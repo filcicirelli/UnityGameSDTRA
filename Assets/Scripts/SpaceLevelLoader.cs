@@ -119,7 +119,9 @@ public static class SpaceLevelLoader
         a.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
         var sr = a.AddComponent<SpriteRenderer>();
         sr.sprite = SpaceSpriteFactory.CreateAstro();
-        sr.sortingOrder = 4;
+        // Astro e' il puntatore: deve sempre essere visibile sopra
+        // caramelle, chiave e porta. sortingOrder alto.
+        sr.sortingOrder = 10;
         a.AddComponent<Astro>();
     }
 
@@ -227,7 +229,9 @@ public static class SpaceLevelLoader
         sr.sprite = SpaceSpriteFactory.CreateKey();
         sr.sortingOrder = 5;
         var k = go.AddComponent<Key>();
-        k.Init(new Vector2(0f, 3.0f));   // appare in alto al centro
+        // y=2.0 invece di 3.0: ben sotto il muro superiore di L2/L3 (y>=4),
+        // cosi' Astro la puo' prendere senza dover sfiorare le barriere.
+        k.Init(new Vector2(0f, 2.0f));
     }
 
     public static void SpawnDoor()
@@ -250,8 +254,10 @@ public static class SpaceLevelLoader
         if (currentDef == null) return new Vector2(0f, 2f);
         for (int tries = 0; tries < 40; tries++)
         {
-            float x = Random.Range(-6.5f, 6.5f);
-            float y = Random.Range(-3f, 3.2f);
+            // Range stretto: lascia margine ai muri laterali (x=+-7.5) e
+            // al muro superiore (y=4). La porta e' larga ~1.8 unita'.
+            float x = Random.Range(-5.5f, 5.5f);
+            float y = Random.Range(-2.5f, 2.8f);
             var p = new Vector2(x, y);
             if (Vector2.Distance(p, avoidPos) < 3f) continue;
             if (IsInsideBarrier(p, currentDef)) continue;

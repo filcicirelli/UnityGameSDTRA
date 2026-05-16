@@ -8,10 +8,12 @@ public class Astro : MonoBehaviour
 {
     public static Astro Instance { get; private set; }
 
-    // Raggi di "tocco" (in unita' di mondo)
-    public float candyTouchRadius   = 0.75f;
-    public float keyTouchRadius     = 0.80f;
-    public float doorTouchRadius    = 0.90f;
+    // Raggi di "tocco" (in unita' di mondo).
+    // Chiave/porta hanno raggio generoso: e' una raccolta "a passaggio",
+    // pensata per bambini che possono avere problemi di motricita' fine.
+    public float candyTouchRadius   = 0.85f;
+    public float keyTouchRadius     = 1.30f;
+    public float doorTouchRadius    = 1.30f;
     public float bombTouchRadius    = 0.55f;
 
     public bool HasKey { get; private set; }
