@@ -183,6 +183,76 @@ public static class SpaceSpriteFactory
         return Bake(px);
     }
 
+    // -------- Barriera-asteroide (tessera) --------
+    // Pixel a "roccia" con bordo scuro: scalata dal loader sulla dimensione richiesta.
+    public static Sprite CreateBarrierTile(Color baseColor)
+    {
+        var px = NewTransparent();
+        Color light = baseColor;
+        Color dark = Darken(baseColor, 0.55f);
+        Color edge = Darken(baseColor, 0.30f);
+
+        for (int y = 0; y < SIZE; y++)
+            for (int x = 0; x < SIZE; x++)
+            {
+                bool border = (x == 0 || x == SIZE - 1 || y == 0 || y == SIZE - 1);
+                // crateri pseudo-casuali ma deterministici
+                int h = ((x * 13 + y * 7) % 9);
+                Color c = border ? edge : (h < 3 ? dark : light);
+                px[y * SIZE + x] = c;
+            }
+        return Bake(px);
+    }
+
+    // -------- Bomba (sfera scura con miccia rossa) --------
+    public static Sprite CreateBomb()
+    {
+        var px = NewTransparent();
+        Color body = new Color(0.12f, 0.10f, 0.18f);
+        Color shine = new Color(0.55f, 0.55f, 0.70f);
+        Color fuseDark = new Color(0.45f, 0.30f, 0.20f);
+        Color spark = new Color(1f, 0.55f, 0.20f);
+
+        // Sfera
+        float cx = 7.5f, cy = 6.5f, r = 5.5f;
+        for (int y = 0; y < SIZE; y++)
+            for (int x = 0; x < SIZE; x++)
+            {
+                float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= r) px[y * SIZE + x] = body;
+            }
+        // Riflesso in alto-sinistra
+        px[9 * SIZE + 5] = shine; px[9 * SIZE + 6] = shine;
+        px[10 * SIZE + 5] = shine;
+
+        // Miccia con scintilla in cima
+        px[12 * SIZE + 8] = fuseDark;
+        px[13 * SIZE + 9] = fuseDark;
+        px[14 * SIZE + 9] = fuseDark;
+        px[15 * SIZE + 9] = spark;
+        px[14 * SIZE + 10] = spark;
+        return Bake(px);
+    }
+
+    // -------- Esplosione (anello luminoso, scalata dall'animazione) --------
+    public static Sprite CreateExplosion()
+    {
+        var px = NewTransparent();
+        Color inner = new Color(1f, 1f, 0.6f);
+        Color mid = new Color(1f, 0.55f, 0.20f);
+        Color outer = new Color(0.85f, 0.20f, 0.20f);
+        float cx = 7.5f, cy = 7.5f;
+        for (int y = 0; y < SIZE; y++)
+            for (int x = 0; x < SIZE; x++)
+            {
+                float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= 3f) px[y * SIZE + x] = inner;
+                else if (d <= 5.5f) px[y * SIZE + x] = mid;
+                else if (d <= 7f) px[y * SIZE + x] = outer;
+            }
+        return Bake(px);
+    }
+
     // -------- Quadratino pieno (per coriandoli e barre HUD in-world) --------
     public static Sprite CreateSolid(Color color)
     {

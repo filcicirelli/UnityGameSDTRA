@@ -1,18 +1,22 @@
 using UnityEngine;
 
 // HUD del gioco con IMGUI (testi grandi e amichevoli per bambini):
-//   - in alto a sinistra:  CRISTALLI: N
-//   - sotto:               PUNTI: NNNN
-//   - in alto a destra:    ENERGIA NAVICELLA (barra verde)
-//   - in basso a sinistra: distintivo obiettivo
-//   - in basso a destra:   pulsanti MENU e RIAVVIA
-//   - centro:              "MISSIONE COMPLETATA!" con celebrazione
+//   - in alto a sinistra:   CRISTALLI: N
+//   - sotto:                PUNTI: NNNN
+//   - in alto al centro:    titolo del livello
+//   - in alto a destra:     ENERGIA NAVICELLA (barra verde)
+//   - in basso a sinistra:  distintivo obiettivo
+//   - in basso a destra:    pulsanti MENU e RIAVVIA
+//   - centro a missione completa:  "MISSIONE COMPLETATA!" + PROSSIMO LIVELLO
+//   - centro a GAME OVER:          "BOOM!" + RIPROVA
+//   - flash rosso a tutto schermo quando si tocca una barriera
 public class SpaceUIManager : MonoBehaviour
 {
     public static SpaceUIManager Instance { get; private set; }
 
     private GUIStyle bigLabel;
     private GUIStyle hugeLabel;
+    private GUIStyle titleLabel;
     private GUIStyle objectiveBadge;
     private GUIStyle button;
     private Texture2D barBg, barFill, panelBg;
@@ -33,6 +37,12 @@ public class SpaceUIManager : MonoBehaviour
         hugeLabel.fontStyle = FontStyle.Bold;
         hugeLabel.alignment = TextAnchor.MiddleCenter;
         hugeLabel.normal.textColor = new Color(1f, 0.95f, 0.45f);
+
+        titleLabel = new GUIStyle(GUI.skin.label);
+        titleLabel.fontSize = 24;
+        titleLabel.fontStyle = FontStyle.Bold;
+        titleLabel.alignment = TextAnchor.MiddleCenter;
+        titleLabel.normal.textColor = new Color(0.85f, 0.95f, 1f);
 
         objectiveBadge = new GUIStyle(GUI.skin.box);
         objectiveBadge.fontSize = 22;
@@ -56,17 +66,32 @@ public class SpaceUIManager : MonoBehaviour
         var gm = SpaceGameManager.Instance;
         if (gm == null) return;
 
+        // -------- Flash rosso a schermo intero quando si tocca una barriera --------
+        if (gm.BarrierFlashTimer > 0f)
+        {
+            var c = new Color(1f, 0.20f, 0.20f,
+                              0.35f * Mathf.Clamp01(gm.BarrierFlashTimer / 0.25f));
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), SolidTex(c));
+        }
+
         // -------- HUD principale --------
 
         // CRISTALLI in alto a sinistra
         GUI.Label(new Rect(20, 12, 360, 36),
                   "CRISTALLI: " + gm.CrystalsCollected, bigLabel);
-        // PUNTI subito sotto, piu' grande
+        // PUNTI sotto, piu' grande
         GUI.Label(new Rect(20, 46, 360, 50),
                   "PUNTI: " + gm.Score.ToString("0000"),
                   new GUIStyle(bigLabel) { fontSize = 34 });
 
-        // ENERGIA NAVICELLA in alto a destra (etichetta + barra)
+        // Titolo livello in alto al centro
+        string title = gm.CurrentDef != null ? gm.CurrentDef.title : "";
+        GUI.Label(new Rect(Screen.width / 2f - 320, 14, 640, 36), title, titleLabel);
+        GUI.Label(new Rect(Screen.width / 2f - 320, 46, 640, 28),
+                  "Livello " + (gm.CurrentLevel + 1) + " di " + SpaceLevels.Count,
+                  new GUIStyle(titleLabel) { fontSize = 18 });
+
+        // ENERGIA NAVICELLA in alto a destra
         float barW = 260, barH = 28;
         float barX = Screen.width - barW - 20;
         GUI.Label(new Rect(barX, 12, barW, 28), "ENERGIA NAVICELLA", bigLabel);
@@ -77,8 +102,8 @@ public class SpaceUIManager : MonoBehaviour
                         barFill);
 
         // Distintivo obiettivo in basso a sinistra
-        GUI.Box(new Rect(20, Screen.height - 70, 320, 50),
-                gm.ObjectiveText, objectiveBadge);
+        string obj = gm.CurrentDef != null ? gm.CurrentDef.objective : "";
+        GUI.Box(new Rect(20, Screen.height - 70, 360, 50), obj, objectiveBadge);
 
         // Pulsanti MENU e RIAVVIA in basso a destra
         if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 70, 140, 50),
@@ -88,23 +113,60 @@ public class SpaceUIManager : MonoBehaviour
                        "RIAVVIA", button))
             gm.Restart();
 
-        // -------- Schermata "Missione Completata" --------
+        // -------- Pannello "Missione Completata" --------
+        if (gm.MissionComplete) DrawMissionCompletePanel(gm);
 
-        if (gm.MissionComplete)
-        {
-            // Sfondo semitrasparente per dare risalto al messaggio
-            GUI.DrawTexture(new Rect(0, Screen.height * 0.30f, Screen.width, 160),
-                            SolidTex(new Color(0f, 0f, 0f, 0.45f)));
-            GUI.Label(new Rect(0, Screen.height * 0.32f, Screen.width, 80),
-                      "MISSIONE COMPLETATA!", hugeLabel);
-            GUI.Label(new Rect(0, Screen.height * 0.32f + 80, Screen.width, 40),
-                      "Hai raccolto tutti i cristalli: ben fatto, Astro!",
-                      new GUIStyle(bigLabel) { alignment = TextAnchor.MiddleCenter });
-        }
+        // -------- Pannello "Game Over" --------
+        if (gm.GameOver) DrawGameOverPanel(gm);
 
         // -------- Menu di pausa --------
-
         if (menuOpen) DrawMenuPanel(gm);
+    }
+
+    void DrawMissionCompletePanel(SpaceGameManager gm)
+    {
+        // Banda scura per dare risalto al messaggio
+        GUI.DrawTexture(new Rect(0, Screen.height * 0.28f, Screen.width, 220),
+                        SolidTex(new Color(0f, 0f, 0f, 0.5f)));
+        GUI.Label(new Rect(0, Screen.height * 0.30f, Screen.width, 80),
+                  "MISSIONE COMPLETATA!", hugeLabel);
+        GUI.Label(new Rect(0, Screen.height * 0.30f + 80, Screen.width, 40),
+                  "Hai raccolto tutti i cristalli: ben fatto, Astro!",
+                  new GUIStyle(bigLabel) { alignment = TextAnchor.MiddleCenter });
+
+        // Pulsante PROSSIMO LIVELLO / RICOMINCIA
+        string label = gm.HasNextLevel ? "PROSSIMO LIVELLO" : "RICOMINCIA";
+        float bw = 320, bh = 60;
+        if (GUI.Button(new Rect((Screen.width - bw) / 2f,
+                                Screen.height * 0.30f + 140, bw, bh),
+                       label, button))
+        {
+            if (gm.HasNextLevel) gm.NextLevel();
+            else gm.Restart();
+        }
+    }
+
+    void DrawGameOverPanel(SpaceGameManager gm)
+    {
+        // Banda scura rossastra
+        GUI.DrawTexture(new Rect(0, Screen.height * 0.28f, Screen.width, 220),
+                        SolidTex(new Color(0.35f, 0.05f, 0.05f, 0.85f)));
+        GUI.Label(new Rect(0, Screen.height * 0.30f, Screen.width, 80),
+                  "BOOM!  GAME OVER",
+                  new GUIStyle(hugeLabel) { normal = { textColor = new Color(1f, 0.6f, 0.6f) } });
+        GUI.Label(new Rect(0, Screen.height * 0.30f + 80, Screen.width, 40),
+                  "Hai toccato una bomba. Riprova con piu' calma!",
+                  new GUIStyle(bigLabel) { alignment = TextAnchor.MiddleCenter });
+
+        float bw = 220, bh = 60;
+        if (GUI.Button(new Rect(Screen.width / 2f - bw - 10,
+                                Screen.height * 0.30f + 140, bw, bh),
+                       "RIPROVA LIVELLO", button))
+            gm.RetryLevel();
+        if (GUI.Button(new Rect(Screen.width / 2f + 10,
+                                Screen.height * 0.30f + 140, bw, bh),
+                       "DA CAPO", button))
+            gm.Restart();
     }
 
     void DrawMenuPanel(SpaceGameManager gm)
@@ -130,7 +192,6 @@ public class SpaceUIManager : MonoBehaviour
         }
     }
 
-    // Crea una texture 1x1 di un certo colore (per sfondi e barre).
     static Texture2D SolidTex(Color c)
     {
         var t = new Texture2D(1, 1);

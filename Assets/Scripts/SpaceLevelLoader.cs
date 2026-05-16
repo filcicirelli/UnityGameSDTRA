@@ -1,25 +1,27 @@
 using UnityEngine;
 
-// Costruisce la scena del gioco a partire da nulla: sfondo (stelle e
-// piccoli pianeti), Astro al centro, la navicella-puntatore e i cristalli
-// sparsi sul "percorso spaziale".
-// Tutto e' figlio di un GameObject "Mission" che viene distrutto al riavvio.
+// Costruisce la scena del gioco a partire da un SpaceLevelDef:
+// sfondo (stelle e pianeti), Astro al centro, la navicella-puntatore,
+// barriere/asteroidi, bombe e cristalli.
+// Tutto e' figlio di un GameObject "Mission" che viene distrutto al cambio livello.
 public static class SpaceLevelLoader
 {
     private static GameObject root;
     private static Transform crystalsRoot;
+    private static Transform barriersRoot;
+    private static Transform bombsRoot;
 
-    // Palette colorata e luminosa per i cristalli (8-bit ma invitante)
+    // Palette per cristalli generati in modo casuale (livello 1)
     static readonly Color[] CRYSTAL_COLORS =
     {
-        new Color(1f, 0.85f, 0.30f),   // giallo
-        new Color(0.40f, 0.85f, 1f),   // azzurro
-        new Color(0.95f, 0.45f, 0.85f),// rosa
-        new Color(0.55f, 1f, 0.55f),   // verde chiaro
-        new Color(1f, 0.55f, 0.30f),   // arancio
+        new Color(1f, 0.85f, 0.30f),
+        new Color(0.40f, 0.85f, 1f),
+        new Color(0.95f, 0.45f, 0.85f),
+        new Color(0.55f, 1f, 0.55f),
+        new Color(1f, 0.55f, 0.30f),
     };
 
-    public static int Load()
+    public static int Load(SpaceLevelDef def)
     {
         Clear();
         root = new GameObject("Mission");
@@ -29,9 +31,13 @@ public static class SpaceLevelLoader
         BuildAstro();
         BuildSpaceship();
 
-        crystalsRoot = new GameObject("Crystals").transform;
-        crystalsRoot.SetParent(root.transform);
-        int total = BuildCrystals(10);
+        crystalsRoot = NewChild("Crystals");
+        barriersRoot = NewChild("Barriers");
+        bombsRoot    = NewChild("Bombs");
+
+        BuildBarriers(def);
+        BuildBombs(def);
+        int total = BuildCrystals(def);
         return total;
     }
 
@@ -39,30 +45,34 @@ public static class SpaceLevelLoader
     {
         if (root != null) Object.Destroy(root);
         root = null;
-        crystalsRoot = null;
+        crystalsRoot = barriersRoot = bombsRoot = null;
+    }
+
+    static Transform NewChild(string name)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(root.transform);
+        return go.transform;
     }
 
     // -------- Sfondo --------
 
     static void BuildBackgroundStars()
     {
-        var starRoot = new GameObject("Stars");
-        starRoot.transform.SetParent(root.transform);
-        // ~120 stelline distribuite sullo schermo
+        var starRoot = NewChild("Stars");
         for (int i = 0; i < 120; i++)
         {
             float x = Random.Range(-9.5f, 9.5f);
             float y = Random.Range(-5.5f, 5.5f);
-            float brightness = Random.Range(0.4f, 1f);
-            var c = new Color(brightness, brightness, brightness * 0.9f + 0.1f, 1f);
+            float b = Random.Range(0.4f, 1f);
+            var c = new Color(b, b, b * 0.9f + 0.1f, 1f);
 
             var s = new GameObject("Star");
-            s.transform.SetParent(starRoot.transform);
+            s.transform.SetParent(starRoot);
             s.transform.position = new Vector3(x, y, 5f);
             var sr = s.AddComponent<SpriteRenderer>();
             sr.sprite = SpaceSpriteFactory.CreateStar(c);
             sr.sortingOrder = -5;
-            // Scala random per varieta' di "lontananza"
             float k = Random.Range(0.4f, 1.1f);
             s.transform.localScale = new Vector3(k, k, 1f);
         }
@@ -70,8 +80,7 @@ public static class SpaceLevelLoader
 
     static void BuildDecorativePlanets()
     {
-        var planets = new GameObject("Planets");
-        planets.transform.SetParent(root.transform);
+        var planets = NewChild("Planets");
 
         var palette = new (Color, Color)[]
         {
@@ -82,15 +91,13 @@ public static class SpaceLevelLoader
         };
         Vector2[] positions =
         {
-            new Vector2(-7f,  3.2f),
-            new Vector2( 7.2f, 2.5f),
-            new Vector2(-6.2f,-3.0f),
-            new Vector2( 6.5f,-3.3f),
+            new Vector2(-7f,  3.2f), new Vector2( 7.2f, 2.5f),
+            new Vector2(-6.2f,-3.0f),new Vector2( 6.5f,-3.3f),
         };
         for (int i = 0; i < positions.Length; i++)
         {
             var p = new GameObject("Planet_" + i);
-            p.transform.SetParent(planets.transform);
+            p.transform.SetParent(planets);
             p.transform.position = positions[i];
             float k = Random.Range(1.1f, 1.6f);
             p.transform.localScale = new Vector3(k, k, 1f);
@@ -126,42 +133,102 @@ public static class SpaceLevelLoader
         s.AddComponent<SpaceShip>();
     }
 
-    // -------- Cristalli --------
+    // -------- Barriere --------
 
-    static int BuildCrystals(int count)
+    static void BuildBarriers(SpaceLevelDef def)
     {
-        for (int i = 0; i < count; i++)
+        foreach (var b in def.barriers)
         {
-            Vector2 pos = RandomCrystalPosition();
-            var color = CRYSTAL_COLORS[Random.Range(0, CRYSTAL_COLORS.Length)];
-
-            var c = new GameObject("Crystal_" + i);
-            c.transform.SetParent(crystalsRoot);
-            c.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
-            var sr = c.AddComponent<SpriteRenderer>();
-            sr.sprite = SpaceSpriteFactory.CreateCrystal(color);
-            sr.sortingOrder = 2;
-
-            var cr = c.AddComponent<Crystal>();
-            cr.Init(new Vector3(pos.x, pos.y, 0f));
+            var go = new GameObject("Barrier");
+            go.transform.SetParent(barriersRoot);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = SpaceSpriteFactory.CreateBarrierTile(b.color);
+            sr.sortingOrder = 0;
+            var br = go.AddComponent<Barrier>();
+            br.Init(b.center, b.size);
         }
-        return count;
     }
 
-    // Pesca una posizione casuale ragionevole: dentro alla "mappa" ma
-    // non troppo vicina ad Astro (cosi' il giocatore deve muovere il mouse).
-    static Vector2 RandomCrystalPosition()
+    // -------- Bombe --------
+
+    static void BuildBombs(SpaceLevelDef def)
     {
-        for (int tries = 0; tries < 20; tries++)
+        foreach (var pos in def.bombs)
+        {
+            var go = new GameObject("Bomb");
+            go.transform.SetParent(bombsRoot);
+            go.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = SpaceSpriteFactory.CreateBomb();
+            sr.sortingOrder = 3;
+            var b = go.AddComponent<Bomb>();
+            b.Init(pos);
+        }
+    }
+
+    // -------- Cristalli --------
+
+    static int BuildCrystals(SpaceLevelDef def)
+    {
+        int total;
+        if (def.randomCrystals > 0)
+        {
+            total = def.randomCrystals;
+            for (int i = 0; i < total; i++)
+            {
+                Vector2 pos = RandomCrystalPosition(def);
+                var color = CRYSTAL_COLORS[Random.Range(0, CRYSTAL_COLORS.Length)];
+                CreateCrystal(pos, color, i);
+            }
+        }
+        else
+        {
+            total = def.crystals.Count;
+            for (int i = 0; i < total; i++)
+                CreateCrystal(def.crystals[i].position, def.crystals[i].color, i);
+        }
+        return total;
+    }
+
+    static void CreateCrystal(Vector2 pos, Color color, int i)
+    {
+        var c = new GameObject("Crystal_" + i);
+        c.transform.SetParent(crystalsRoot);
+        c.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+        var sr = c.AddComponent<SpriteRenderer>();
+        sr.sprite = SpaceSpriteFactory.CreateCrystal(color);
+        sr.sortingOrder = 2;
+        var cr = c.AddComponent<Crystal>();
+        cr.Init(new Vector3(pos.x, pos.y, 0f));
+    }
+
+    static Vector2 RandomCrystalPosition(SpaceLevelDef def)
+    {
+        for (int tries = 0; tries < 30; tries++)
         {
             float x = Random.Range(-7f, 7f);
             float y = Random.Range(-3.5f, 4f);
-            if (new Vector2(x, y + 0.5f).magnitude > 1.8f) return new Vector2(x, y);
+            var p = new Vector2(x, y);
+            if (new Vector2(x, y + 0.5f).magnitude < 1.8f) continue; // troppo vicino ad Astro
+            if (IsInsideBarrier(p, def)) continue;
+            return p;
         }
         return new Vector2(3f, 3f);
     }
 
-    // -------- Festa di completamento --------
+    static bool IsInsideBarrier(Vector2 p, SpaceLevelDef def)
+    {
+        foreach (var b in def.barriers)
+        {
+            var r = new Rect(b.center.x - b.size.x / 2f,
+                             b.center.y - b.size.y / 2f,
+                             b.size.x, b.size.y);
+            if (r.Contains(p)) return true;
+        }
+        return false;
+    }
+
+    // -------- Effetti --------
 
     public static void SpawnFriendPlanet()
     {
@@ -181,5 +248,17 @@ public static class SpaceLevelLoader
         var c = new GameObject("Confetti");
         c.transform.SetParent(root.transform);
         c.AddComponent<Confetti>();
+    }
+
+    public static void SpawnExplosion(Vector3 position)
+    {
+        if (root == null) return;
+        var e = new GameObject("Explosion");
+        e.transform.SetParent(root.transform);
+        e.transform.position = new Vector3(position.x, position.y, -3f);
+        var sr = e.AddComponent<SpriteRenderer>();
+        sr.sprite = SpaceSpriteFactory.CreateExplosion();
+        sr.sortingOrder = 8;
+        e.AddComponent<Explosion>();
     }
 }
