@@ -76,9 +76,10 @@ public class SpaceUIManager : MonoBehaviour
 
         // -------- HUD principale --------
 
-        // CRISTALLI in alto a sinistra
+        // CARAMELLE in alto a sinistra
         GUI.Label(new Rect(20, 12, 360, 36),
-                  "CRISTALLI: " + gm.CrystalsCollected, bigLabel);
+                  "CARAMELLE: " + gm.CandiesCollected + " / " + gm.TotalCandies,
+                  bigLabel);
         // PUNTI sotto, piu' grande
         GUI.Label(new Rect(20, 46, 360, 50),
                   "PUNTI: " + gm.Score.ToString("0000"),
@@ -94,16 +95,16 @@ public class SpaceUIManager : MonoBehaviour
         // ENERGIA NAVICELLA in alto a destra
         float barW = 260, barH = 28;
         float barX = Screen.width - barW - 20;
-        GUI.Label(new Rect(barX, 12, barW, 28), "ENERGIA NAVICELLA", bigLabel);
+        GUI.Label(new Rect(barX, 12, barW, 28), "ENERGIA ASTRO", bigLabel);
         GUI.DrawTexture(new Rect(barX, 46, barW, barH), barBg);
         GUI.DrawTexture(new Rect(barX + 3, 49,
                                  Mathf.Max(0, (barW - 6) * Mathf.Clamp01(gm.Energy)),
                                  barH - 6),
                         barFill);
 
-        // Distintivo obiettivo in basso a sinistra
-        string obj = gm.CurrentDef != null ? gm.CurrentDef.objective : "";
-        GUI.Box(new Rect(20, Screen.height - 70, 360, 50), obj, objectiveBadge);
+        // Distintivo obiettivo in basso a sinistra (cambia tra raccolta/chiave/porta)
+        GUI.Box(new Rect(20, Screen.height - 70, 420, 50),
+                gm.ObjectiveText, objectiveBadge);
 
         // Pulsanti MENU e RIAVVIA in basso a destra
         if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 70, 140, 50),
@@ -141,7 +142,7 @@ public class SpaceUIManager : MonoBehaviour
         GUI.Label(new Rect(0, Screen.height * 0.30f, Screen.width, 80),
                   "MISSIONE COMPLETATA!", hugeLabel);
         GUI.Label(new Rect(0, Screen.height * 0.30f + 80, Screen.width, 40),
-                  "Hai raccolto tutti i cristalli: ben fatto, Astro!",
+                  "Hai aperto la porta: ottimo lavoro, Astro!",
                   new GUIStyle(bigLabel) { alignment = TextAnchor.MiddleCenter });
 
         // Pulsante PROSSIMO LIVELLO / RICOMINCIA

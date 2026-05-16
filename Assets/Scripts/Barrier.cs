@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Barriera-asteroide statica: e' una "no-go zone" rettangolare.
-// La SpaceShip ogni frame controlla se e' dentro un Barrier
+// Astro ogni frame controlla se e' dentro un Barrier
 // (test Axis-Aligned Bounding Box) per applicare la penalita'.
 public class Barrier : MonoBehaviour
 {
-    // Lista globale: SpaceShip la scorre per testare collisione punto-rect.
+    // Lista globale: Astro la scorre per testare collisione punto-rect.
     public static readonly List<Barrier> All = new List<Barrier>();
 
     public Rect WorldRect { get; private set; }

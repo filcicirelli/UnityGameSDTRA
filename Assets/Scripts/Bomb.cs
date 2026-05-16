@@ -39,7 +39,8 @@ public class Bomb : MonoBehaviour
         halo.sortingOrder = (sr != null ? sr.sortingOrder : 2) - 1;
     }
 
-    // Chiamato da SpaceShip quando il raggio traente la "tocca".
+    // Lasciato come hook per eventuali futuri "tiri" della bomba.
+    // Attualmente non viene usato: Astro la fa esplodere al contatto.
     public void PullToward(Vector3 target, float speed)
     {
         pulling = true;

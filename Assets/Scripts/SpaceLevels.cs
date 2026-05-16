@@ -20,7 +20,7 @@ public static class SpaceLevels
     }
 
     // --- Palette dei cristalli (riuso anche in altri livelli)
-    static readonly Color[] CRYSTAL_COLORS =
+    static readonly Color[] CANDY_COLORS =
     {
         new Color(1f, 0.85f, 0.30f),
         new Color(0.40f, 0.85f, 1f),
@@ -39,10 +39,10 @@ public static class SpaceLevels
         {
             index = 0,
             title = "LIVELLO 1 - PRIMO VOLO",
-            objective = "RACCOGLI 10 CRISTALLI",
+            objective = "RACCOGLI 10 CARAMELLE",
         };
         // Posizioni random: il loader le genera al volo.
-        lv.randomCrystals = 10;
+        lv.randomCandies = 10;
         return lv;
     }
 
@@ -56,7 +56,7 @@ public static class SpaceLevels
         {
             index = 1,
             title = "LIVELLO 2 - TRA GLI ASTEROIDI",
-            objective = "EVITA LE BARRIERE",
+            objective = "EVITA GLI ASTEROIDI",
         };
 
         // Cornice "a corridoio": due muri verticali ai lati + un soffitto
@@ -68,7 +68,7 @@ public static class SpaceLevels
         lv.barriers.Add(B( 2.5f,-1.5f, 1.8f, 1.0f));
 
         // Cristalli posizionati nei "varchi" tra le barriere.
-        AddCrystals(lv, new Vector2[]
+        AddCandies(lv, new Vector2[]
         {
             new Vector2(-5.5f,  3.0f), new Vector2(-3.0f,  3.5f),
             new Vector2( 3.0f,  3.5f), new Vector2( 5.5f,  3.0f),
@@ -108,7 +108,7 @@ public static class SpaceLevels
         lv.bombs.Add(new Vector2( 4.0f, -3.5f));
 
         // 10 cristalli sparsi tra barriere e bombe (lontani dalle bombe)
-        AddCrystals(lv, new Vector2[]
+        AddCandies(lv, new Vector2[]
         {
             new Vector2(-4.0f,  3.0f), new Vector2(-1.5f,  3.0f),
             new Vector2( 1.5f,  3.0f), new Vector2( 4.0f,  3.0f),
@@ -132,14 +132,14 @@ public static class SpaceLevels
         };
     }
 
-    static void AddCrystals(SpaceLevelDef lv, Vector2[] positions)
+    static void AddCandies(SpaceLevelDef lv, Vector2[] positions)
     {
         for (int i = 0; i < positions.Length; i++)
         {
-            lv.crystals.Add(new CrystalSpec
+            lv.candies.Add(new CandySpec
             {
                 position = positions[i],
-                color = CRYSTAL_COLORS[i % CRYSTAL_COLORS.Length],
+                color = CANDY_COLORS[i % CANDY_COLORS.Length],
             });
         }
     }
@@ -152,15 +152,15 @@ public class SpaceLevelDef
     public int index;
     public string title;
     public string objective;
-    public int randomCrystals = 0;             // se >0, cristalli generati random
-    public List<CrystalSpec> crystals = new List<CrystalSpec>();
+    public int randomCandies = 0;             // se >0, caramelle generate random
+    public List<CandySpec> candies = new List<CandySpec>();
     public List<BarrierSpec> barriers = new List<BarrierSpec>();
     public List<Vector2> bombs = new List<Vector2>();
 
-    public int CrystalCount => (randomCrystals > 0) ? randomCrystals : crystals.Count;
+    public int CandyCount => (randomCandies > 0) ? randomCandies : candies.Count;
 }
 
-public class CrystalSpec
+public class CandySpec
 {
     public Vector2 position;
     public Color color;

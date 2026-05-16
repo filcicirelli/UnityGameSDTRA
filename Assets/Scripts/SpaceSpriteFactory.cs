@@ -83,29 +83,118 @@ public static class SpaceSpriteFactory
         return Bake(px);
     }
 
-    // -------- Cristallo di polvere cosmica --------
-    // Piccolo rombo brillante, colore variabile per dare vita alla scena.
-    public static Sprite CreateCrystal(Color tint)
+    // -------- Caramella incartata --------
+    // Cerchio del colore richiesto + due "ali" di incarto ai lati.
+    public static Sprite CreateCandy(Color tint)
     {
         var px = NewTransparent();
-        Color core = tint;
-        Color edge = Darken(tint, 0.45f);
-        Color spark = Color.white;
+        Color body = tint;
+        Color outline = Darken(tint, 0.45f);
+        Color shine = Color.white;
+        // incarto piu' chiaro del corpo
+        Color wrap = new Color(0.5f + tint.r * 0.5f,
+                               0.5f + tint.g * 0.5f,
+                               0.5f + tint.b * 0.5f, 1f);
 
-        // Rombo
+        // Corpo a cerchio
+        float cx = 7.5f, cy = 7.5f, r = 3.8f;
         for (int y = 0; y < SIZE; y++)
-        {
-            int half = Mathf.Max(0, 6 - Mathf.Abs(y - 8));
-            for (int x = 8 - half; x <= 8 + half; x++)
+            for (int x = 0; x < SIZE; x++)
             {
-                if (x < 0 || x >= SIZE) continue;
-                bool e = (x == 8 - half) || (x == 8 + half);
-                px[y * SIZE + x] = e ? edge : core;
+                float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= r - 1) px[y * SIZE + x] = body;
+                else if (d <= r) px[y * SIZE + x] = outline;
             }
+        // Highlight
+        px[10 * SIZE + 6] = shine;
+        px[10 * SIZE + 7] = shine;
+        px[9 * SIZE + 6] = shine;
+
+        // Ala incarto sinistra (triangoli concentrici)
+        px[8 * SIZE + 3] = wrap;
+        px[7 * SIZE + 3] = wrap;
+        px[9 * SIZE + 2] = wrap;
+        px[6 * SIZE + 2] = wrap;
+        px[8 * SIZE + 1] = wrap;
+        px[7 * SIZE + 1] = wrap;
+        // bordo
+        px[10 * SIZE + 2] = outline; px[5 * SIZE + 2] = outline;
+        px[9 * SIZE + 1] = outline;  px[6 * SIZE + 1] = outline;
+
+        // Ala incarto destra (mirror)
+        px[8 * SIZE + 12] = wrap;
+        px[7 * SIZE + 12] = wrap;
+        px[9 * SIZE + 13] = wrap;
+        px[6 * SIZE + 13] = wrap;
+        px[8 * SIZE + 14] = wrap;
+        px[7 * SIZE + 14] = wrap;
+        px[10 * SIZE + 13] = outline; px[5 * SIZE + 13] = outline;
+        px[9 * SIZE + 14] = outline;  px[6 * SIZE + 14] = outline;
+
+        return Bake(px);
+    }
+
+    // -------- Chiave dorata --------
+    public static Sprite CreateKey()
+    {
+        var px = NewTransparent();
+        Color gold = new Color(1f, 0.85f, 0.20f);
+        Color goldDark = new Color(0.70f, 0.50f, 0.10f);
+        Color shine = Color.white;
+
+        // Anello (cerchio cavo) a sinistra
+        float cx = 4.5f, cy = 7.5f, rOut = 3.2f, rIn = 1.6f;
+        for (int y = 0; y < SIZE; y++)
+            for (int x = 0; x < SIZE; x++)
+            {
+                float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= rOut && d > rIn)
+                    px[y * SIZE + x] = (d > rOut - 0.7f) ? goldDark : gold;
+            }
+        px[9 * SIZE + 3] = shine; // riflesso
+
+        // Asta orizzontale verso destra
+        for (int x = 7; x <= 13; x++)
+        {
+            px[7 * SIZE + x] = gold;
+            px[8 * SIZE + x] = gold;
+            px[6 * SIZE + x] = goldDark;
+            px[9 * SIZE + x] = goldDark;
         }
-        // Scintilla
-        px[10 * SIZE + 9] = spark;
-        px[11 * SIZE + 9] = spark;
+
+        // Denti in punta
+        px[5 * SIZE + 11] = gold; px[5 * SIZE + 12] = gold; px[5 * SIZE + 13] = gold;
+        px[4 * SIZE + 11] = goldDark; px[4 * SIZE + 13] = goldDark;
+        return Bake(px);
+    }
+
+    // -------- Porta / portale --------
+    public static Sprite CreateDoor()
+    {
+        var px = NewTransparent();
+        Color frame = new Color(0.75f, 0.55f, 0.30f);
+        Color frameDark = new Color(0.35f, 0.20f, 0.08f);
+        Color portal = new Color(0.55f, 0.30f, 0.85f);
+        Color portalLight = new Color(0.85f, 0.65f, 1f);
+        Color star = Color.white;
+
+        // Cornice rettangolare verticale x:[3..11], y:[1..14]
+        for (int y = 1; y <= 14; y++)
+            for (int x = 3; x <= 11; x++)
+            {
+                bool outer = (x == 3 || x == 11 || y == 1 || y == 14);
+                bool inner = (x == 4 || x == 10 || y == 2 || y == 13);
+                if (outer)      px[y * SIZE + x] = frameDark;
+                else if (inner) px[y * SIZE + x] = frame;
+                else            px[y * SIZE + x] = portal;
+            }
+        // Luce interna (verso il centro)
+        for (int y = 5; y <= 10; y++)
+            for (int x = 6; x <= 8; x++) px[y * SIZE + x] = portalLight;
+        // Stellina al centro
+        px[8 * SIZE + 7] = star;
+        px[7 * SIZE + 6] = star; px[7 * SIZE + 8] = star;
+        px[6 * SIZE + 7] = star;
         return Bake(px);
     }
 
@@ -168,18 +257,6 @@ public static class SpaceSpriteFactory
         px[6 * SIZE + 5] = mouth; px[6 * SIZE + 10] = mouth;
         px[5 * SIZE + 6] = mouth; px[5 * SIZE + 7] = mouth;
         px[5 * SIZE + 8] = mouth; px[5 * SIZE + 9] = mouth;
-        return Bake(px);
-    }
-
-    // -------- Tessera 1x1 del raggio traente (rettangolino chiaro) --------
-    public static Sprite CreateBeamTile()
-    {
-        var px = NewTransparent();
-        Color a = new Color(0.55f, 0.95f, 1f, 0.85f);
-        Color b = new Color(1f, 1f, 1f, 1f);
-        for (int y = 0; y < SIZE; y++)
-            for (int x = 5; x <= 10; x++)
-                px[y * SIZE + x] = ((x + y) % 2 == 0) ? a : b;
         return Bake(px);
     }
 

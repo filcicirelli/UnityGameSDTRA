@@ -1,51 +1,54 @@
 using UnityEngine;
 
 // Costruisce la scena del gioco a partire da un SpaceLevelDef:
-// sfondo (stelle e pianeti), Astro al centro, la navicella-puntatore,
-// barriere/asteroidi, bombe e cristalli.
-// Tutto e' figlio di un GameObject "Mission" che viene distrutto al cambio livello.
+// sfondo (stelle e pianeti), Astro (controllato dal mouse),
+// barriere/asteroidi, bombe e caramelle.
+// La chiave e la porta vengono spawnati dopo la raccolta totale.
+// Tutto e' figlio di un GameObject "Mission" distrutto al cambio livello.
 public static class SpaceLevelLoader
 {
     private static GameObject root;
-    private static Transform crystalsRoot;
+    private static Transform candiesRoot;
     private static Transform barriersRoot;
     private static Transform bombsRoot;
+    private static SpaceLevelDef currentDef;
 
-    // Palette per cristalli generati in modo casuale (livello 1)
-    static readonly Color[] CRYSTAL_COLORS =
+    // Palette per caramelle generate in modo casuale (livello 1)
+    static readonly Color[] CANDY_COLORS =
     {
-        new Color(1f, 0.85f, 0.30f),
-        new Color(0.40f, 0.85f, 1f),
-        new Color(0.95f, 0.45f, 0.85f),
-        new Color(0.55f, 1f, 0.55f),
-        new Color(1f, 0.55f, 0.30f),
+        new Color(1f, 0.35f, 0.55f),     // fragola
+        new Color(0.40f, 0.85f, 1f),     // menta-blu
+        new Color(0.95f, 0.45f, 0.85f),  // anguria
+        new Color(0.55f, 1f, 0.55f),     // mela verde
+        new Color(1f, 0.65f, 0.20f),     // arancia
+        new Color(0.95f, 0.85f, 0.30f),  // limone
     };
 
     public static int Load(SpaceLevelDef def)
     {
         Clear();
+        currentDef = def;
         root = new GameObject("Mission");
 
         BuildBackgroundStars();
         BuildDecorativePlanets();
         BuildAstro();
-        BuildSpaceship();
 
-        crystalsRoot = NewChild("Crystals");
+        candiesRoot  = NewChild("Candies");
         barriersRoot = NewChild("Barriers");
         bombsRoot    = NewChild("Bombs");
 
         BuildBarriers(def);
         BuildBombs(def);
-        int total = BuildCrystals(def);
-        return total;
+        return BuildCandies(def);
     }
 
     public static void Clear()
     {
         if (root != null) Object.Destroy(root);
         root = null;
-        crystalsRoot = barriersRoot = bombsRoot = null;
+        candiesRoot = barriersRoot = bombsRoot = null;
+        currentDef = null;
     }
 
     static Transform NewChild(string name)
@@ -81,7 +84,6 @@ public static class SpaceLevelLoader
     static void BuildDecorativePlanets()
     {
         var planets = NewChild("Planets");
-
         var palette = new (Color, Color)[]
         {
             (new Color(0.95f, 0.45f, 0.45f), new Color(0.60f, 0.20f, 0.30f)),
@@ -107,30 +109,18 @@ public static class SpaceLevelLoader
         }
     }
 
-    // -------- Personaggi --------
+    // -------- Astro (puntatore + protagonista) --------
 
     static void BuildAstro()
     {
         var a = new GameObject("Astro");
         a.transform.SetParent(root.transform);
-        a.transform.position = new Vector3(0, -0.5f, 0);
-        a.transform.localScale = new Vector3(2f, 2f, 1f);
+        a.transform.position = new Vector3(0, 0, 0);     // partenza al centro
+        a.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
         var sr = a.AddComponent<SpriteRenderer>();
         sr.sprite = SpaceSpriteFactory.CreateAstro();
-        sr.sortingOrder = 1;
+        sr.sortingOrder = 4;
         a.AddComponent<Astro>();
-    }
-
-    static void BuildSpaceship()
-    {
-        var s = new GameObject("Spaceship");
-        s.transform.SetParent(root.transform);
-        s.transform.position = new Vector3(0, 2f, -1f);
-        s.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
-        var sr = s.AddComponent<SpriteRenderer>();
-        sr.sprite = SpaceSpriteFactory.CreateShip();
-        sr.sortingOrder = 5;
-        s.AddComponent<SpaceShip>();
     }
 
     // -------- Barriere --------
@@ -166,50 +156,47 @@ public static class SpaceLevelLoader
         }
     }
 
-    // -------- Cristalli --------
+    // -------- Caramelle --------
 
-    static int BuildCrystals(SpaceLevelDef def)
+    static int BuildCandies(SpaceLevelDef def)
     {
         int total;
-        if (def.randomCrystals > 0)
+        if (def.randomCandies > 0)
         {
-            total = def.randomCrystals;
+            total = def.randomCandies;
             for (int i = 0; i < total; i++)
-            {
-                Vector2 pos = RandomCrystalPosition(def);
-                var color = CRYSTAL_COLORS[Random.Range(0, CRYSTAL_COLORS.Length)];
-                CreateCrystal(pos, color, i);
-            }
+                CreateCandyAt(RandomCandyPosition(def),
+                              CANDY_COLORS[Random.Range(0, CANDY_COLORS.Length)], i);
         }
         else
         {
-            total = def.crystals.Count;
+            total = def.candies.Count;
             for (int i = 0; i < total; i++)
-                CreateCrystal(def.crystals[i].position, def.crystals[i].color, i);
+                CreateCandyAt(def.candies[i].position, def.candies[i].color, i);
         }
         return total;
     }
 
-    static void CreateCrystal(Vector2 pos, Color color, int i)
+    static void CreateCandyAt(Vector2 pos, Color color, int i)
     {
-        var c = new GameObject("Crystal_" + i);
-        c.transform.SetParent(crystalsRoot);
-        c.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+        var c = new GameObject("Candy_" + i);
+        c.transform.SetParent(candiesRoot);
+        c.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
         var sr = c.AddComponent<SpriteRenderer>();
-        sr.sprite = SpaceSpriteFactory.CreateCrystal(color);
+        sr.sprite = SpaceSpriteFactory.CreateCandy(color);
         sr.sortingOrder = 2;
-        var cr = c.AddComponent<Crystal>();
+        var cr = c.AddComponent<Candy>();
         cr.Init(new Vector3(pos.x, pos.y, 0f));
     }
 
-    static Vector2 RandomCrystalPosition(SpaceLevelDef def)
+    static Vector2 RandomCandyPosition(SpaceLevelDef def)
     {
         for (int tries = 0; tries < 30; tries++)
         {
             float x = Random.Range(-7f, 7f);
             float y = Random.Range(-3.5f, 4f);
             var p = new Vector2(x, y);
-            if (new Vector2(x, y + 0.5f).magnitude < 1.8f) continue; // troppo vicino ad Astro
+            if (p.magnitude < 1.2f) continue;
             if (IsInsideBarrier(p, def)) continue;
             return p;
         }
@@ -225,6 +212,60 @@ public static class SpaceLevelLoader
                              b.size.x, b.size.y);
             if (r.Contains(p)) return true;
         }
+        return false;
+    }
+
+    // -------- Chiave + Porta (fase finale del livello) --------
+
+    public static void SpawnKey()
+    {
+        if (root == null) return;
+        var go = new GameObject("Key");
+        go.transform.SetParent(root.transform);
+        go.transform.localScale = new Vector3(1.6f, 1.6f, 1f);
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = SpaceSpriteFactory.CreateKey();
+        sr.sortingOrder = 5;
+        var k = go.AddComponent<Key>();
+        k.Init(new Vector2(0f, 3.0f));   // appare in alto al centro
+    }
+
+    public static void SpawnDoor()
+    {
+        if (root == null) return;
+        var go = new GameObject("Door");
+        go.transform.SetParent(root.transform);
+        go.transform.localScale = new Vector3(1.8f, 1.8f, 1f);
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = SpaceSpriteFactory.CreateDoor();
+        sr.sortingOrder = 5;
+        var d = go.AddComponent<Door>();
+        d.Init(PickRandomDoorPos(Vector2.zero));
+    }
+
+    // Sceglie una posizione casuale per la porta, evitando barriere,
+    // bombe e la posizione corrente (per garantire un cambio reale).
+    public static Vector2 PickRandomDoorPos(Vector2 avoidPos)
+    {
+        if (currentDef == null) return new Vector2(0f, 2f);
+        for (int tries = 0; tries < 40; tries++)
+        {
+            float x = Random.Range(-6.5f, 6.5f);
+            float y = Random.Range(-3f, 3.2f);
+            var p = new Vector2(x, y);
+            if (Vector2.Distance(p, avoidPos) < 3f) continue;
+            if (IsInsideBarrier(p, currentDef)) continue;
+            if (NearBomb(p)) continue;
+            return p;
+        }
+        return new Vector2(4f, 2f);
+    }
+
+    static bool NearBomb(Vector2 p)
+    {
+        foreach (var b in Bomb.All)
+            if (b != null && Vector2.Distance(p, b.transform.position) < 1.2f)
+                return true;
         return false;
     }
 
