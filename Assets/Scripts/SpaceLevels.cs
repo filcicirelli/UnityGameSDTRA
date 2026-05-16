@@ -100,20 +100,21 @@ public static class SpaceLevels
         lv.barriers.Add(B(-2.5f, 1.0f, 1.5f, 1.5f));
         lv.barriers.Add(B( 2.5f,-1.5f, 1.8f, 1.0f));
 
-        // Bombe (4) nei varchi piu' tentati dal raggio
-        lv.bombs.Add(new Vector2(-4.5f,  2.0f));
-        lv.bombs.Add(new Vector2( 4.0f,  2.0f));
-        lv.bombs.Add(new Vector2( 0.0f,  0.5f));
-        lv.bombs.Add(new Vector2( 2.0f, -3.0f));
+        // Bombe (4) NON al centro: zona di spawn (raggio ~3 dall'origine)
+        // deve essere libera, cosi' il giocatore puo' orientarsi.
+        lv.bombs.Add(new Vector2(-6.0f,  2.5f));
+        lv.bombs.Add(new Vector2( 6.0f,  2.5f));
+        lv.bombs.Add(new Vector2(-4.0f, -3.5f));
+        lv.bombs.Add(new Vector2( 4.0f, -3.5f));
 
-        // 10 cristalli sparsi tra barriere e bombe
+        // 10 cristalli sparsi tra barriere e bombe (lontani dalle bombe)
         AddCrystals(lv, new Vector2[]
         {
-            new Vector2(-5.5f,  3.0f), new Vector2(-3.0f,  3.5f),
-            new Vector2( 3.0f,  3.5f), new Vector2( 5.5f,  3.0f),
-            new Vector2(-5.0f,  0.0f), new Vector2( 1.5f,  2.5f),
-            new Vector2( 5.0f,  0.5f), new Vector2(-3.5f, -2.0f),
-            new Vector2(-1.0f, -3.0f), new Vector2( 5.0f, -2.5f),
+            new Vector2(-4.0f,  3.0f), new Vector2(-1.5f,  3.0f),
+            new Vector2( 1.5f,  3.0f), new Vector2( 4.0f,  3.0f),
+            new Vector2(-5.0f,  0.0f), new Vector2( 0.0f,  2.5f),
+            new Vector2( 5.0f,  0.0f), new Vector2(-1.5f, -3.0f),
+            new Vector2( 1.5f, -3.0f), new Vector2( 0.0f, -3.5f),
         });
 
         return lv;

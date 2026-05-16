@@ -113,6 +113,16 @@ public class SpaceUIManager : MonoBehaviour
                        "RIAVVIA", button))
             gm.Restart();
 
+        // -------- Banner "Pronti..." durante il grace period --------
+        if (gm.LevelStartGrace > 0f && !gm.GameOver && !gm.MissionComplete)
+        {
+            GUI.DrawTexture(new Rect(0, Screen.height * 0.45f, Screen.width, 70),
+                            SolidTex(new Color(0f, 0f, 0f, 0.55f)));
+            GUI.Label(new Rect(0, Screen.height * 0.45f + 5, Screen.width, 60),
+                      "PRONTI...  " + Mathf.CeilToInt(gm.LevelStartGrace),
+                      new GUIStyle(hugeLabel) { fontSize = 40 });
+        }
+
         // -------- Pannello "Missione Completata" --------
         if (gm.MissionComplete) DrawMissionCompletePanel(gm);
 

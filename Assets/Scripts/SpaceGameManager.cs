@@ -19,6 +19,11 @@ public class SpaceGameManager : MonoBehaviour
     // Penalita' barriera (mostrata per qualche frame come flash rosso)
     public float BarrierFlashTimer { get; private set; }
 
+    // Grace period a inizio livello: le bombe restano "disarmate" cosi' il
+    // giocatore puo' vedere la mappa prima di rischiare un GAME OVER.
+    public float LevelStartGrace { get; private set; }
+    public bool  BombsArmed => LevelStartGrace <= 0f;
+
     // Cooldown: dopo un colpo a una barriera, ignora altri colpi per un po'
     private float barrierCooldown;
 
@@ -35,6 +40,7 @@ public class SpaceGameManager : MonoBehaviour
         if (MissionComplete) CelebrationTime += Time.deltaTime;
         if (barrierCooldown > 0f)    barrierCooldown    -= Time.deltaTime;
         if (BarrierFlashTimer > 0f)  BarrierFlashTimer  -= Time.deltaTime;
+        if (LevelStartGrace > 0f)    LevelStartGrace    -= Time.deltaTime;
     }
 
     // -------- Gestione livelli --------
@@ -49,6 +55,7 @@ public class SpaceGameManager : MonoBehaviour
         CelebrationTime = 0f;
         BarrierFlashTimer = 0f;
         barrierCooldown = 0f;
+        LevelStartGrace = 1.5f; // mezzo secondo + un secondo: le bombe sono inerti
         TotalCrystals = SpaceLevelLoader.Load(CurrentDef);
     }
 

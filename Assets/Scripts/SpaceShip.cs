@@ -63,10 +63,10 @@ public class SpaceShip : MonoBehaviour
             if (BeamActive)
             {
                 PullNearbyCrystals();
-                PullNearbyBombs();
+                if (gm.BombsArmed) PullNearbyBombs();
             }
             CheckBarrierHit();
-            CheckBombContact();
+            if (gm.BombsArmed) CheckBombContact();
         }
 
         UpdateFlash();
