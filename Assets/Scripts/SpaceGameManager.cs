@@ -16,6 +16,10 @@ public class SpaceGameManager : MonoBehaviour
     public int TotalCandies      { get; private set; }
     public bool MissionComplete  { get; private set; }
     public bool GameOver         { get; private set; }
+    // Vittoria finale: settata quando si completa l'ultimo livello.
+    // In quel caso si salta la fase chiave/porta e si mostra la schermata
+    // di fine gioco con i crediti.
+    public bool Victory          { get; private set; }
     public float CelebrationTime { get; private set; }
 
     // Vite del giocatore (resettate a ogni livello)
@@ -71,8 +75,8 @@ public class SpaceGameManager : MonoBehaviour
         if (LevelStartGrace > 0f)    LevelStartGrace    -= Time.deltaTime;
 
         // Countdown del tempo solo quando il livello e' "vivo"
-        // (no grace period iniziale, no game over, no missione completata)
-        if (!GameOver && !MissionComplete && LevelStartGrace <= 0f)
+        // (no grace period iniziale, no game over, no missione completata, no vittoria finale)
+        if (!GameOver && !MissionComplete && !Victory && LevelStartGrace <= 0f)
         {
             LevelTimeLeft -= Time.deltaTime;
             if (LevelTimeLeft <= 0f)
@@ -92,6 +96,7 @@ public class SpaceGameManager : MonoBehaviour
         CandiesCollected = 0;
         MissionComplete = false;
         GameOver = false;
+        Victory = false;
         GameOverReason = "";
         KeySpawned = false;
         KeyPickedUp = false;
@@ -118,14 +123,18 @@ public class SpaceGameManager : MonoBehaviour
 
     public void OnCandyCollected()
     {
-        if (GameOver || MissionComplete) return;
+        if (GameOver || MissionComplete || Victory) return;
         CandiesCollected++;
         Score += 10;
 
-        // Tutte raccolte: spawna chiave + porta. Niente "missione complete"
-        // ancora: serve raggiungere la porta con la chiave.
-        if (CandiesCollected >= TotalCandies && !KeySpawned)
-            SpawnKeyAndDoor();
+        // Tutte raccolte:
+        //   - sull'ultimo livello => vittoria finale (schermata credits)
+        //   - sugli altri livelli  => spawna chiave + porta per la fase finale
+        if (CandiesCollected >= TotalCandies && !KeySpawned && !Victory)
+        {
+            if (!HasNextLevel) TriggerFinalVictory();
+            else SpawnKeyAndDoor();
+        }
     }
 
     public void OnKeyPickedUp()
@@ -186,5 +195,13 @@ public class SpaceGameManager : MonoBehaviour
         KeySpawned = true;
         SpaceLevelLoader.SpawnKey();
         SpaceLevelLoader.SpawnDoor();
+    }
+
+    void TriggerFinalVictory()
+    {
+        Victory = true;
+        CelebrationTime = 0f;
+        SpaceLevelLoader.SpawnConfetti();
+        SpaceLevelLoader.SpawnFriendPlanet();
     }
 }

@@ -73,7 +73,7 @@ public class Astro : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, tilt);
 
         // 3) Interazioni: solo se il gioco e' "vivo"
-        bool gameLive = !gm.MissionComplete && !gm.GameOver;
+        bool gameLive = !gm.MissionComplete && !gm.GameOver && !gm.Victory;
         if (gameLive)
         {
             CheckCandyTouch();

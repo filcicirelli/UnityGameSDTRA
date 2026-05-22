@@ -126,17 +126,23 @@ public class SpaceUIManager : MonoBehaviour
         };
         GUI.Label(new Rect(barX, 80, barW, 40), "TEMPO: " + secs + "s", timeStyle);
 
-        // Distintivo obiettivo in basso a sinistra (cambia tra raccolta/chiave/porta)
-        GUI.Box(new Rect(20, Screen.height - 70, 420, 50),
-                gm.ObjectiveText, objectiveBadge);
+        // In vittoria finale nascondiamo l'HUD inferiore: il pannello credits
+        // ha il proprio pulsante e non vogliamo click "fantasma" sul RIAVVIA
+        // che e' sotto allo sfondo opaco.
+        if (!gm.Victory)
+        {
+            // Distintivo obiettivo in basso a sinistra (cambia tra raccolta/chiave/porta)
+            GUI.Box(new Rect(20, Screen.height - 70, 420, 50),
+                    gm.ObjectiveText, objectiveBadge);
 
-        // Pulsanti MENU e RIAVVIA in basso a destra
-        if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 70, 140, 50),
-                       "MENU", button))
-            menuOpen = !menuOpen;
-        if (GUI.Button(new Rect(Screen.width - 170, Screen.height - 70, 150, 50),
-                       "RIAVVIA", button))
-            gm.Restart();
+            // Pulsanti MENU e RIAVVIA in basso a destra
+            if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 70, 140, 50),
+                           "MENU", button))
+                menuOpen = !menuOpen;
+            if (GUI.Button(new Rect(Screen.width - 170, Screen.height - 70, 150, 50),
+                           "RIAVVIA", button))
+                gm.Restart();
+        }
 
         // -------- Banner "Pronti..." durante il grace period --------
         if (gm.LevelStartGrace > 0f && !gm.GameOver && !gm.MissionComplete)
@@ -148,14 +154,84 @@ public class SpaceUIManager : MonoBehaviour
                       new GUIStyle(hugeLabel) { fontSize = 40 });
         }
 
-        // -------- Pannello "Missione Completata" --------
-        if (gm.MissionComplete) DrawMissionCompletePanel(gm);
+        // -------- Pannello "Vittoria finale" (ultimo livello completato) --------
+        if (gm.Victory) DrawVictoryPanel(gm);
+        // -------- Pannello "Missione Completata" (livelli intermedi) --------
+        else if (gm.MissionComplete) DrawMissionCompletePanel(gm);
 
         // -------- Pannello "Game Over" --------
         if (gm.GameOver) DrawGameOverPanel(gm);
 
         // -------- Menu di pausa --------
-        if (menuOpen) DrawMenuPanel(gm);
+        if (menuOpen && !gm.Victory) DrawMenuPanel(gm);
+    }
+
+    void DrawVictoryPanel(SpaceGameManager gm)
+    {
+        // Sfondo a tutto schermo per dare risalto: blu-viola spaziale
+        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height),
+                        SolidTex(new Color(0.04f, 0.05f, 0.20f, 0.92f)));
+
+        // Pannello centrale
+        float panelW = Mathf.Min(820f, Screen.width - 60f);
+        float panelH = 520f;
+        var panel = new Rect((Screen.width - panelW) / 2f,
+                             (Screen.height - panelH) / 2f,
+                             panelW, panelH);
+        GUI.DrawTexture(panel, SolidTex(new Color(0.08f, 0.10f, 0.30f, 0.95f)));
+        // Bordo giallo "luminoso"
+        var borderC = SolidTex(new Color(1f, 0.85f, 0.30f, 1f));
+        GUI.DrawTexture(new Rect(panel.x,                panel.y,                panel.width, 4), borderC);
+        GUI.DrawTexture(new Rect(panel.x,                panel.y + panel.height - 4, panel.width, 4), borderC);
+        GUI.DrawTexture(new Rect(panel.x,                panel.y, 4, panel.height), borderC);
+        GUI.DrawTexture(new Rect(panel.x + panel.width - 4, panel.y, 4, panel.height), borderC);
+
+        // Titolo
+        GUI.Label(new Rect(panel.x, panel.y + 24, panel.width, 70),
+                  "CONGRATULAZIONI!  HAI VINTO!",
+                  new GUIStyle(hugeLabel) { fontSize = 44 });
+
+        // Messaggio principale
+        GUI.Label(new Rect(panel.x + 30, panel.y + 110, panel.width - 60, 50),
+                  "Sei sulla buona strada per la tua guarigione.",
+                  new GUIStyle(bigLabel)
+                  {
+                      alignment = TextAnchor.MiddleCenter,
+                      fontSize = 26,
+                      normal = { textColor = new Color(0.85f, 0.95f, 1f) },
+                  });
+
+        // Crediti (autore / esame / professore)
+        var creditLabel = new GUIStyle(bigLabel)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            fontSize = 22,
+            normal = { textColor = new Color(1f, 0.95f, 0.75f) },
+        };
+        var creditValue = new GUIStyle(bigLabel)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            fontSize = 22,
+            normal = { textColor = Color.white },
+        };
+        float row = panel.y + 200f;
+        GUI.Label(new Rect(panel.x, row,        panel.width, 32), "Autore",      creditLabel);
+        GUI.Label(new Rect(panel.x, row +  30f, panel.width, 32), "Filippo Cicirelli", creditValue);
+        GUI.Label(new Rect(panel.x, row +  76f, panel.width, 32), "Esame",       creditLabel);
+        GUI.Label(new Rect(panel.x, row + 106f, panel.width, 32),
+                  "Sistemi per la Riabilitazione e la Terapia Assistita", creditValue);
+        GUI.Label(new Rect(panel.x, row + 152f, panel.width, 32), "Professore",  creditLabel);
+        GUI.Label(new Rect(panel.x, row + 182f, panel.width, 32),
+                  "Vitantonio Bevilacqua", creditValue);
+
+        // Pulsante "Clicca per giocare di nuovo"
+        float bw = 420f, bh = 70f;
+        var btnRect = new Rect(panel.x + (panel.width - bw) / 2f,
+                               panel.y + panel.height - bh - 24f,
+                               bw, bh);
+        var bigBtn = new GUIStyle(button) { fontSize = 24 };
+        if (GUI.Button(btnRect, "CLICCA PER GIOCARE DI NUOVO", bigBtn))
+            gm.Restart();
     }
 
     void DrawMissionCompletePanel(SpaceGameManager gm)
