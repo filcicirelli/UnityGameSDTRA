@@ -1,59 +1,46 @@
 using UnityEngine;
 
-// =====================================================================
-//  CaricatoreLivelli
-// ---------------------------------------------------------------------
-//  A partire da un DatiLivello costruisce in scena tutti gli oggetti
-//  del livello: lo sfondo (stelle e pianeti decorativi), Astro (che
-//  segue il mouse), gli asteroidi, le bombe e le caramelle.
-//
-//  La chiave e la porta sono create solo dopo che tutte le caramelle
-//  sono state raccolte (lo chiede il GestoreGioco).
-//
-//  Tutto viene messo come figlio di un GameObject "Missione", cosi'
-//  quando passo a un nuovo livello mi basta distruggere quel
-//  contenitore per fare pulizia.
-// =====================================================================
+// Da un DatiLivello costruisce in scena tutti gli oggetti:
+// sfondo, Astro, asteroidi, bombe e caramelle.
+// La chiave e la porta vengono create dopo, quando il GestoreGioco
+// segnala che tutte le caramelle sono state raccolte.
 public static class CaricatoreLivelli
 {
-    // Riferimenti agli oggetti di scena
+    // Riferimenti agli oggetti in scena
     private static GameObject contenitore;
     private static Transform contenitoreCaramelle;
     private static Transform contenitoreAsteroidi;
     private static Transform contenitoreBombe;
     private static DatiLivello livelloCorrente;
 
-    // Palette delle caramelle per il livello 1 (generate casualmente)
+    // Colori delle caramelle del livello 1 (random)
     static readonly Color[] COLORI_RANDOM = new Color[]
     {
-        new Color(1f,    0.35f, 0.55f),    // fragola
-        new Color(0.40f, 0.85f, 1f),       // menta blu
-        new Color(0.95f, 0.45f, 0.85f),    // anguria
-        new Color(0.55f, 1f,    0.55f),    // mela verde
-        new Color(1f,    0.65f, 0.20f),    // arancia
-        new Color(0.95f, 0.85f, 0.30f),    // limone
+        new Color(1f,    0.35f, 0.55f),
+        new Color(0.40f, 0.85f, 1f),
+        new Color(0.95f, 0.45f, 0.85f),
+        new Color(0.55f, 1f,    0.55f),
+        new Color(1f,    0.65f, 0.20f),
+        new Color(0.95f, 0.85f, 0.30f),
     };
 
-    // -----------------------------------------------------------------
-    //  Costruzione e pulizia del livello
-    // -----------------------------------------------------------------
+    // ---- Caricamento e pulizia ----
 
     public static int Carica(DatiLivello dati)
     {
-        // Pulisco quello che c'era prima
-        Pulisci();
+        Pulisci(); // tolgo quello che c'era prima
 
         livelloCorrente = dati;
         contenitore = new GameObject("Missione");
 
-        CostruisciStelleDiSfondo();
-        CostruisciPianetiDecorativi();
+        CostruisciStelle();
+        CostruisciPianeti();
         CostruisciAstro();
 
-        // Creo i sotto-contenitori per tenere la gerarchia ordinata
+        // Sotto-contenitori per tenere ordinata la gerarchia in Unity
         contenitoreCaramelle = CreaFiglio("Caramelle");
         contenitoreAsteroidi = CreaFiglio("Asteroidi");
-        contenitoreBombe     = CreaFiglio("Bombe");
+        contenitoreBombe = CreaFiglio("Bombe");
 
         CostruisciAsteroidi(dati);
         CostruisciBombe(dati);
@@ -80,15 +67,13 @@ public static class CaricatoreLivelli
         return go.transform;
     }
 
-    // -----------------------------------------------------------------
-    //  Sfondo (stelle e pianeti decorativi)
-    // -----------------------------------------------------------------
+    // ---- Sfondo: stelline e pianeti ----
 
-    static void CostruisciStelleDiSfondo()
+    static void CostruisciStelle()
     {
         Transform radice = CreaFiglio("Stelle");
 
-        // 120 piccoli puntini bianchi in posizione e luminosita' casuali
+        // 120 stelline bianche piazzate a caso
         for (int i = 0; i < 120; i++)
         {
             float x = Random.Range(-9.5f, 9.5f);
@@ -109,12 +94,11 @@ public static class CaricatoreLivelli
         }
     }
 
-    static void CostruisciPianetiDecorativi()
+    static void CostruisciPianeti()
     {
         Transform radice = CreaFiglio("Pianeti");
 
-        // Quattro pianeti agli angoli, ciascuno con due colori per
-        // dare l'effetto "screziato".
+        // 4 pianeti agli angoli con colori diversi
         Color[] coloriPrincipali = new Color[]
         {
             new Color(0.95f, 0.45f, 0.45f),
@@ -152,9 +136,7 @@ public static class CaricatoreLivelli
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Astro (il protagonista che segue il mouse)
-    // -----------------------------------------------------------------
+    // ---- Astro ----
 
     static void CostruisciAstro()
     {
@@ -165,16 +147,13 @@ public static class CaricatoreLivelli
 
         SpriteRenderer sr = a.AddComponent<SpriteRenderer>();
         sr.sprite = FabbricaImmagini.CreaAstro();
-        // sortingOrder alto: Astro deve sempre essere visibile davanti
-        // alle caramelle, alla chiave e alla porta (e' il puntatore).
+        // sortingOrder alto: Astro deve stare sempre davanti agli altri
         sr.sortingOrder = 10;
 
         a.AddComponent<Astro>();
     }
 
-    // -----------------------------------------------------------------
-    //  Asteroidi (le barriere rettangolari)
-    // -----------------------------------------------------------------
+    // ---- Asteroidi ----
 
     static void CostruisciAsteroidi(DatiLivello dati)
     {
@@ -189,14 +168,12 @@ public static class CaricatoreLivelli
             sr.sprite = FabbricaImmagini.CreaTesseraAsteroide(d.colore);
             sr.sortingOrder = 0;
 
-            Asteroide ast = go.AddComponent<Asteroide>();
-            ast.Inizializza(d.centro, d.dimensione);
+            Asteroide a = go.AddComponent<Asteroide>();
+            a.Inizializza(d.centro, d.dimensione);
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Bombe
-    // -----------------------------------------------------------------
+    // ---- Bombe ----
 
     static void CostruisciBombe(DatiLivello dati)
     {
@@ -217,9 +194,7 @@ public static class CaricatoreLivelli
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Caramelle (random nel livello 1, fisse negli altri)
-    // -----------------------------------------------------------------
+    // ---- Caramelle ----
 
     static int CostruisciCaramelle(DatiLivello dati)
     {
@@ -227,6 +202,7 @@ public static class CaricatoreLivelli
 
         if (dati.caramelleCasuali > 0)
         {
+            // Le metto a caso (livello 1)
             totale = dati.caramelleCasuali;
             for (int i = 0; i < totale; i++)
             {
@@ -237,6 +213,7 @@ public static class CaricatoreLivelli
         }
         else
         {
+            // Posizioni fisse (livelli 2 e 3)
             totale = dati.caramelle.Count;
             for (int i = 0; i < totale; i++)
             {
@@ -263,24 +240,24 @@ public static class CaricatoreLivelli
 
     static Vector2 PosizioneCaramellaCasuale(DatiLivello dati)
     {
-        // Provo fino a 30 volte a trovare una posizione "buona":
-        //  - non troppo vicina al centro (dove parte Astro)
+        // Provo fino a 30 volte a trovare un posto buono:
+        //  - non troppo vicino al centro (dove parte Astro)
         //  - non dentro un asteroide
-        for (int tentativi = 0; tentativi < 30; tentativi++)
+        for (int tent = 0; tent < 30; tent++)
         {
             float x = Random.Range(-7f, 7f);
             float y = Random.Range(-3.5f, 4f);
             Vector2 p = new Vector2(x, y);
 
             if (p.magnitude < 1.2f) continue;
-            if (DentroUnAsteroide(p, dati)) continue;
+            if (DentroAsteroide(p, dati)) continue;
             return p;
         }
-        // Fallback se proprio non trovo (caso quasi impossibile)
+        // Se proprio non trovo (quasi impossibile)
         return new Vector2(3f, 3f);
     }
 
-    static bool DentroUnAsteroide(Vector2 punto, DatiLivello dati)
+    static bool DentroAsteroide(Vector2 punto, DatiLivello dati)
     {
         for (int i = 0; i < dati.asteroidi.Count; i++)
         {
@@ -294,9 +271,7 @@ public static class CaricatoreLivelli
         return false;
     }
 
-    // -----------------------------------------------------------------
-    //  Chiave e Porta (compaiono dopo aver raccolto tutte le caramelle)
-    // -----------------------------------------------------------------
+    // ---- Chiave e porta (vengono create dopo) ----
 
     public static void GeneraChiave()
     {
@@ -311,7 +286,7 @@ public static class CaricatoreLivelli
         sr.sortingOrder = 5;
 
         Chiave k = go.AddComponent<Chiave>();
-        // y = 2.0 cosi' resta ben sotto il muro superiore dei livelli 2 e 3.
+        // y=2.0: cosi' resta sotto il "soffitto" dei livelli 2 e 3
         k.Inizializza(new Vector2(0f, 2.0f));
     }
 
@@ -331,29 +306,27 @@ public static class CaricatoreLivelli
         p.Inizializza(ScegliPosizionePortaCasuale(Vector2.zero));
     }
 
-    // Sceglie una posizione "valida" per la porta:
-    // distante da quella attuale, fuori dagli asteroidi, lontana dalle bombe.
+    // Sceglie una posizione "buona" per la porta:
+    // lontana dalla posizione attuale, fuori dagli asteroidi, lontana dalle bombe
     public static Vector2 ScegliPosizionePortaCasuale(Vector2 daEvitare)
     {
         if (livelloCorrente == null) return new Vector2(0f, 2f);
 
-        for (int tentativi = 0; tentativi < 40; tentativi++)
+        for (int tent = 0; tent < 40; tent++)
         {
-            // Range stretto: lascio margine ai muri laterali e al soffitto.
             float x = Random.Range(-5.5f, 5.5f);
             float y = Random.Range(-2.5f, 2.8f);
             Vector2 p = new Vector2(x, y);
 
             if (Vector2.Distance(p, daEvitare) < 3f) continue;
-            if (DentroUnAsteroide(p, livelloCorrente)) continue;
-            if (TroppoVicinoAUnaBomba(p)) continue;
+            if (DentroAsteroide(p, livelloCorrente)) continue;
+            if (TroppoVicinoBomba(p)) continue;
             return p;
         }
-        // Fallback
-        return new Vector2(4f, 2f);
+        return new Vector2(4f, 2f); // fallback
     }
 
-    static bool TroppoVicinoAUnaBomba(Vector2 punto)
+    static bool TroppoVicinoBomba(Vector2 punto)
     {
         for (int i = 0; i < Bomba.Tutte.Count; i++)
         {
@@ -364,9 +337,7 @@ public static class CaricatoreLivelli
         return false;
     }
 
-    // -----------------------------------------------------------------
-    //  Effetti speciali (festa, esplosione)
-    // -----------------------------------------------------------------
+    // ---- Effetti speciali (festa ed esplosioni) ----
 
     public static void GeneraPianetaAmico()
     {

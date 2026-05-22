@@ -1,22 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// =====================================================================
-//  Asteroide
-// ---------------------------------------------------------------------
-//  E' la "barriera": un rettangolo che fa male a chi lo tocca.
-//  Non si muove, non ha collider fisici: la collisione e' calcolata
-//  a mano da Astro, con un semplice test "punto dentro rettangolo".
-//  E' un metodo semplice ma efficace per un gioco 2D senza fisica.
-// =====================================================================
+// Rettangolo che fa male se viene toccato.
+// Non uso la fisica di Unity, faccio io il controllo "punto dentro rettangolo".
 public class Asteroide : MonoBehaviour
 {
-    // Lista globale di tutti gli asteroidi in scena.
-    // Astro la legge per testare la collisione del puntatore.
-    public static readonly List<Asteroide> Tutti = new List<Asteroide>();
+    // Lista di tutti gli asteroidi presenti nel livello
+    public static List<Asteroide> Tutti = new List<Asteroide>();
 
-    // Rettangolo nello spazio del mondo
-    public Rect Rettangolo { get; private set; }
+    // Rettangolo nello spazio del gioco
+    public Rect Rettangolo;
 
     void OnEnable()
     {
@@ -31,7 +24,7 @@ public class Asteroide : MonoBehaviour
     public void Inizializza(Vector2 centro, Vector2 dimensione)
     {
         transform.position = new Vector3(centro.x, centro.y, 0f);
-        // Lo sprite e' un tile 1x1: lo scalo per coprire la dimensione voluta.
+        // Lo sprite e' 1x1, lo ridimensiono in base a quanto deve essere grande
         transform.localScale = new Vector3(dimensione.x, dimensione.y, 1f);
 
         Rettangolo = new Rect(

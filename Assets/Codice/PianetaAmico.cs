@@ -1,51 +1,41 @@
 using UnityEngine;
 
-// =====================================================================
-//  PianetaAmico
-// ---------------------------------------------------------------------
-//  Pianeta sorridente che appare quando si completa la missione.
-//  Serve come "ricompensa visiva" e rinforzo positivo per il
-//  giocatore in riabilitazione.
-//
-//  Animazione in due fasi:
-//      - Pop-in: nei primi 0.5 secondi cresce da 0 alla scala
-//        finale con un piccolo "rimbalzo" (overshoot).
-//      - Idle: ondeggia dolcemente avanti-indietro come a salutare.
-// =====================================================================
+// Pianeta sorridente che appare a fine missione.
+// All'inizio fa un effetto pop-in, poi sta li' a ondeggiare.
 public class PianetaAmico : MonoBehaviour
 {
     public float scalaFinale = 2.4f;
 
     private Vector3 posizioneBase;
-    private float tempoDiVita;
+    private float vita;
 
     void Awake()
     {
         posizioneBase = transform.position;
-        transform.localScale = Vector3.zero;
+        transform.localScale = Vector3.zero; // parte invisibile
     }
 
     void Update()
     {
-        tempoDiVita += Time.deltaTime;
+        vita = vita + Time.deltaTime;
 
-        float scalaAttuale;
-        if (tempoDiVita < 0.5f)
+        float scala;
+        if (vita < 0.5f)
         {
-            // ----- Fase 1: pop-in con overshoot -----
-            float t = Mathf.Clamp01(tempoDiVita / 0.5f);
-            float overshoot = 1f + 0.2f * Mathf.Sin(t * Mathf.PI);
-            scalaAttuale = scalaFinale * overshoot * t;
+            // Effetto "pop": cresce con un piccolo rimbalzo
+            float t = vita / 0.5f;
+            float rimbalzo = 1f + 0.2f * Mathf.Sin(t * Mathf.PI);
+            scala = scalaFinale * rimbalzo * t;
         }
         else
         {
-            // ----- Fase 2: idle "respirante" -----
-            scalaAttuale = scalaFinale + 0.1f * Mathf.Sin(Time.time * 3f);
+            // Dopo respira piano
+            scala = scalaFinale + 0.1f * Mathf.Sin(Time.time * 3f);
         }
 
-        transform.localScale = new Vector3(scalaAttuale, scalaAttuale, 1f);
+        transform.localScale = new Vector3(scala, scala, 1f);
 
-        // Saluto: ondeggio orizzontale leggero
+        // Si muove un po' a destra e a sinistra, come a salutare
         float dx = Mathf.Sin(Time.time * 1.5f) * 0.15f;
         transform.position = posizioneBase + new Vector3(dx, 0f, 0f);
     }

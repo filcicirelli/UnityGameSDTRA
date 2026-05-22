@@ -1,49 +1,35 @@
 using UnityEngine;
 
-// =====================================================================
-//  Astro
-// ---------------------------------------------------------------------
-//  Astro e' il personaggio del giocatore: un alieno verde con uno
-//  zainetto. Si comporta come un "puntatore vivente":
-//      - segue il mouse in ogni momento
-//      - se passa vicino a una caramella, la raccoglie
-//      - se tocca un asteroide o una bomba, perde una vita
-//      - dopo aver raccolto tutto, raccoglie la chiave e la porta
-//        verso la porta-portale
-//
-//  Tutti i raggi di "tocco" sono volutamente generosi: il gioco e'
-//  pensato per pazienti in riabilitazione, quindi non serve la
-//  precisione millimetrica di un mouse.
-// =====================================================================
+// Astro: il personaggio del giocatore (un alieno verde).
+// Astro segue il mouse: dove sta il mouse, sta lui.
+// Se passa vicino a una caramella la prende, se tocca un asteroide o
+// una bomba perde una vita. Quando ha tutte le caramelle deve prendere
+// la chiave e portarla alla porta.
 public class Astro : MonoBehaviour
 {
-    public static Astro Istanza { get; private set; }
+    public static Astro Istanza;
 
-    // ----- Raggi di interazione (in unita' di mondo) -----
-    public float raggioCaramella = 0.85f;
-    public float raggioChiave    = 1.80f;   // generoso (la chiave e' "magnetica")
-    public float raggioPorta     = 1.80f;   // anche la porta e' generosa
-    public float raggioBomba     = 0.55f;
+    // Raggi entro i quali Astro "tocca" gli oggetti
+    public float raggioCaramella = Impostazioni.RAGGIO_CARAMELLA;
+    public float raggioChiave    = Impostazioni.RAGGIO_CHIAVE;
+    public float raggioPorta     = Impostazioni.RAGGIO_PORTA;
+    public float raggioBomba     = Impostazioni.RAGGIO_BOMBA;
 
     // Sta gia' portando la chiave?
-    public bool HaChiave { get; private set; }
+    public bool HaChiave;
 
-    // Velocita' attuale (la calcolo a mano dal cambio di posizione)
-    public Vector2 Velocita { get; private set; }
+    // Velocita' attuale (la calcolo dalla differenza di posizione)
+    public Vector2 Velocita;
 
-    // ----- Variabili interne -----
+    // Variabili interne
     private Camera telecamera;
     private float distanzaZ;
     private Vector3 scalaBase;
     private SpriteRenderer sr;
     private Color coloreBase;
-    private float timerSaltoFelice;
-    private float timerLampeggioRosso;
-    private float inclinazione;  // angolo corrente in gradi
-
-    // -----------------------------------------------------------------
-    //  Ciclo di vita Unity
-    // -----------------------------------------------------------------
+    private float timerSalto;
+    private float timerLampeggio;
+    private float inclinazione;
 
     void Awake()
     {
@@ -72,82 +58,73 @@ public class Astro : MonoBehaviour
         GestoreGioco gm = GestoreGioco.Istanza;
         if (gm == null) return;
 
-        // ------------------------------------------------------------
-        //  1) Posizione: seguo il mouse (Astro E' il cursore)
-        // ------------------------------------------------------------
-        Vector3 posizionePrecedente = transform.position;
+        // 1) Sposto Astro dove sta il mouse
+        Vector3 posPrecedente = transform.position;
         Vector3 mouseScreen = Input.mousePosition;
         mouseScreen.z = distanzaZ;
         Vector3 mouseMondo = telecamera.ScreenToWorldPoint(mouseScreen);
         transform.position = new Vector3(mouseMondo.x, mouseMondo.y, 0f);
 
-        // Stima della velocita' (mi servira' per inclinare lo sprite)
+        // Calcolo la velocita' (mi serve per inclinare lo sprite)
         float dt = Mathf.Max(Time.deltaTime, 0.000001f);
-        Velocita = ((Vector2)(transform.position - posizionePrecedente)) / dt;
+        Velocita = ((Vector2)(transform.position - posPrecedente)) / dt;
 
-        // ------------------------------------------------------------
-        //  2) Animazioni: respiro + saltino di gioia + tilt
-        // ------------------------------------------------------------
+        // 2) Animazioni: respiro, saltino quando raccoglie, inclinazione
         float respiro = 1f + Mathf.Sin(Time.time * 2f) * 0.04f;
 
-        float saltoFelice = 1f;
-        if (timerSaltoFelice > 0f)
+        float salto = 1f;
+        if (timerSalto > 0f)
         {
-            timerSaltoFelice -= Time.deltaTime;
-            float k = Mathf.Clamp01(timerSaltoFelice / 0.35f);
-            saltoFelice = 1f + k * 0.20f;
+            timerSalto = timerSalto - Time.deltaTime;
+            float k = Mathf.Clamp01(timerSalto / 0.35f);
+            salto = 1f + k * 0.20f;
         }
 
-        float scalaCorrente = respiro * saltoFelice;
-        transform.localScale = new Vector3(
-            scalaBase.x * scalaCorrente,
-            scalaBase.y * scalaCorrente,
-            1f);
+        float scalaTot = respiro * salto;
+        transform.localScale = new Vector3(scalaBase.x * scalaTot, scalaBase.y * scalaTot, 1f);
 
-        // Inclinazione legata alla velocita' orizzontale (effetto "lean")
-        float inclinazioneObiettivo = Mathf.Clamp(-Velocita.x * 3f, -18f, 18f);
-        inclinazione = Mathf.Lerp(inclinazione, inclinazioneObiettivo, Time.deltaTime * 8f);
+        // Inclinazione dovuta al movimento orizzontale
+        float inclinObiettivo = Mathf.Clamp(-Velocita.x * 3f, -18f, 18f);
+        inclinazione = Mathf.Lerp(inclinazione, inclinObiettivo, Time.deltaTime * 8f);
         transform.localRotation = Quaternion.Euler(0f, 0f, inclinazione);
 
-        // ------------------------------------------------------------
-        //  3) Interazioni (solo se il gioco e' "vivo")
-        // ------------------------------------------------------------
+        // 3) Controllo le interazioni solo se il gioco e' "vivo"
         bool giocoVivo = !gm.MissioneCompletata && !gm.PartitaFinita && !gm.VittoriaFinale;
         if (giocoVivo)
         {
-            ControllaToccoCaramelle();
-            ControllaToccoAsteroidi();
+            ControllaCaramelle();
+            ControllaAsteroidi();
 
             if (gm.BombeAttive)
             {
-                ControllaToccoBombe();
+                ControllaBombe();
             }
 
-            // Fase chiave/porta: attiva solo dopo la raccolta
+            // Fase chiave/porta
             if (Chiave.Istanza != null && !HaChiave)
             {
-                ControllaToccoChiave();
+                ControllaChiave();
             }
             if (HaChiave && Porta.Istanza != null)
             {
-                ControllaToccoPorta();
+                ControllaPorta();
             }
         }
 
         AggiornaLampeggioRosso();
     }
 
-    // -----------------------------------------------------------------
-    //  Controlli di tocco
-    // -----------------------------------------------------------------
+    // ---- Controlli di tocco ----
 
-    void ControllaToccoCaramelle()
+    void ControllaCaramelle()
     {
-        Vector2 posAstro = transform.position;
-        foreach (Caramella c in Caramella.Attive)
+        Vector2 pos = transform.position;
+        // Faccio una copia perche' Raccogli() modifica la lista
+        for (int i = Caramella.Attive.Count - 1; i >= 0; i--)
         {
+            Caramella c = Caramella.Attive[i];
             if (c == null) continue;
-            float dist = Vector2.Distance(posAstro, c.transform.position);
+            float dist = Vector2.Distance(pos, c.transform.position);
             if (dist <= raggioCaramella)
             {
                 c.Raccogli();
@@ -155,29 +132,29 @@ public class Astro : MonoBehaviour
         }
     }
 
-    void ControllaToccoAsteroidi()
+    void ControllaAsteroidi()
     {
-        Vector2 posAstro = transform.position;
+        Vector2 pos = transform.position;
         for (int i = 0; i < Asteroide.Tutti.Count; i++)
         {
             Asteroide a = Asteroide.Tutti[i];
-            if (a != null && a.Contiene(posAstro))
+            if (a != null && a.Contiene(pos))
             {
                 GestoreGioco.Istanza.SegnalaAsteroideToccato();
-                timerLampeggioRosso = 0.20f;
+                timerLampeggio = 0.20f;
                 return; // basta un asteroide alla volta
             }
         }
     }
 
-    void ControllaToccoBombe()
+    void ControllaBombe()
     {
-        Vector2 posAstro = transform.position;
+        Vector2 pos = transform.position;
         for (int i = 0; i < Bomba.Tutte.Count; i++)
         {
             Bomba b = Bomba.Tutte[i];
             if (b == null) continue;
-            float dist = Vector2.Distance(posAstro, b.transform.position);
+            float dist = Vector2.Distance(pos, b.transform.position);
             if (dist <= raggioBomba + b.raggioPericolo)
             {
                 b.Detona();
@@ -186,7 +163,7 @@ public class Astro : MonoBehaviour
         }
     }
 
-    void ControllaToccoChiave()
+    void ControllaChiave()
     {
         Chiave k = Chiave.Istanza;
         float dist = Vector2.Distance(transform.position, k.transform.position);
@@ -197,7 +174,7 @@ public class Astro : MonoBehaviour
         }
     }
 
-    void ControllaToccoPorta()
+    void ControllaPorta()
     {
         Porta p = Porta.Istanza;
         float dist = Vector2.Distance(transform.position, p.transform.position);
@@ -207,18 +184,15 @@ public class Astro : MonoBehaviour
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Feedback visivo (lampeggio rosso quando "fa male")
-    // -----------------------------------------------------------------
-
+    // Quando Astro prende un colpo lampeggia di rosso per un istante
     void AggiornaLampeggioRosso()
     {
         if (sr == null) return;
 
-        if (timerLampeggioRosso > 0f)
+        if (timerLampeggio > 0f)
         {
-            timerLampeggioRosso -= Time.deltaTime;
-            float k = Mathf.Clamp01(timerLampeggioRosso / 0.20f);
+            timerLampeggio = timerLampeggio - Time.deltaTime;
+            float k = Mathf.Clamp01(timerLampeggio / 0.20f);
             sr.color = Color.Lerp(coloreBase, new Color(1f, 0.3f, 0.3f, 1f), k);
         }
         else
@@ -227,12 +201,12 @@ public class Astro : MonoBehaviour
         }
     }
 
-    // Chiamato dalla caramella quando viene raccolta: Astro fa un saltino.
+    // La caramella chiama questo metodo: Astro fa un piccolo saltino
     public static void NotificaSaltoFelice()
     {
         if (Istanza != null)
         {
-            Istanza.timerSaltoFelice = 0.35f;
+            Istanza.timerSalto = 0.35f;
         }
     }
 }

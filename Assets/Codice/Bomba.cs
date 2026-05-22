@@ -1,22 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// =====================================================================
-//  Bomba
-// ---------------------------------------------------------------------
-//  Oggetto che NON si deve toccare. Visivamente pulsa di rosso per
-//  attirare l'attenzione del giocatore: la pulsazione e' importante
-//  per chi ha difficolta' a riconoscere oggetti statici.
-//
-//  Al contatto: parte un'esplosione e il GestoreGioco viene avvisato
-//  con SegnalaBombaColpita (che fa perdere una vita).
-// =====================================================================
+// Bomba: da non toccare.
+// Pulsa di rosso per farsi notare.
 public class Bomba : MonoBehaviour
 {
-    // Lista globale: Astro la legge per testare i contatti.
-    public static readonly List<Bomba> Tutte = new List<Bomba>();
+    // Lista di tutte le bombe del livello
+    public static List<Bomba> Tutte = new List<Bomba>();
 
-    // Raggio "di pericolo" attorno alla bomba (oltre lo sprite)
+    // Zona di pericolo attorno alla bomba (oltre lo sprite)
     public float raggioPericolo = 0.5f;
 
     private Vector3 posizioneBase;
@@ -42,8 +34,7 @@ public class Bomba : MonoBehaviour
         fase = Random.Range(0f, Mathf.PI * 2f);
         sr = GetComponent<SpriteRenderer>();
 
-        // Aggiungo un "alone" rosso pulsante come SpriteRenderer figlio.
-        // Cosi' la bomba e' subito riconoscibile dai bambini.
+        // Aggiungo un alone rosso che pulsa: cosi' si vede meglio
         GameObject aloneGo = new GameObject("Alone");
         aloneGo.transform.SetParent(transform, false);
         aloneGo.transform.localPosition = Vector3.zero;
@@ -51,7 +42,9 @@ public class Bomba : MonoBehaviour
 
         alone = aloneGo.AddComponent<SpriteRenderer>();
         alone.sprite = FabbricaImmagini.CreaQuadratoPieno(new Color(1f, 0.20f, 0.20f, 0.30f));
-        int ordine = (sr != null) ? sr.sortingOrder : 2;
+        int ordine;
+        if (sr != null) ordine = sr.sortingOrder;
+        else ordine = 2;
         alone.sortingOrder = ordine - 1;
     }
 
@@ -59,24 +52,24 @@ public class Bomba : MonoBehaviour
     {
         if (esplosa) return;
 
-        // ----- Pulsazione dell'alone -----
+        // Pulsazione dell'alone
         float pulse = 0.85f + Mathf.Sin(Time.time * 5f + fase) * 0.25f;
         if (alone != null)
         {
             alone.transform.localScale = new Vector3(2.4f * pulse, 2.4f * pulse, 1f);
-            Color c = alone.color;
-            c.a = 0.20f + 0.20f * Mathf.Sin(Time.time * 5f + fase);
-            alone.color = c;
+            Color col = alone.color;
+            col.a = 0.20f + 0.20f * Mathf.Sin(Time.time * 5f + fase);
+            alone.color = col;
         }
 
-        // ----- Piccola fluttuazione della bomba stessa -----
+        // Piccolo movimento della bomba
         float t = Time.time * 1.2f + fase;
         float dx = Mathf.Sin(t) * 0.06f;
         float dy = Mathf.Cos(t * 0.7f) * 0.08f;
         transform.position = posizioneBase + new Vector3(dx, dy, 0f);
     }
 
-    // Innesca l'esplosione e segnala l'evento al gestore.
+    // Esplode e fa perdere una vita
     public void Detona()
     {
         if (esplosa) return;

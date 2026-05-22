@@ -1,75 +1,60 @@
 using UnityEngine;
 
-// =====================================================================
-//  GestoreGioco
-// ---------------------------------------------------------------------
-//  E' il "cervello" del gioco: tiene lo stato globale della partita
-//  (punteggio, vite, tempo, livello corrente) e decide cosa succede
-//  quando il giocatore raccoglie una caramella, prende la chiave,
-//  tocca un asteroide o una bomba.
+// Cervello del gioco: tiene punteggio, vite, tempo e livello.
+// Decide cosa succede quando una caramella viene presa, quando si
+// tocca un asteroide o una bomba, quando si arriva alla porta, etc.
 //
-//  Ho organizzato il livello in tre fasi:
-//      Fase 1 - Raccolta:   raccogli tutte le caramelle
-//      Fase 2 - Chiave:     prendi la chiave che appare al centro
-//      Fase 3 - Porta:      porta la chiave alla porta che si sposta
-//
-//  Uso il pattern "Singleton" (proprieta' statica Istanza) cosi' gli
-//  altri script possono chiamare GestoreGioco.Istanza senza doverlo
-//  cercare ogni volta nella scena.
-// =====================================================================
+// Ogni livello ha 3 fasi:
+//   FASE 1: raccogli tutte le caramelle
+//   FASE 2: prendi la chiave che appare al centro
+//   FASE 3: porta la chiave alla porta
 public class GestoreGioco : MonoBehaviour
 {
-    // ----- Singleton -----
-    public static GestoreGioco Istanza { get; private set; }
+    // Riferimento unico: cosi' gli altri script lo trovano facilmente
+    public static GestoreGioco Istanza;
 
-    // ----- Stato della partita -----
-    public int LivelloCorrente      { get; private set; }
-    public int CaramelleRaccolte    { get; private set; }
-    public int Punteggio            { get; private set; }
-    public int TotaleCaramelle      { get; private set; }
-    public bool MissioneCompletata  { get; private set; }
-    public bool PartitaFinita       { get; private set; }
-    public bool VittoriaFinale      { get; private set; }
-    public float TempoFesta         { get; private set; }
+    // ---- Stato della partita ----
+    public int LivelloCorrente;
+    public int CaramelleRaccolte;
+    public int Punteggio;
+    public int TotaleCaramelle;
+    public bool MissioneCompletata;
+    public bool PartitaFinita;
+    public bool VittoriaFinale;
+    public float TempoFesta;
 
-    // ----- Vite del giocatore -----
-    // Ad ogni livello ricomincio da 3 vite: e' un gioco per bambini in
-    // riabilitazione, quindi voglio che possano sbagliare qualche volta
-    // senza perdere subito la partita.
-    public const int ViteMassime = 3;
-    public int Vite { get; private set; }
+    // ---- Vite ----
+    public int Vite;
 
-    // ----- Tempo limite del livello -----
-    // 60 secondi: abbastanza per esplorare, ma serve un po' di fretta
-    // per stimolare la concentrazione (obiettivo riabilitativo).
-    public const float DurataLivello = 60f;
-    public float TempoRimasto { get; private set; }
+    // ---- Tempo del livello ----
+    public float TempoRimasto;
 
-    // Motivo dell'ultima sconfitta (lo mostro nel pannello di Game Over)
-    public string MotivoSconfitta { get; private set; }
+    // Motivo per cui ho perso (lo mostro nel Game Over)
+    public string MotivoSconfitta;
 
-    // ----- Fase finale: chiave + porta -----
-    public bool ChiaveApparsa { get; private set; }
-    public bool ChiavePresa   { get; private set; }
+    // ---- Chiave e porta ----
+    public bool ChiaveApparsa;
+    public bool ChiavePresa;
 
-    // Lampeggio rosso quando si tocca un asteroide
-    public float TimerLampeggio { get; private set; }
+    // Lampeggio rosso quando prendo un colpo
+    public float TimerLampeggio;
 
-    // Periodo di grazia iniziale ("PRONTI..."): bombe inerti per un attimo
-    public float TempoIniziale { get; private set; }
+    // Periodo iniziale "PRONTI..." (le bombe non fanno male in questo tempo)
+    public float TempoIniziale;
+
     public bool BombeAttive
     {
         get { return TempoIniziale <= 0f; }
     }
 
-    // Piccolo cooldown dopo ogni hit per non perdere tutte le vite
-    // restando incollati ad un asteroide.
+    // Aspetta un secondo dopo aver perso una vita, cosi' non perdo
+    // tutte le vite restando incollato a un asteroide
     private float cooldownDanno;
 
-    // Definizione del livello che sto giocando in questo momento
-    public DatiLivello LivelloAttuale { get; private set; }
+    // Definizione del livello in corso
+    public DatiLivello LivelloAttuale;
 
-    // Energia = percentuale di caramelle raccolte. La uso per la barra in HUD.
+    // Percentuale di caramelle raccolte (la uso per la barra "energia")
     public float Energia
     {
         get
@@ -79,7 +64,7 @@ public class GestoreGioco : MonoBehaviour
         }
     }
 
-    // Testo dell'obiettivo: cambia a seconda della fase del livello.
+    // Testo dell'obiettivo da mostrare nell'HUD
     public string TestoObiettivo
     {
         get
@@ -100,10 +85,6 @@ public class GestoreGioco : MonoBehaviour
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Ciclo di vita
-    // -----------------------------------------------------------------
-
     void Awake()
     {
         Istanza = this;
@@ -111,57 +92,53 @@ public class GestoreGioco : MonoBehaviour
 
     void Start()
     {
-        // Inizio sempre dal primo livello
+        // Parto sempre dal primo livello
         CaricaLivello(0);
     }
 
     void Update()
     {
-        // Aggiorno i vari timer "che scendono"
+        // Aggiorno i vari timer
         if (MissioneCompletata)
         {
-            TempoFesta += Time.deltaTime;
+            TempoFesta = TempoFesta + Time.deltaTime;
         }
         if (cooldownDanno > 0f)
         {
-            cooldownDanno -= Time.deltaTime;
+            cooldownDanno = cooldownDanno - Time.deltaTime;
         }
         if (TimerLampeggio > 0f)
         {
-            TimerLampeggio -= Time.deltaTime;
+            TimerLampeggio = TimerLampeggio - Time.deltaTime;
         }
         if (TempoIniziale > 0f)
         {
-            TempoIniziale -= Time.deltaTime;
+            TempoIniziale = TempoIniziale - Time.deltaTime;
         }
 
-        // Il timer del livello scorre solo quando il gioco e' "vivo":
-        // niente countdown durante il PRONTI iniziale, ne' dopo la vittoria
-        // o un game over.
+        // Il tempo scorre solo se il livello e' "vivo"
         bool livelloVivo = !PartitaFinita && !MissioneCompletata
                            && !VittoriaFinale && TempoIniziale <= 0f;
         if (livelloVivo)
         {
-            TempoRimasto -= Time.deltaTime;
+            TempoRimasto = TempoRimasto - Time.deltaTime;
             if (TempoRimasto <= 0f)
             {
                 TempoRimasto = 0f;
-                GestisciTempoScaduto();
+                TempoScaduto();
             }
         }
     }
 
-    // -----------------------------------------------------------------
-    //  Gestione dei livelli
-    // -----------------------------------------------------------------
+    // ---- Caricamento livelli ----
 
     public void CaricaLivello(int indice)
     {
-        // Mi assicuro che l'indice sia valido
+        // Sicurezza: l'indice deve essere valido
         LivelloCorrente = Mathf.Clamp(indice, 0, DefinizioneLivelli.Conteggio - 1);
         LivelloAttuale = DefinizioneLivelli.Ottieni(LivelloCorrente);
 
-        // Azzero tutto lo stato di livello
+        // Azzero tutto
         CaramelleRaccolte = 0;
         MissioneCompletata = false;
         PartitaFinita = false;
@@ -172,11 +149,11 @@ public class GestoreGioco : MonoBehaviour
         TempoFesta = 0f;
         TimerLampeggio = 0f;
         cooldownDanno = 0f;
-        TempoIniziale = 1.5f;
-        Vite = ViteMassime;
-        TempoRimasto = DurataLivello;
+        TempoIniziale = Impostazioni.TEMPO_PRONTI;
+        Vite = Impostazioni.VITE;
+        TempoRimasto = Impostazioni.TEMPO_LIVELLO;
 
-        // Chiedo al caricatore di costruire la scena del livello
+        // Chiedo al caricatore di creare gli oggetti del livello
         TotaleCaramelle = CaricatoreLivelli.Carica(LivelloAttuale);
     }
 
@@ -208,20 +185,17 @@ public class GestoreGioco : MonoBehaviour
         CaricaLivello(LivelloCorrente);
     }
 
-    // -----------------------------------------------------------------
-    //  Eventi che arrivano dal gameplay
-    // -----------------------------------------------------------------
+    // ---- Eventi che mi mandano gli altri script ----
 
     public void SegnalaCaramellaRaccolta()
     {
-        // Se la partita non e' piu' "viva", ignoro
         if (PartitaFinita || MissioneCompletata || VittoriaFinale) return;
 
         CaramelleRaccolte = CaramelleRaccolte + 1;
-        Punteggio = Punteggio + 10;
+        Punteggio = Punteggio + Impostazioni.PUNTI_CARAMELLA;
 
-        // Se ho raccolto tutto, passo alla fase finale (chiave + porta)
-        // oppure scateno la vittoria definitiva se ero all'ultimo livello.
+        // Se ho raccolto tutto passo alla fase chiave/porta,
+        // oppure vinco se era l'ultimo livello
         if (CaramelleRaccolte >= TotaleCaramelle && !ChiaveApparsa && !VittoriaFinale)
         {
             if (!ProssimoLivelloDisponibile)
@@ -243,7 +217,7 @@ public class GestoreGioco : MonoBehaviour
 
     public void SegnalaPortaRaggiunta()
     {
-        // La porta si apre solo se sto trasportando la chiave
+        // La porta si apre solo se sto portando la chiave
         if (!ChiavePresa) return;
         if (MissioneCompletata) return;
 
@@ -262,7 +236,7 @@ public class GestoreGioco : MonoBehaviour
 
         cooldownDanno = 1.0f;
         TimerLampeggio = 0.30f;
-        Punteggio = Mathf.Max(0, Punteggio - 5);
+        Punteggio = Mathf.Max(0, Punteggio - Impostazioni.PUNTI_PERSI_HIT);
         PerdiUnaVita("Hai toccato un asteroide!");
     }
 
@@ -276,20 +250,18 @@ public class GestoreGioco : MonoBehaviour
         PerdiUnaVita("Hai toccato una bomba!");
     }
 
-    // -----------------------------------------------------------------
-    //  Metodi interni di supporto
-    // -----------------------------------------------------------------
+    // ---- Metodi interni ----
 
-    void GestisciTempoScaduto()
+    void TempoScaduto()
     {
         if (PartitaFinita || MissioneCompletata) return;
 
-        // Il tempo finito costa una vita. Se restano vite, faccio
-        // ripartire il timer per dare un'altra possibilita'.
+        // Il tempo scaduto fa perdere una vita; se ne ho ancora
+        // faccio ripartire il timer
         PerdiUnaVita("Tempo scaduto!");
         if (!PartitaFinita)
         {
-            TempoRimasto = DurataLivello;
+            TempoRimasto = Impostazioni.TEMPO_LIVELLO;
         }
     }
 

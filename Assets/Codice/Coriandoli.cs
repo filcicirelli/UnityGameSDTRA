@@ -1,18 +1,12 @@
 using UnityEngine;
 
-// =====================================================================
-//  Coriandoli
-// ---------------------------------------------------------------------
-//  Pioggia di coriandoli colorati che parte alla "missione completata".
-//  Per restare nello stile semplice del progetto NON uso un sistema
-//  particellare: creo tanti piccoli quadrati (SpriteRenderer) e li
-//  animo a mano nel componente PezzoCoriandolo.
-// =====================================================================
+// Pioggia di coriandoli colorati per festeggiare la missione completata.
 public class Coriandoli : MonoBehaviour
 {
     public int quantita = 80;
     public float durata = 4f;
 
+    // Colori dei coriandoli
     static readonly Color[] COLORI = new Color[]
     {
         new Color(1f,    0.30f, 0.40f),
@@ -24,21 +18,21 @@ public class Coriandoli : MonoBehaviour
 
     void Start()
     {
-        // Creo i coriandoli in un colpo solo all'inizio
+        // Creo tutti i coriandoli subito
         for (int i = 0; i < quantita; i++)
         {
-            CreaPezzo();
+            CreaUno();
         }
-        // Auto-distruzione dopo un po' (la festa non dura per sempre)
+        // Dopo un po' la festa finisce e tutto sparisce
         Destroy(gameObject, durata + 1.5f);
     }
 
-    void CreaPezzo()
+    void CreaUno()
     {
         GameObject go = new GameObject("Coriandolo");
         go.transform.SetParent(transform, false);
 
-        // Parto dal bordo alto, posizione orizzontale casuale
+        // Parto dall'alto, posizione orizzontale a caso
         float x = Random.Range(-8f, 8f);
         go.transform.position = new Vector3(x, 6.5f, -3f);
 
@@ -50,19 +44,14 @@ public class Coriandoli : MonoBehaviour
         float scala = Random.Range(0.12f, 0.22f);
         go.transform.localScale = new Vector3(scala, scala * 0.6f, 1f);
 
-        PezzoCoriandolo pezzo = go.AddComponent<PezzoCoriandolo>();
-        pezzo.velocita = new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1f, -3f));
-        pezzo.velocitaAngolare = Random.Range(-360f, 360f);
-        pezzo.vita = durata;
+        PezzoCoriandolo p = go.AddComponent<PezzoCoriandolo>();
+        p.velocita = new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1f, -3f));
+        p.velocitaAngolare = Random.Range(-360f, 360f);
+        p.vita = durata;
     }
 }
 
-// =====================================================================
-//  PezzoCoriandolo
-// ---------------------------------------------------------------------
-//  Singolo coriandolo: cade per gravita' debole, ondeggia orizzontalmente
-//  e ruota su se stesso. Quando il suo tempo finisce, sparisce.
-// =====================================================================
+// Singolo coriandolo: cade, ondeggia e gira.
 public class PezzoCoriandolo : MonoBehaviour
 {
     public Vector2 velocita;
@@ -79,17 +68,15 @@ public class PezzoCoriandolo : MonoBehaviour
 
     void Update()
     {
-        eta += Time.deltaTime;
+        eta = eta + Time.deltaTime;
 
-        // Gravita' leggera (acceleratore verso il basso)
-        velocita.y -= 1.2f * Time.deltaTime;
+        // Gravita' leggera
+        velocita.y = velocita.y - 1.2f * Time.deltaTime;
 
-        // Movimento + leggero ondeggio orizzontale
-        Vector3 passo = new Vector3(
-            velocita.x * Time.deltaTime + Mathf.Sin(Time.time * 4f + fase) * 0.01f,
-            velocita.y * Time.deltaTime,
-            0f);
-        transform.position += passo;
+        // Movimento + un po' di ondeggio
+        float dx = velocita.x * Time.deltaTime + Mathf.Sin(Time.time * 4f + fase) * 0.01f;
+        float dy = velocita.y * Time.deltaTime;
+        transform.position = transform.position + new Vector3(dx, dy, 0f);
         transform.Rotate(0f, 0f, velocitaAngolare * Time.deltaTime);
 
         if (eta >= vita)
