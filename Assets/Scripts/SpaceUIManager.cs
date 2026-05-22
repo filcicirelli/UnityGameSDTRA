@@ -84,6 +84,16 @@ public class SpaceUIManager : MonoBehaviour
         GUI.Label(new Rect(20, 46, 360, 50),
                   "PUNTI: " + gm.Score.ToString("0000"),
                   new GUIStyle(bigLabel) { fontSize = 34 });
+        // VITE: cuori rossi pieni o vuoti a seconda di quante ne restano
+        var heartsStyle = new GUIStyle(bigLabel)
+        {
+            fontSize = 30,
+            normal = { textColor = new Color(1f, 0.45f, 0.55f) },
+        };
+        string hearts = "VITE: ";
+        for (int i = 0; i < SpaceGameManager.MaxLives; i++)
+            hearts += (i < gm.Lives) ? "♥" : "♡";
+        GUI.Label(new Rect(20, 96, 360, 40), hearts, heartsStyle);
 
         // Titolo livello in alto al centro
         string title = gm.CurrentDef != null ? gm.CurrentDef.title : "";
@@ -101,6 +111,20 @@ public class SpaceUIManager : MonoBehaviour
                                  Mathf.Max(0, (barW - 6) * Mathf.Clamp01(gm.Energy)),
                                  barH - 6),
                         barFill);
+        // TEMPO sotto la barra ENERGIA: rosso lampeggiante quando <= 10s
+        int secs = Mathf.CeilToInt(gm.LevelTimeLeft);
+        bool urgent = gm.LevelTimeLeft <= 10f && !gm.MissionComplete && !gm.GameOver;
+        Color timeColor = urgent
+            ? Color.Lerp(new Color(1f, 0.95f, 0.45f), new Color(1f, 0.30f, 0.30f),
+                         0.5f + 0.5f * Mathf.Sin(Time.time * 8f))
+            : Color.white;
+        var timeStyle = new GUIStyle(bigLabel)
+        {
+            fontSize = 30,
+            alignment = TextAnchor.MiddleRight,
+            normal = { textColor = timeColor },
+        };
+        GUI.Label(new Rect(barX, 80, barW, 40), "TEMPO: " + secs + "s", timeStyle);
 
         // Distintivo obiettivo in basso a sinistra (cambia tra raccolta/chiave/porta)
         GUI.Box(new Rect(20, Screen.height - 70, 420, 50),
@@ -165,8 +189,11 @@ public class SpaceUIManager : MonoBehaviour
         GUI.Label(new Rect(0, Screen.height * 0.30f, Screen.width, 80),
                   "BOOM!  GAME OVER",
                   new GUIStyle(hugeLabel) { normal = { textColor = new Color(1f, 0.6f, 0.6f) } });
+        string reason = string.IsNullOrEmpty(gm.GameOverReason)
+            ? "Hai esaurito le vite."
+            : gm.GameOverReason + "  Vite finite.";
         GUI.Label(new Rect(0, Screen.height * 0.30f + 80, Screen.width, 40),
-                  "Hai toccato una bomba. Riprova con piu' calma!",
+                  reason + " Riprova con piu' calma!",
                   new GUIStyle(bigLabel) { alignment = TextAnchor.MiddleCenter });
 
         float bw = 220, bh = 60;

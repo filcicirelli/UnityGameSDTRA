@@ -18,6 +18,17 @@ public class SpaceGameManager : MonoBehaviour
     public bool GameOver         { get; private set; }
     public float CelebrationTime { get; private set; }
 
+    // Vite del giocatore (resettate a ogni livello)
+    public const int MaxLives = 3;
+    public int Lives { get; private set; }
+
+    // Tempo a disposizione per completare il livello
+    public const float LevelDuration = 60f;
+    public float LevelTimeLeft { get; private set; }
+
+    // Motivo dell'ultimo Game Over (mostrato nell'HUD)
+    public string GameOverReason { get; private set; }
+
     // Fase chiave/porta
     public bool KeySpawned     { get; private set; }
     public bool KeyPickedUp    { get; private set; }
@@ -29,7 +40,9 @@ public class SpaceGameManager : MonoBehaviour
     public float LevelStartGrace { get; private set; }
     public bool  BombsArmed => LevelStartGrace <= 0f;
 
-    private float barrierCooldown;
+    // Periodo di invulnerabilita' breve dopo ogni hit (barriera/bomba),
+    // per non drenare tutte le vite in un solo contatto prolungato.
+    private float hitCooldown;
 
     // Definizione del livello corrente
     public SpaceLevelDef CurrentDef { get; private set; }
@@ -53,9 +66,21 @@ public class SpaceGameManager : MonoBehaviour
     void Update()
     {
         if (MissionComplete) CelebrationTime += Time.deltaTime;
-        if (barrierCooldown > 0f)    barrierCooldown    -= Time.deltaTime;
+        if (hitCooldown > 0f)        hitCooldown        -= Time.deltaTime;
         if (BarrierFlashTimer > 0f)  BarrierFlashTimer  -= Time.deltaTime;
         if (LevelStartGrace > 0f)    LevelStartGrace    -= Time.deltaTime;
+
+        // Countdown del tempo solo quando il livello e' "vivo"
+        // (no grace period iniziale, no game over, no missione completata)
+        if (!GameOver && !MissionComplete && LevelStartGrace <= 0f)
+        {
+            LevelTimeLeft -= Time.deltaTime;
+            if (LevelTimeLeft <= 0f)
+            {
+                LevelTimeLeft = 0f;
+                OnTimeOut();
+            }
+        }
     }
 
     // -------- Gestione livelli --------
@@ -67,12 +92,15 @@ public class SpaceGameManager : MonoBehaviour
         CandiesCollected = 0;
         MissionComplete = false;
         GameOver = false;
+        GameOverReason = "";
         KeySpawned = false;
         KeyPickedUp = false;
         CelebrationTime = 0f;
         BarrierFlashTimer = 0f;
-        barrierCooldown = 0f;
+        hitCooldown = 0f;
         LevelStartGrace = 1.5f;
+        Lives = MaxLives;
+        LevelTimeLeft = LevelDuration;
         TotalCandies = SpaceLevelLoader.Load(CurrentDef);
     }
 
@@ -118,16 +146,39 @@ public class SpaceGameManager : MonoBehaviour
     public void OnBarrierTouched()
     {
         if (GameOver || MissionComplete) return;
-        if (barrierCooldown > 0f) return;
-        barrierCooldown = 0.5f;
-        BarrierFlashTimer = 0.25f;
+        if (hitCooldown > 0f) return;
+        hitCooldown = 1.0f;
+        BarrierFlashTimer = 0.30f;
         Score = Mathf.Max(0, Score - 5);
+        LoseLife("Hai toccato un asteroide!");
     }
 
     public void OnBombHit()
     {
-        if (GameOver) return;
-        GameOver = true;
+        if (GameOver || MissionComplete) return;
+        if (hitCooldown > 0f) return;
+        hitCooldown = 1.0f;
+        BarrierFlashTimer = 0.30f;
+        LoseLife("Hai toccato una bomba!");
+    }
+
+    void OnTimeOut()
+    {
+        if (GameOver || MissionComplete) return;
+        // Penalita' per tempo scaduto: perde una vita e (se restano vite)
+        // ricomincia il timer per dare un'altra possibilita'.
+        LoseLife("Tempo scaduto!");
+        if (!GameOver) LevelTimeLeft = LevelDuration;
+    }
+
+    void LoseLife(string reason)
+    {
+        Lives = Mathf.Max(0, Lives - 1);
+        if (Lives <= 0)
+        {
+            GameOver = true;
+            GameOverReason = reason;
+        }
     }
 
     void SpawnKeyAndDoor()
