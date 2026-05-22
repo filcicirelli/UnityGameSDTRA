@@ -12,8 +12,8 @@ public class Astro : MonoBehaviour
     // Chiave/porta hanno raggio generoso: e' una raccolta "a passaggio",
     // pensata per bambini che possono avere problemi di motricita' fine.
     public float candyTouchRadius   = 0.85f;
-    public float keyTouchRadius     = 1.30f;
-    public float doorTouchRadius    = 1.30f;
+    public float keyTouchRadius     = 1.80f;   // generoso: la chiave e' anche "magnetica"
+    public float doorTouchRadius    = 1.80f;   // anche la porta e' magnetica/generosa
     public float bombTouchRadius    = 0.55f;
 
     public bool HasKey { get; private set; }
