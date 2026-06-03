@@ -1,403 +1,267 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-// Disegna da codice tutti gli sprite del gioco (pixel art 16x16).
-// Cosi' il progetto non ha bisogno di file immagine esterni.
-// Per cambiare l'aspetto di un oggetto basta cambiare i pixel qui.
+// Disegna da codice tutte le immagini (sprite) del gioco, cosi' non
+// servono file immagine esterni.
+//
+// COME FUNZIONA (semplice!):
+// Ogni immagine e' un "disegno" fatto di lettere, una riga di testo per
+// ogni riga di pixel. La LEGENDA qui sotto dice quale colore corrisponde
+// a ogni lettera. Il punto '.' (e lo spazio) vuol dire "trasparente".
+//
+// Per cambiare un disegno basta cambiare le lettere: per esempio se metto
+// una 'W' (bianco) in piu' aggiungo un pixel bianco. Niente matematica.
 public static class FabbricaImmagini
 {
-    private const int LATO = 16; // griglia 16x16
+    private const int LATO = 16; // i disegni sono griglie 16x16
     private const int PPU = 16;  // 16 pixel = 1 unita' di Unity
 
-    // ---- ASTRO (alieno verde con zaino) ----
-    public static Sprite CreaAstro()
+    // ---- LEGENDA COLORI: una lettera = un colore ----
+    static readonly Dictionary<char, Color> LEGENDA = new Dictionary<char, Color>
     {
-        Color[] pixel = NuovaGriglia();
+        { '.', Color.clear },                          // trasparente
+        { ' ', Color.clear },                          // trasparente
 
-        Color pelle = new Color(0.40f, 0.85f, 0.40f);
-        Color pelleScura = new Color(0.20f, 0.55f, 0.25f);
-        Color pancia = new Color(0.70f, 1f, 0.70f);
-        Color bianco = Color.white;
-        Color nero = Color.black;
-        Color serbatoio = new Color(0.85f, 0.85f, 0.95f);
-        Color serbatoioScuro = new Color(0.40f, 0.45f, 0.60f);
-        Color antenna = new Color(1f, 0.85f, 0.20f);
+        { 'V', new Color(0.40f, 0.85f, 0.40f) },       // verde Astro
+        { 'v', new Color(0.20f, 0.55f, 0.25f) },       // verde scuro (bordo)
+        { 'b', new Color(0.75f, 1f,    0.75f) },       // pancia chiara
+        { 'W', Color.white },                          // bianco
+        { 'N', Color.black },                          // nero
+        { 'h', new Color(0.85f, 0.85f, 0.95f) },       // grigio chiaro (zaino/riflessi)
+        { 'H', new Color(0.45f, 0.50f, 0.65f) },       // grigio scuro
 
-        // Corpo tondo
-        for (int y = 2; y <= 12; y++)
-        {
-            for (int x = 3; x <= 12; x++)
-            {
-                float dx = x - 7.5f;
-                float dy = y - 7.5f;
-                float dist = Mathf.Sqrt(dx * dx + dy * dy);
-                if (dist < 4.2f) pixel[y * LATO + x] = pelle;
-                else if (dist < 5.0f) pixel[y * LATO + x] = pelleScura;
-            }
-        }
+        { 'G', new Color(1f,    0.85f, 0.20f) },       // oro
+        { 'g', new Color(0.70f, 0.50f, 0.10f) },       // oro scuro
 
-        // Pancia chiara
-        for (int y = 4; y <= 7; y++)
-        {
-            for (int x = 6; x <= 9; x++)
-            {
-                pixel[y * LATO + x] = pancia;
-            }
-        }
+        { 'P', new Color(0.55f, 0.30f, 0.85f) },       // viola portale
+        { 'L', new Color(0.85f, 0.65f, 1f)    },       // viola chiaro (luce)
+        { 'M', new Color(0.75f, 0.55f, 0.30f) },       // legno cornice
+        { 'm', new Color(0.35f, 0.20f, 0.08f) },       // legno scuro
 
-        // Occhi
-        pixel[9 * LATO + 5] = bianco;
-        pixel[9 * LATO + 6] = bianco;
-        pixel[9 * LATO + 9] = bianco;
-        pixel[9 * LATO + 10] = bianco;
-        pixel[9 * LATO + 6] = nero; // pupille
-        pixel[9 * LATO + 9] = nero;
+        { 'R', new Color(0.95f, 0.55f, 0.85f) },       // rosa
+        { 'A', new Color(0.55f, 0.80f, 1f)    },       // azzurro
+        { 'C', new Color(0.40f, 0.20f, 0.55f) },       // bordo viola scuro
+        { 'k', new Color(0.40f, 0.25f, 0.15f) },       // marrone scuro (bocca/miccia)
 
-        // Bocca
-        pixel[7 * LATO + 6] = pelleScura;
-        pixel[7 * LATO + 7] = pelleScura;
-        pixel[7 * LATO + 8] = pelleScura;
-        pixel[7 * LATO + 9] = pelleScura;
+        { 'S', new Color(0.12f, 0.10f, 0.18f) },       // quasi nero (bomba)
+        { 'F', new Color(1f,    0.55f, 0.20f) },       // fiamma arancio
 
-        // Antenna con pallina gialla in cima
-        pixel[13 * LATO + 8] = pelleScura;
-        pixel[14 * LATO + 8] = pelleScura;
-        pixel[15 * LATO + 7] = antenna;
-        pixel[15 * LATO + 8] = antenna;
-        pixel[15 * LATO + 9] = antenna;
+        { 'Y', new Color(1f,    1f,    0.60f) },       // giallo (esplosione)
+        { 'O', new Color(1f,    0.55f, 0.20f) },       // arancio (esplosione)
+        { 'r', new Color(0.85f, 0.20f, 0.20f) },       // rosso (esplosione)
+    };
 
-        // Zainetto ai lati
-        for (int y = 5; y <= 10; y++)
-        {
-            pixel[y * LATO + 1] = serbatoioScuro;
-            pixel[y * LATO + 2] = serbatoio;
-            pixel[y * LATO + 13] = serbatoio;
-            pixel[y * LATO + 14] = serbatoioScuro;
-        }
+    // =========================================================
+    // I DISEGNI (la prima riga e' quella in alto)
+    // =========================================================
 
-        return Cuoci(pixel);
-    }
-
-    // ---- CARAMELLA (cerchio con ali ai lati) ----
-    public static Sprite CreaCaramella(Color tinta)
+    // ASTRO: alieno verde con antenna, occhi, sorriso e zainetto
+    static readonly string[] ASTRO =
     {
-        Color[] pixel = NuovaGriglia();
+        ".......GG.......",
+        ".......gg.......",
+        ".......v........",
+        ".....vvvvv......",
+        "....vVVVVVv.....",
+        "...vVVVVVVVv....",
+        "..hvVVVVVVVvh...",
+        ".HhVWNVVNWVhH...",
+        ".HhVWNVVNWVhH...",
+        "..hVVVVVVVVh....",
+        "...VVbbbbVV.....",
+        "...vVbkkbVv.....",
+        "....vVVVVv......",
+        ".....vVVv.......",
+        "......vv........",
+        "................",
+    };
 
-        Color corpo = tinta;
-        Color bordo = Scurisci(tinta, 0.45f);
-        Color luce = Color.white;
-        Color incarto = new Color(
-            0.5f + tinta.r * 0.5f,
-            0.5f + tinta.g * 0.5f,
-            0.5f + tinta.b * 0.5f, 1f);
-
-        // Cerchio
-        float cx = 7.5f, cy = 7.5f, r = 3.8f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                if (dist <= r - 1) pixel[y * LATO + x] = corpo;
-                else if (dist <= r) pixel[y * LATO + x] = bordo;
-            }
-        }
-
-        // Riflesso bianco
-        pixel[10 * LATO + 6] = luce;
-        pixel[10 * LATO + 7] = luce;
-        pixel[9 * LATO + 6] = luce;
-
-        // Ala sinistra
-        pixel[8 * LATO + 3] = incarto;
-        pixel[7 * LATO + 3] = incarto;
-        pixel[9 * LATO + 2] = incarto;
-        pixel[6 * LATO + 2] = incarto;
-        pixel[8 * LATO + 1] = incarto;
-        pixel[7 * LATO + 1] = incarto;
-        pixel[10 * LATO + 2] = bordo;
-        pixel[5 * LATO + 2] = bordo;
-        pixel[9 * LATO + 1] = bordo;
-        pixel[6 * LATO + 1] = bordo;
-
-        // Ala destra
-        pixel[8 * LATO + 12] = incarto;
-        pixel[7 * LATO + 12] = incarto;
-        pixel[9 * LATO + 13] = incarto;
-        pixel[6 * LATO + 13] = incarto;
-        pixel[8 * LATO + 14] = incarto;
-        pixel[7 * LATO + 14] = incarto;
-        pixel[10 * LATO + 13] = bordo;
-        pixel[5 * LATO + 13] = bordo;
-        pixel[9 * LATO + 14] = bordo;
-        pixel[6 * LATO + 14] = bordo;
-
-        return Cuoci(pixel);
-    }
-
-    // ---- CHIAVE DORATA ----
-    public static Sprite CreaChiave()
+    // CARAMELLA: caramella rotonda con incarto ai lati ('#' = colore scelto)
+    static readonly string[] CARAMELLA =
     {
-        Color[] pixel = NuovaGriglia();
+        "................",
+        "......++++......",
+        ".....+####+.....",
+        "....+######+....",
+        "...+########+...",
+        "...+###WW###+...",
+        "o.+##########+.o",
+        "oo+##########+oo",
+        "oo+##########+oo",
+        "o.+##########+.o",
+        "...+########+...",
+        "....+######+....",
+        ".....+####+.....",
+        "......++++......",
+        "................",
+        "................",
+    };
 
-        Color oro = new Color(1f, 0.85f, 0.20f);
-        Color oroScuro = new Color(0.70f, 0.50f, 0.10f);
-        Color luce = Color.white;
-
-        // Anello (cerchio cavo a sinistra)
-        float cx = 4.5f, cy = 7.5f, raggioEsterno = 3.2f, raggioInterno = 1.6f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                if (dist <= raggioEsterno && dist > raggioInterno)
-                {
-                    if (dist > raggioEsterno - 0.7f)
-                        pixel[y * LATO + x] = oroScuro;
-                    else
-                        pixel[y * LATO + x] = oro;
-                }
-            }
-        }
-        pixel[9 * LATO + 3] = luce; // riflesso
-
-        // Asta verso destra
-        for (int x = 7; x <= 13; x++)
-        {
-            pixel[7 * LATO + x] = oro;
-            pixel[8 * LATO + x] = oro;
-            pixel[6 * LATO + x] = oroScuro;
-            pixel[9 * LATO + x] = oroScuro;
-        }
-
-        // Denti
-        pixel[5 * LATO + 11] = oro;
-        pixel[5 * LATO + 12] = oro;
-        pixel[5 * LATO + 13] = oro;
-        pixel[4 * LATO + 11] = oroScuro;
-        pixel[4 * LATO + 13] = oroScuro;
-
-        return Cuoci(pixel);
-    }
-
-    // ---- PORTA / PORTALE ----
-    public static Sprite CreaPorta()
+    // CHIAVE dorata: testa tonda con buco, asta e dentini
+    static readonly string[] CHIAVE =
     {
-        Color[] pixel = NuovaGriglia();
+        "................",
+        "...ggg..........",
+        "..gWGGg.........",
+        "..gG.Gg.........",
+        "..gGGGgGGGGGGG..",
+        "..gGGGGGGGGGGGg.",
+        "..gGGGgGGGGGGGg.",
+        "...ggg.....G.G.G",
+        "...........G.G..",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+    };
 
-        Color cornice = new Color(0.75f, 0.55f, 0.30f);
-        Color corniceScura = new Color(0.35f, 0.20f, 0.08f);
-        Color portale = new Color(0.55f, 0.30f, 0.85f);
-        Color portaleLuce = new Color(0.85f, 0.65f, 1f);
-        Color stella = Color.white;
-
-        // Cornice rettangolare verticale
-        for (int y = 1; y <= 14; y++)
-        {
-            for (int x = 3; x <= 11; x++)
-            {
-                bool esterno = (x == 3 || x == 11 || y == 1 || y == 14);
-                bool interno = (x == 4 || x == 10 || y == 2 || y == 13);
-
-                if (esterno) pixel[y * LATO + x] = corniceScura;
-                else if (interno) pixel[y * LATO + x] = cornice;
-                else pixel[y * LATO + x] = portale;
-            }
-        }
-
-        // Luce centrale del portale
-        for (int y = 5; y <= 10; y++)
-        {
-            for (int x = 6; x <= 8; x++)
-            {
-                pixel[y * LATO + x] = portaleLuce;
-            }
-        }
-
-        // Stellina centrale
-        pixel[8 * LATO + 7] = stella;
-        pixel[7 * LATO + 6] = stella;
-        pixel[7 * LATO + 8] = stella;
-        pixel[6 * LATO + 7] = stella;
-
-        return Cuoci(pixel);
-    }
-
-    // ---- STELLINA DI SFONDO ----
-    public static Sprite CreaStella(Color tinta)
+    // PORTA / portale viola con cornice di legno e stella al centro
+    static readonly string[] PORTA =
     {
-        Color[] pixel = NuovaGriglia();
-        // Una crocetta di 5 pixel
-        pixel[8 * LATO + 8] = tinta;
-        pixel[8 * LATO + 7] = tinta;
-        pixel[8 * LATO + 9] = tinta;
-        pixel[7 * LATO + 8] = tinta;
-        pixel[9 * LATO + 8] = tinta;
-        return Cuoci(pixel);
-    }
+        "................",
+        "...mmmmmmmmm....",
+        "...mMMMMMMMm....",
+        "...mMPPPPPMm....",
+        "...mMPPPPPMm....",
+        "...mMPPWPPMm....",
+        "...mMPWLWPMm....",
+        "...mMPPWPPMm....",
+        "...mMPPPPPMm....",
+        "...mMPPPPPMm....",
+        "...mMPPPPPMm....",
+        "...mMPPPPPMm....",
+        "...mMMMMMMMm....",
+        "...mmmmmmmmm....",
+        "................",
+        "................",
+    };
 
-    // ---- PIANETA DECORATIVO (sullo sfondo) ----
-    public static Sprite CreaPianeta(Color principale, Color screziato)
+    // BOMBA: sfera scura con riflesso, miccia e fiamma
+    static readonly string[] BOMBA =
     {
-        Color[] pixel = NuovaGriglia();
+        "........F.......",
+        ".......FFF......",
+        "........k.......",
+        ".......k........",
+        ".....SSSSSS.....",
+        "....SSSSSSSS....",
+        "...ShhSSSSSSS...",
+        "...ShSSSSSSSS...",
+        "...SSSSSSSSSS...",
+        "...SSSSSSSSSS...",
+        "...SSSSSSSSSS...",
+        "....SSSSSSSS....",
+        ".....SSSSSS.....",
+        "................",
+        "................",
+        "................",
+    };
 
-        float cx = 7.5f, cy = 7.5f, raggio = 6f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dx = x - cx;
-                float dy = y - cy;
-                float dist = Mathf.Sqrt(dx * dx + dy * dy);
-
-                if (dist <= raggio - 1)
-                {
-                    // Pattern a chiazze
-                    if (((x + y) % 3) == 0) pixel[y * LATO + x] = screziato;
-                    else pixel[y * LATO + x] = principale;
-                }
-                else if (dist <= raggio)
-                {
-                    pixel[y * LATO + x] = Scurisci(principale, 0.5f);
-                }
-            }
-        }
-        return Cuoci(pixel);
-    }
-
-    // ---- PIANETA AMICO (compare a fine missione) ----
-    public static Sprite CreaPianetaAmico()
+    // PIANETA AMICO: pianeta sorridente (azzurro sopra, rosa sotto)
+    static readonly string[] PIANETA_AMICO =
     {
-        Color[] pixel = NuovaGriglia();
+        "................",
+        ".....CCCCCC.....",
+        "...CCAAAAAACC...",
+        "..CAAAAAAAAAAC..",
+        ".CAAAAAAAAAAAAC.",
+        ".CAAANAAAANAAAC.",
+        ".CAAANAAAANAAAC.",
+        ".CAAAAAAAAAAAAC.",
+        ".CRRRRRRRRRRRRC.",
+        ".CRRkRRRRRRkRRC.",
+        ".CRRkkkkkkkkRRC.",
+        "..CRRRRRRRRRRC..",
+        "...CCRRRRRRCC...",
+        ".....CCCCCC.....",
+        "................",
+        "................",
+    };
 
-        Color rosa = new Color(0.95f, 0.55f, 0.85f);
-        Color azzurro = new Color(0.55f, 0.80f, 1f);
-        Color bordo = new Color(0.40f, 0.20f, 0.55f);
-        Color occhio = Color.black;
-        Color bocca = new Color(0.30f, 0.10f, 0.10f);
-
-        float cx = 7.5f, cy = 7.5f, raggio = 6.5f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dx = x - cx;
-                float dy = y - cy;
-                float dist = Mathf.Sqrt(dx * dx + dy * dy);
-
-                if (dist <= raggio - 1)
-                {
-                    if (y > 7) pixel[y * LATO + x] = rosa;
-                    else pixel[y * LATO + x] = azzurro;
-                }
-                else if (dist <= raggio)
-                {
-                    pixel[y * LATO + x] = bordo;
-                }
-            }
-        }
-        // Occhioni
-        pixel[9 * LATO + 5] = occhio;
-        pixel[9 * LATO + 6] = occhio;
-        pixel[9 * LATO + 9] = occhio;
-        pixel[9 * LATO + 10] = occhio;
-        // Sorriso
-        pixel[6 * LATO + 5] = bocca;
-        pixel[6 * LATO + 10] = bocca;
-        pixel[5 * LATO + 6] = bocca;
-        pixel[5 * LATO + 7] = bocca;
-        pixel[5 * LATO + 8] = bocca;
-        pixel[5 * LATO + 9] = bocca;
-
-        return Cuoci(pixel);
-    }
-
-    // ---- TESSERA ASTEROIDE (la "barriera") ----
-    public static Sprite CreaTesseraAsteroide(Color coloreBase)
+    // ASTEROIDE: blocco roccioso (viene allungato per fare le barriere)
+    // '#' = colore scelto, '+' = versione piu' scura (crateri/bordo)
+    static readonly string[] ASTEROIDE =
     {
-        Color[] pixel = NuovaGriglia();
+        "++++++++++++++++",
+        "+##############+",
+        "+###+#######+##+",
+        "+##############+",
+        "+######+#######+",
+        "+##############+",
+        "+##+########+##+",
+        "+##############+",
+        "+#######+######+",
+        "+##############+",
+        "+####+#####+###+",
+        "+##############+",
+        "+###+######+###+",
+        "+##############+",
+        "+#####+####+###+",
+        "++++++++++++++++",
+    };
 
-        Color chiaro = coloreBase;
-        Color scuro = Scurisci(coloreBase, 0.55f);
-        Color bordo = Scurisci(coloreBase, 0.30f);
-
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                bool sulBordo = (x == 0 || x == LATO - 1 || y == 0 || y == LATO - 1);
-                int rumore = ((x * 13 + y * 7) % 9); // crateri "finti casuali"
-
-                Color c;
-                if (sulBordo) c = bordo;
-                else if (rumore < 3) c = scuro;
-                else c = chiaro;
-                pixel[y * LATO + x] = c;
-            }
-        }
-        return Cuoci(pixel);
-    }
-
-    // ---- BOMBA (sfera scura con miccia) ----
-    public static Sprite CreaBomba()
+    // PIANETA decorativo di sfondo ('#' = colore scelto, '+' = piu' scuro)
+    static readonly string[] PIANETA =
     {
-        Color[] pixel = NuovaGriglia();
+        "................",
+        ".....######.....",
+        "...##########...",
+        "..############..",
+        ".#####+######+#.",
+        ".##############.",
+        ".####+#####+###.",
+        ".##############.",
+        ".###+######+###.",
+        ".##############.",
+        ".#####+####+###.",
+        "..############..",
+        "...##########...",
+        ".....######.....",
+        "................",
+        "................",
+    };
 
-        Color corpo = new Color(0.12f, 0.10f, 0.18f);
-        Color luce = new Color(0.55f, 0.55f, 0.70f);
-        Color miccia = new Color(0.45f, 0.30f, 0.20f);
-        Color fiamma = new Color(1f, 0.55f, 0.20f);
-
-        // Sfera
-        float cx = 7.5f, cy = 6.5f, raggio = 5.5f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                if (dist <= raggio) pixel[y * LATO + x] = corpo;
-            }
-        }
-
-        // Riflesso in alto a sinistra
-        pixel[9 * LATO + 5] = luce;
-        pixel[9 * LATO + 6] = luce;
-        pixel[10 * LATO + 5] = luce;
-
-        // Miccia con scintilla
-        pixel[12 * LATO + 8] = miccia;
-        pixel[13 * LATO + 9] = miccia;
-        pixel[14 * LATO + 9] = miccia;
-        pixel[15 * LATO + 9] = fiamma;
-        pixel[14 * LATO + 10] = fiamma;
-
-        return Cuoci(pixel);
-    }
-
-    // ---- ESPLOSIONE (anello luminoso a 3 strati) ----
-    public static Sprite CreaEsplosione()
+    // ESPLOSIONE: anello luminoso a tre colori
+    static readonly string[] ESPLOSIONE =
     {
-        Color[] pixel = NuovaGriglia();
+        "................",
+        ".....rrrrrr.....",
+        "...rrOOOOOOrr...",
+        "..rOOOOOOOOOOr..",
+        ".rOOOYYYYYYOOOr.",
+        ".rOOYYYYYYYYOOr.",
+        "rOOYYYYYYYYYYOOr",
+        "rOOYYYYYYYYYYOOr",
+        "rOOYYYYYYYYYYOOr",
+        ".rOOYYYYYYYYOOr.",
+        ".rOOOYYYYYYOOOr.",
+        "..rOOOOOOOOOOr..",
+        "...rrOOOOOOrr...",
+        ".....rrrrrr.....",
+        "................",
+        "................",
+    };
 
-        Color interno = new Color(1f, 1f, 0.6f);
-        Color medio = new Color(1f, 0.55f, 0.20f);
-        Color esterno = new Color(0.85f, 0.20f, 0.20f);
+    // =========================================================
+    // I METODI che il resto del gioco chiama
+    // =========================================================
 
-        float cx = 7.5f, cy = 7.5f;
-        for (int y = 0; y < LATO; y++)
-        {
-            for (int x = 0; x < LATO; x++)
-            {
-                float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                if (dist <= 3f) pixel[y * LATO + x] = interno;
-                else if (dist <= 5.5f) pixel[y * LATO + x] = medio;
-                else if (dist <= 7f) pixel[y * LATO + x] = esterno;
-            }
-        }
-        return Cuoci(pixel);
-    }
+    public static Sprite CreaAstro()        { return Disegna(ASTRO); }
+    public static Sprite CreaChiave()        { return Disegna(CHIAVE); }
+    public static Sprite CreaPorta()         { return Disegna(PORTA); }
+    public static Sprite CreaBomba()         { return Disegna(BOMBA); }
+    public static Sprite CreaPianetaAmico()  { return Disegna(PIANETA_AMICO); }
+    public static Sprite CreaEsplosione()    { return Disegna(ESPLOSIONE); }
 
-    // ---- QUADRATO PIENO (lo uso per coriandoli e barre dell'HUD) ----
+    // Questi prendono un colore: il disegno usa '#' (colore), '+' (scuro), 'o' (chiaro)
+    public static Sprite CreaCaramella(Color tinta)      { return DisegnaColorato(CARAMELLA, tinta); }
+    public static Sprite CreaTesseraAsteroide(Color c)   { return DisegnaColorato(ASTEROIDE, c); }
+    public static Sprite CreaPianeta(Color c)            { return DisegnaColorato(PIANETA, c); }
+
+    // Quadrato pieno di un colore (lo uso per stelle, coriandoli, aloni e barre)
     public static Sprite CreaQuadratoPieno(Color colore)
     {
         Color[] pixel = new Color[LATO * LATO];
@@ -408,29 +272,89 @@ public static class FabbricaImmagini
         return Cuoci(pixel);
     }
 
-    // ---- Funzioni di supporto ----
+    // =========================================================
+    // Funzioni di supporto
+    // =========================================================
 
-    static Color[] NuovaGriglia()
+    // Trasforma un disegno (lettere) in uno sprite usando la LEGENDA
+    static Sprite Disegna(string[] disegno)
     {
-        // Griglia di pixel tutti trasparenti
         Color[] pixel = new Color[LATO * LATO];
-        for (int i = 0; i < pixel.Length; i++)
+
+        for (int riga = 0; riga < LATO; riga++)
         {
-            pixel[i] = Color.clear;
+            string testo = riga < disegno.Length ? disegno[riga] : "";
+            // la prima riga del disegno e' in alto -> y piu' grande
+            int y = LATO - 1 - riga;
+
+            for (int x = 0; x < LATO; x++)
+            {
+                char c = x < testo.Length ? testo[x] : '.';
+                Color colore;
+                if (!LEGENDA.TryGetValue(c, out colore))
+                {
+                    colore = Color.clear; // lettera sconosciuta = trasparente
+                }
+                pixel[y * LATO + x] = colore;
+            }
         }
-        return pixel;
+
+        return Cuoci(pixel);
     }
 
-    static Color Scurisci(Color c, float fattore)
+    // Come Disegna, ma '#'/'+'/'o' prendono il colore scelto (e le sue
+    // versioni piu' scura e piu' chiara). Serve per caramelle, asteroidi
+    // e pianeti, che cambiano colore.
+    static Sprite DisegnaColorato(string[] disegno, Color tinta)
     {
-        // Moltiplico i canali RGB per "fattore"
-        return new Color(c.r * fattore, c.g * fattore, c.b * fattore, c.a);
+        Color corpo  = tinta;
+        Color scuro  = Scurisci(tinta, 0.5f);
+        Color chiaro = Schiarisci(tinta, 0.5f);
+
+        Color[] pixel = new Color[LATO * LATO];
+
+        for (int riga = 0; riga < LATO; riga++)
+        {
+            string testo = riga < disegno.Length ? disegno[riga] : "";
+            int y = LATO - 1 - riga;
+
+            for (int x = 0; x < LATO; x++)
+            {
+                char c = x < testo.Length ? testo[x] : '.';
+
+                Color colore;
+                if (c == '#') colore = corpo;
+                else if (c == '+') colore = scuro;
+                else if (c == 'o') colore = chiaro;
+                else if (!LEGENDA.TryGetValue(c, out colore)) colore = Color.clear;
+
+                pixel[y * LATO + x] = colore;
+            }
+        }
+
+        return Cuoci(pixel);
     }
 
+    static Color Scurisci(Color c, float quanto)
+    {
+        // Avvicino i colori al nero
+        return new Color(c.r * quanto, c.g * quanto, c.b * quanto, c.a);
+    }
+
+    static Color Schiarisci(Color c, float quanto)
+    {
+        // Avvicino i colori al bianco
+        return new Color(
+            c.r + (1f - c.r) * quanto,
+            c.g + (1f - c.g) * quanto,
+            c.b + (1f - c.b) * quanto,
+            c.a);
+    }
+
+    // Trasforma l'array di colori in una immagine (Texture) e poi in uno Sprite.
+    // filterMode = Point cosi' i pixel restano "a quadretti" (pixel art).
     static Sprite Cuoci(Color[] pixel)
     {
-        // Trasformo l'array di colori in una Texture e poi in uno Sprite.
-        // filterMode = Point cosi' la pixel art resta "a quadretti".
         Texture2D tex = new Texture2D(LATO, LATO, TextureFormat.RGBA32, false);
         tex.filterMode = FilterMode.Point;
         tex.wrapMode = TextureWrapMode.Clamp;

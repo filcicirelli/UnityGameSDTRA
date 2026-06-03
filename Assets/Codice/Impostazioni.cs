@@ -5,7 +5,7 @@ using UnityEngine;
 public static class Impostazioni
 {
     // ---- VITE E TEMPO ----
-    public const int VITE = 3;             // vite all'inizio di ogni livello
+    public const int VITE = 5;             // vite all'inizio di ogni livello
     public const float TEMPO_LIVELLO = 60f; // secondi a disposizione
 
     // ---- ASTRO ----
