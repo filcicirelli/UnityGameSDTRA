@@ -252,7 +252,7 @@ public static class CaricatoreLivelli
             stella.transform.position = new Vector3(x, y, 5f);
 
             SpriteRenderer sr = stella.AddComponent<SpriteRenderer>();
-            sr.sprite = FabbricaImmagini.CreaQuadratoPieno(colore);
+            sr.sprite = FabbricaImmagini.CreaStella(colore);
             sr.sortingOrder = -5;
 
             float scala = Random.Range(0.4f, 1.1f);
