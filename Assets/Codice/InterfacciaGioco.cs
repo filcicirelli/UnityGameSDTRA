@@ -29,9 +29,32 @@ public class InterfacciaGioco : MonoBehaviour
     // Se il menu e' aperto o no
     private bool menuAperto;
 
+    // Pannello informazioni tecniche (tasto F3, come la schermata di Minecraft)
+    private bool debugAperto;
+    private float fps = 60f;          // fotogrammi al secondo (valore medio)
+    private float fpsMinimo = 99999f; // FPS piu' basso visto da quando l'ho aperto
+    private GUIStyle stileDebug;
+
     void Awake()
     {
         Istanza = this;
+    }
+
+    // Unity chiama Update ogni frame: qui apro/chiudo il pannello e conto gli FPS
+    void Update()
+    {
+        // F3 (o il tasto ` ) apre e chiude il pannello
+        if (Input.GetKeyDown(KeyCode.F3) || Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            debugAperto = !debugAperto;
+            fpsMinimo = 99999f; // riparto a contare il minimo
+        }
+
+        // FPS = 1 diviso il tempo passato dall'ultimo frame.
+        // Uso unscaledDeltaTime e una media morbida cosi' il numero non balla.
+        float fpsOra = 1f / Mathf.Max(Time.unscaledDeltaTime, 0.000001f);
+        fps = Mathf.Lerp(fps, fpsOra, 0.1f);
+        if (fps < fpsMinimo) fpsMinimo = fps;
     }
 
     // Costruisco gli stili la prima volta che servono
@@ -68,6 +91,13 @@ public class InterfacciaGioco : MonoBehaviour
         texSfondoBarra = TexturaPiena(new Color(0.10f, 0.10f, 0.15f, 0.85f));
         texRiempimentoBarra = TexturaPiena(new Color(0.30f, 0.95f, 0.40f, 1f));
         texPannello = TexturaPiena(new Color(0.05f, 0.05f, 0.15f, 0.92f));
+
+        // Stile del testo del pannello informazioni (verdino, piccolo)
+        stileDebug = new GUIStyle(GUI.skin.label);
+        stileDebug.fontSize = 15;
+        stileDebug.normal.textColor = new Color(0.80f, 1f, 0.80f);
+        stileDebug.alignment = TextAnchor.UpperLeft;
+        stileDebug.wordWrap = false;
     }
 
     // Disegno principale: Unity chiama questo ogni frame
@@ -112,6 +142,15 @@ public class InterfacciaGioco : MonoBehaviour
             {
                 gm.RicominciaTutto();
             }
+
+            // Bottone che apre il pannello informazioni: serve soprattutto nella
+            // build WebGL, dove il browser puo' rubare il tasto F3 (ricerca pagina).
+            if (GUI.Button(new Rect(450, Screen.height - 70, 150, 50),
+                           "INFO (F3)", stileBottone))
+            {
+                debugAperto = !debugAperto;
+                fpsMinimo = 99999f;
+            }
         }
 
         // Banner "PRONTI..." durante il periodo iniziale
@@ -138,6 +177,12 @@ public class InterfacciaGioco : MonoBehaviour
         if (menuAperto && !gm.VittoriaFinale)
         {
             DisegnaPannelloMenu(gm);
+        }
+
+        // Pannello informazioni tecniche (sopra a tutto)
+        if (debugAperto)
+        {
+            DisegnaPannelloDebug(gm);
         }
     }
 
@@ -446,6 +491,98 @@ public class InterfacciaGioco : MonoBehaviour
             gm.RicominciaTutto();
             menuAperto = false;
         }
+    }
+
+    // Pannello con tutte le informazioni tecniche, come la schermata di
+    // debug di Minecraft (tasto F3). Lo uso per spiegare a colpo d'occhio
+    // i valori del gioco, le prestazioni e il dispositivo su cui gira.
+    void DisegnaPannelloDebug(GestoreGioco gm)
+    {
+        // Sfondo nero semitrasparente, cosi' il testo si legge bene
+        GUI.DrawTexture(
+            new Rect(0, 0, Screen.width, Screen.height),
+            TexturaPiena(new Color(0f, 0f, 0f, 0.55f)));
+
+        // --- Dati di Astro e del mouse ---
+        Vector2 posAstro = Vector2.zero;
+        float velAstro = 0f;
+        bool haChiave = false;
+        if (Astro.Istanza != null)
+        {
+            posAstro = Astro.Istanza.transform.position;
+            velAstro = Astro.Istanza.Velocita.magnitude;
+            haChiave = Astro.Istanza.HaChiave;
+        }
+        Vector3 mouse = Input.mousePosition;
+
+        string stato;
+        if (gm.VittoriaFinale)         stato = "VITTORIA FINALE";
+        else if (gm.MissioneCompletata) stato = "missione completata";
+        else if (gm.PartitaFinita)      stato = "game over";
+        else                            stato = "in gioco";
+
+        // ===== COLONNA SINISTRA: valori del gioco =====
+        string sinistra =
+            "=== GIOCO ===\n" +
+            "Livello: " + (gm.LivelloCorrente + 1) + " / " + DefinizioneLivelli.Conteggio + "\n" +
+            "Stato: " + stato + "\n" +
+            "Obiettivo: " + gm.TestoObiettivo + "\n" +
+            "Punti: " + gm.Punteggio + "\n" +
+            "Caramelle: " + gm.CaramelleRaccolte + " / " + gm.TotaleCaramelle + "\n" +
+            "Vite: " + gm.Vite + " / " + Impostazioni.VITE + "\n" +
+            "Tempo rimasto: " + gm.TempoRimasto.ToString("0.0") + " s\n" +
+            "\n" +
+            "Astro X: " + posAstro.x.ToString("0.00") + "\n" +
+            "Astro Y: " + posAstro.y.ToString("0.00") + "\n" +
+            "Velocita' Astro: " + velAstro.ToString("0.0") + "\n" +
+            "Mouse (pixel): " + (int)mouse.x + " , " + (int)mouse.y + "\n" +
+            "Ha la chiave: " + (haChiave ? "si" : "no") + "\n" +
+            "Bombe attive: " + (gm.BombeAttive ? "si" : "no") + "\n" +
+            "\n" +
+            "Oggetti in scena:\n" +
+            "  caramelle: " + Caramella.Attive.Count + "\n" +
+            "  asteroidi: " + Asteroide.Tutti.Count + "\n" +
+            "  bombe:     " + Bomba.Tutte.Count;
+
+        GUI.Label(new Rect(20, 18, 470, Screen.height - 36), sinistra, stileDebug);
+
+        // ===== COLONNA DESTRA: prestazioni e dispositivo =====
+        string destra =
+            "=== PRESTAZIONI ===\n" +
+            "FPS: " + Mathf.RoundToInt(fps) + "\n" +
+            "FPS minimo: " + Mathf.RoundToInt(fpsMinimo) + "\n" +
+            "Lag (ms per frame): " + (Time.unscaledDeltaTime * 1000f).ToString("0.0") + "\n" +
+            "Target FPS: " + Application.targetFrameRate + "\n" +
+            "VSync: " + QualitySettings.vSyncCount + "\n" +
+            "timeScale (1=normale): " + Time.timeScale.ToString("0.0") + "\n" +
+            "\n" +
+            "=== DISPOSITIVO ===\n" +
+            "Sistema: " + SystemInfo.operatingSystem + "\n" +
+            "Dispositivo: " + SystemInfo.deviceModel + "\n" +
+            "CPU: " + SystemInfo.processorType + "\n" +
+            "Core CPU: " + SystemInfo.processorCount + "\n" +
+            "RAM: " + SystemInfo.systemMemorySize + " MB\n" +
+            "Scheda video: " + SystemInfo.graphicsDeviceName + "\n" +
+            "Memoria video: " + SystemInfo.graphicsMemorySize + " MB\n" +
+            "API grafica: " + SystemInfo.graphicsDeviceType + "\n" +
+            "\n" +
+            "=== SCHERMO ===\n" +
+            "Risoluzione: " + Screen.width + " x " + Screen.height + "\n" +
+            "Refresh: " + Screen.currentResolution.refreshRateRatio.value.ToString("0") + " Hz\n" +
+            "Schermo intero: " + (Screen.fullScreen ? "si" : "no") + "\n" +
+            "\n" +
+            "=== ALTRO ===\n" +
+            "Versione Unity: " + Application.unityVersion + "\n" +
+            "Piattaforma: " + Application.platform + "\n" +
+            "Tempo di gioco: " + Time.realtimeSinceStartup.ToString("0") + " s\n" +
+            "\n" +
+            "(premi di nuovo F3 per chiudere)";
+
+        // La colonna destra parte dopo la sinistra (che finisce a x=490) e adatta
+        // la sua larghezza: cosi' non si sovrappongono su schermi stretti, come
+        // la build WebGL a 960x600.
+        float xDestra = Mathf.Max(510f, Screen.width - 520f);
+        GUI.Label(new Rect(xDestra, 18, Screen.width - xDestra - 20f, Screen.height - 36), destra, stileDebug);
     }
 
     // Piccola texture 1x1 di un colore (utile per sfondi e barre)
