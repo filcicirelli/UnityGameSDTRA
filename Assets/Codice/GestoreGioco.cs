@@ -21,14 +21,15 @@ public static class Avvio
             Object.Destroy(luci[i].gameObject);
         }
 
-        // Telecamera 2D, sfondo viola scuro (sembra lo spazio)
+        // Telecamera 2D. Lo sfondo vero e' il wallpaper (vedi CostruisciSfondo);
+        // questo nero si vede solo se l'immagine non venisse caricata.
         GameObject ogCam = new GameObject("TelecameraPrincipale");
         ogCam.tag = "MainCamera";
 
         Camera c = ogCam.AddComponent<Camera>();
         c.orthographic = true;
         c.orthographicSize = 6f;
-        c.backgroundColor = new Color(0.05f, 0.04f, 0.12f);
+        c.backgroundColor = Color.black;
         c.transform.position = new Vector3(0f, 0f, -10f);
 
         // Nascondo il cursore: nel gioco e' Astro che fa da puntatore

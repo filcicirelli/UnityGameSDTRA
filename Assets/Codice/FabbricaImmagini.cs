@@ -203,49 +203,6 @@ public static class FabbricaImmagini
         "++++++++++++++++",
     };
 
-    // PIANETA decorativo di sfondo ('#' = colore scelto, '+' = piu' scuro)
-    static readonly string[] PIANETA =
-    {
-        "................",
-        ".....######.....",
-        "...##########...",
-        "..############..",
-        ".#####+######+#.",
-        ".##############.",
-        ".####+#####+###.",
-        ".##############.",
-        ".###+######+###.",
-        ".##############.",
-        ".#####+####+###.",
-        "..############..",
-        "...##########...",
-        ".....######.....",
-        "................",
-        "................",
-    };
-
-    // STELLA: scintillio a quattro punte con centro bianco (sfondo)
-    // '#' = colore della stella, 'o' = alone piu' chiaro, 'W' = centro bianco
-    static readonly string[] STELLA =
-    {
-        "................",
-        ".......oo.......",
-        ".......##.......",
-        ".......##.......",
-        "......o##o......",
-        ".....oo##oo.....",
-        ".....o####o.....",
-        ".o###o#WW#o###o.",
-        ".o###o#WW#o###o.",
-        ".....o####o.....",
-        ".....oo##oo.....",
-        "......o##o......",
-        ".......##.......",
-        ".......##.......",
-        ".......oo.......",
-        "................",
-    };
-
     // ESPLOSIONE: anello luminoso a tre colori
     static readonly string[] ESPLOSIONE =
     {
@@ -281,10 +238,8 @@ public static class FabbricaImmagini
     // Questi prendono un colore: il disegno usa '#' (colore), '+' (scuro), 'o' (chiaro)
     public static Sprite CreaCaramella(Color tinta)      { return DisegnaColorato(CARAMELLA, tinta); }
     public static Sprite CreaTesseraAsteroide(Color c)   { return DisegnaColorato(ASTEROIDE, c); }
-    public static Sprite CreaPianeta(Color c)            { return DisegnaColorato(PIANETA, c); }
-    public static Sprite CreaStella(Color c)             { return DisegnaColorato(STELLA, c); }
 
-    // Quadrato pieno di un colore (lo uso per stelle, coriandoli, aloni e barre)
+    // Quadrato pieno di un colore (lo uso per coriandoli e aloni)
     public static Sprite CreaQuadratoPieno(Color colore)
     {
         Color[] pixel = new Color[LATO * LATO];

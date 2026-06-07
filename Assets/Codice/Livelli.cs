@@ -199,8 +199,7 @@ public static class CaricatoreLivelli
         livelloCorrente = dati;
         contenitore = new GameObject("Missione");
 
-        CostruisciStelle();
-        CostruisciPianeti();
+        CostruisciSfondo();
         CostruisciAstro();
 
         // Sotto-contenitori per tenere ordinata la gerarchia in Unity
@@ -233,66 +232,50 @@ public static class CaricatoreLivelli
         return go.transform;
     }
 
-    // ---- Sfondo: stelline e pianeti ----
+    // ---- Sfondo: il wallpaper (immagine della nebulosa) ----
 
-    static void CostruisciStelle()
+    static void CostruisciSfondo()
     {
-        Transform radice = CreaFiglio("Stelle");
+        Transform radice = CreaFiglio("Sfondo");
 
-        // 120 stelline bianche piazzate a caso
-        for (int i = 0; i < 120; i++)
+        // Carico il wallpaper dalla cartella Assets/Resources (file "sfondo.jpg").
+        // Resources.Load vuole il nome SENZA estensione.
+        Texture2D texture = Resources.Load<Texture2D>("sfondo");
+        if (texture == null)
         {
-            float x = Random.Range(-9.5f, 9.5f);
-            float y = Random.Range(-5.5f, 5.5f);
-            float lum = Random.Range(0.4f, 1.0f);
-            Color colore = new Color(lum, lum, lum * 0.9f + 0.1f, 1f);
-
-            GameObject stella = new GameObject("Stella");
-            stella.transform.SetParent(radice);
-            stella.transform.position = new Vector3(x, y, 5f);
-
-            SpriteRenderer sr = stella.AddComponent<SpriteRenderer>();
-            sr.sprite = FabbricaImmagini.CreaStella(colore);
-            sr.sortingOrder = -5;
-
-            float scala = Random.Range(0.4f, 1.1f);
-            stella.transform.localScale = new Vector3(scala, scala, 1f);
+            // Se l'immagine manca non blocco il gioco: resta lo sfondo nero della telecamera.
+            Debug.LogWarning("Sfondo: non trovo 'sfondo' in Assets/Resources/sfondo.jpg");
+            return;
         }
-    }
 
-    static void CostruisciPianeti()
-    {
-        Transform radice = CreaFiglio("Pianeti");
+        // Trasformo l'immagine in uno sprite da mettere in scena
+        Sprite sprite = Sprite.Create(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f),
+            100f);
 
-        // 4 pianeti agli angoli con colori diversi
-        Color[] colori = new Color[]
-        {
-            new Color(0.95f, 0.45f, 0.45f),
-            new Color(0.50f, 0.80f, 1f),
-            new Color(0.95f, 0.85f, 0.40f),
-            new Color(0.70f, 0.55f, 0.95f),
-        };
-        Vector2[] posizioni = new Vector2[]
-        {
-            new Vector2(-7.0f,  3.2f),
-            new Vector2( 7.2f,  2.5f),
-            new Vector2(-6.2f, -3.0f),
-            new Vector2( 6.5f, -3.3f),
-        };
+        GameObject sfondo = new GameObject("Wallpaper");
+        sfondo.transform.SetParent(radice);
+        sfondo.transform.position = new Vector3(0f, 0f, 10f); // ben dietro a tutto
 
-        for (int i = 0; i < posizioni.Length; i++)
-        {
-            GameObject pianeta = new GameObject("Pianeta_" + i);
-            pianeta.transform.SetParent(radice);
-            pianeta.transform.position = posizioni[i];
+        SpriteRenderer sr = sfondo.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite;
+        sr.sortingOrder = -10; // disegnato per primo: sta sotto a ogni altra cosa
 
-            float scala = Random.Range(1.1f, 1.6f);
-            pianeta.transform.localScale = new Vector3(scala, scala, 1f);
+        // Ingrandisco il wallpaper finche' copre tutta la visuale della telecamera,
+        // qualunque sia la dimensione della finestra.
+        Camera cam = Camera.main;
+        float altezzaVista = (cam != null ? cam.orthographicSize : 6f) * 2f;
+        float aspetto = (cam != null ? cam.aspect : 16f / 9f);
+        float larghezzaVista = altezzaVista * aspetto;
 
-            SpriteRenderer sr = pianeta.AddComponent<SpriteRenderer>();
-            sr.sprite = FabbricaImmagini.CreaPianeta(colori[i]);
-            sr.sortingOrder = -2;
-        }
+        float larghezzaSprite = sprite.bounds.size.x;
+        float altezzaSprite = sprite.bounds.size.y;
+
+        // Prendo la scala piu' grande tra larghezza e altezza, cosi' non restano bordi vuoti.
+        float scala = Mathf.Max(larghezzaVista / larghezzaSprite, altezzaVista / altezzaSprite) * 1.02f;
+        sfondo.transform.localScale = new Vector3(scala, scala, 1f);
     }
 
     // ---- Astro ----
