@@ -62,7 +62,6 @@ public class GestoreGioco : MonoBehaviour
     public bool MissioneCompletata;
     public bool PartitaFinita;
     public bool VittoriaFinale;
-    public float TempoFesta;
 
     // ---- Vite ----
     public int Vite;
@@ -140,10 +139,6 @@ public class GestoreGioco : MonoBehaviour
     void Update()
     {
         // Aggiorno i vari timer
-        if (MissioneCompletata)
-        {
-            TempoFesta = TempoFesta + Time.deltaTime;
-        }
         if (cooldownDanno > 0f)
         {
             cooldownDanno = cooldownDanno - Time.deltaTime;
@@ -187,7 +182,6 @@ public class GestoreGioco : MonoBehaviour
         MotivoSconfitta = "";
         ChiaveApparsa = false;
         ChiavePresa = false;
-        TempoFesta = 0f;
         TimerLampeggio = 0f;
         cooldownDanno = 0f;
         TempoIniziale = Impostazioni.TEMPO_PRONTI;
@@ -269,7 +263,6 @@ public class GestoreGioco : MonoBehaviour
         if (MissioneCompletata) return;
 
         MissioneCompletata = true;
-        TempoFesta = 0f;
 
         // FEEDBACK: missione compiuta -> piccola fanfara + Astro si gonfia
         FeedbackPaziente.MissioneCompiuta();
@@ -346,7 +339,6 @@ public class GestoreGioco : MonoBehaviour
     void AttivaVittoriaFinale()
     {
         VittoriaFinale = true;
-        TempoFesta = 0f;
 
         // FEEDBACK: hai finito tutti i livelli -> fanfara di vittoria
         FeedbackPaziente.MissioneCompiuta();

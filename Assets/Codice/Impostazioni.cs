@@ -1,5 +1,3 @@
-using UnityEngine;
-
 // Qui ci sono tutti i numeri del gioco che si possono modificare.
 // Se il gioco e' troppo difficile o troppo facile cambia i valori qua sotto.
 public static class Impostazioni

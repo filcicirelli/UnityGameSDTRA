@@ -51,7 +51,6 @@ public static class DefinizioneLivelli
     static DatiLivello CostruisciLivello1()
     {
         DatiLivello l = new DatiLivello();
-        l.indice = 0;
         l.titolo = "LIVELLO 1 - PRIMO VOLO";
         l.obiettivo = "RACCOGLI " + Impostazioni.CARAMELLE_LIV1 + " CARAMELLE";
         l.caramelleCasuali = Impostazioni.CARAMELLE_LIV1;
@@ -65,7 +64,6 @@ public static class DefinizioneLivelli
     static DatiLivello CostruisciLivello2()
     {
         DatiLivello l = new DatiLivello();
-        l.indice = 1;
         l.titolo = "LIVELLO 2 - TRA GLI ASTEROIDI";
         l.obiettivo = "EVITA GLI ASTEROIDI";
 
@@ -103,7 +101,6 @@ public static class DefinizioneLivelli
     static DatiLivello CostruisciLivello3()
     {
         DatiLivello l = new DatiLivello();
-        l.indice = 2;
         l.titolo = "LIVELLO 3 - CAMPO MINATO";
         l.obiettivo = "ATTENZIONE ALLE BOMBE";
 
@@ -528,7 +525,6 @@ public static class CaricatoreLivelli
 
 public class DatiLivello
 {
-    public int indice;
     public string titolo;
     public string obiettivo;
 
@@ -539,15 +535,6 @@ public class DatiLivello
     public List<DatiCaramella> caramelle = new List<DatiCaramella>();
     public List<DatiAsteroide> asteroidi = new List<DatiAsteroide>();
     public List<Vector2> bombe = new List<Vector2>();
-
-    public int NumeroCaramelle
-    {
-        get
-        {
-            if (caramelleCasuali > 0) return caramelleCasuali;
-            return caramelle.Count;
-        }
-    }
 }
 
 public class DatiCaramella
