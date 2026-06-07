@@ -234,6 +234,9 @@ public class GestoreGioco : MonoBehaviour
         CaramelleRaccolte = CaramelleRaccolte + 1;
         Punteggio = Punteggio + Impostazioni.PUNTI_CARAMELLA;
 
+        // FEEDBACK: azione giusta -> suono gradevole + Astro si gonfia
+        FeedbackPaziente.CaramellaPresa();
+
         // Se ho raccolto tutto passo alla fase chiave/porta,
         // oppure vinco se era l'ultimo livello
         if (CaramelleRaccolte >= TotaleCaramelle && !ChiaveApparsa && !VittoriaFinale)
@@ -253,6 +256,9 @@ public class GestoreGioco : MonoBehaviour
     {
         if (!ChiaveApparsa) return;
         ChiavePresa = true;
+
+        // FEEDBACK: hai preso la chiave -> suono brillante + Astro si gonfia
+        FeedbackPaziente.ChiavePresa();
     }
 
     public void SegnalaPortaRaggiunta()
@@ -263,6 +269,9 @@ public class GestoreGioco : MonoBehaviour
 
         MissioneCompletata = true;
         TempoFesta = 0f;
+
+        // FEEDBACK: missione compiuta -> piccola fanfara + Astro si gonfia
+        FeedbackPaziente.MissioneCompiuta();
 
         // Effetti di festa
         CaricatoreLivelli.GeneraPianetaAmico();
@@ -276,6 +285,10 @@ public class GestoreGioco : MonoBehaviour
 
         cooldownDanno = 1.0f;
         TimerLampeggio = 0.30f;
+
+        // FEEDBACK: azione sbagliata -> suono basso/gentile + Astro si schiaccia
+        FeedbackPaziente.AzioneSbagliata();
+
         Punteggio = Mathf.Max(0, Punteggio - Impostazioni.PUNTI_PERSI_HIT);
         PerdiUnaVita("Hai toccato un asteroide!");
     }
@@ -287,6 +300,10 @@ public class GestoreGioco : MonoBehaviour
 
         cooldownDanno = 1.0f;
         TimerLampeggio = 0.30f;
+
+        // FEEDBACK: azione sbagliata -> suono basso/gentile + Astro si schiaccia
+        FeedbackPaziente.AzioneSbagliata();
+
         PerdiUnaVita("Hai toccato una bomba!");
     }
 
@@ -295,6 +312,9 @@ public class GestoreGioco : MonoBehaviour
     void TempoScaduto()
     {
         if (PartitaFinita || MissioneCompletata) return;
+
+        // FEEDBACK: tempo finito -> suono di errore + Astro si schiaccia
+        FeedbackPaziente.AzioneSbagliata();
 
         // Il tempo scaduto fa perdere una vita; se ne ho ancora
         // faccio ripartire il timer
@@ -326,6 +346,10 @@ public class GestoreGioco : MonoBehaviour
     {
         VittoriaFinale = true;
         TempoFesta = 0f;
+
+        // FEEDBACK: hai finito tutti i livelli -> fanfara di vittoria
+        FeedbackPaziente.MissioneCompiuta();
+
         CaricatoreLivelli.GeneraCoriandoli();
         CaricatoreLivelli.GeneraPianetaAmico();
     }

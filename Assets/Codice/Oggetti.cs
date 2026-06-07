@@ -41,7 +41,8 @@ public class Astro : MonoBehaviour
     private Vector3 scalaBase;
     private SpriteRenderer sr;
     private Color coloreBase;
-    private float timerSalto;
+    private float timerGonfia;     // feedback positivo: Astro si gonfia
+    private float timerSchiaccia;  // feedback negativo: Astro si schiaccia
     private float timerLampeggio;
     private float inclinazione;
 
@@ -83,19 +84,35 @@ public class Astro : MonoBehaviour
         float dt = Mathf.Max(Time.deltaTime, 0.000001f);
         Velocita = ((Vector2)(transform.position - posPrecedente)) / dt;
 
-        // 2) Animazioni: respiro, saltino quando raccoglie, inclinazione
+        // 2) Animazioni: respiro + feedback (gonfiamento / schiacciamento)
+        // Vedi la cartella "feedback paziente": i valori stanno in ParametriFeedback.
         float respiro = 1f + Mathf.Sin(Time.time * 2f) * 0.04f;
 
-        float salto = 1f;
-        if (timerSalto > 0f)
+        float fattoreX = respiro;
+        float fattoreY = respiro;
+
+        // GONFIAMENTO (azione giusta): Astro cresce e torna, con una curva "a campana"
+        if (timerGonfia > 0f)
         {
-            timerSalto = timerSalto - Time.deltaTime;
-            float k = Mathf.Clamp01(timerSalto / 0.35f);
-            salto = 1f + k * 0.20f;
+            timerGonfia = timerGonfia - Time.deltaTime;
+            float avanz = 1f - Mathf.Clamp01(timerGonfia / ParametriFeedback.GONFIA_DURATA);
+            float campana = Mathf.Sin(avanz * Mathf.PI); // 0 -> 1 -> 0
+            float gonfia = 1f + ParametriFeedback.GONFIA_QUANTITA * campana;
+            fattoreX = fattoreX * gonfia;
+            fattoreY = fattoreY * gonfia;
         }
 
-        float scalaTot = respiro * salto;
-        transform.localScale = new Vector3(scalaBase.x * scalaTot, scalaBase.y * scalaTot, 1f);
+        // SCHIACCIAMENTO (azione sbagliata): si appiattisce (largo e basso) e torna
+        if (timerSchiaccia > 0f)
+        {
+            timerSchiaccia = timerSchiaccia - Time.deltaTime;
+            float quanto = ParametriFeedback.SCHIACCIA_QUANTITA
+                           * Mathf.Clamp01(timerSchiaccia / ParametriFeedback.SCHIACCIA_DURATA);
+            fattoreX = fattoreX * (1f + quanto); // piu' largo
+            fattoreY = fattoreY * (1f - quanto); // piu' basso
+        }
+
+        transform.localScale = new Vector3(scalaBase.x * fattoreX, scalaBase.y * fattoreY, 1f);
 
         // Inclinazione dovuta al movimento orizzontale
         float inclinObiettivo = Mathf.Clamp(-Velocita.x * 3f, -18f, 18f);
@@ -125,7 +142,7 @@ public class Astro : MonoBehaviour
             }
         }
 
-        AggiornaLampeggioRosso();
+        AggiornaColore();
     }
 
     // ---- Controlli di tocco ----
@@ -198,8 +215,9 @@ public class Astro : MonoBehaviour
         }
     }
 
-    // Quando Astro prende un colpo lampeggia di rosso per un istante
-    void AggiornaLampeggioRosso()
+    // Colore di Astro: rosso quando prende un colpo, verde/oro quando fa bene.
+    // Il rosso (errore) ha la precedenza sul bagliore di gioia.
+    void AggiornaColore()
     {
         if (sr == null) return;
 
@@ -207,7 +225,14 @@ public class Astro : MonoBehaviour
         {
             timerLampeggio = timerLampeggio - Time.deltaTime;
             float k = Mathf.Clamp01(timerLampeggio / 0.20f);
-            sr.color = Color.Lerp(coloreBase, new Color(1f, 0.3f, 0.3f, 1f), k);
+            sr.color = Color.Lerp(coloreBase, ParametriFeedback.COLORE_ERRORE, k);
+        }
+        else if (timerGonfia > 0f)
+        {
+            // Bagliore di gioia mentre Astro e' gonfio (vedi "feedback paziente")
+            float avanz = 1f - Mathf.Clamp01(timerGonfia / ParametriFeedback.GONFIA_DURATA);
+            float k = Mathf.Sin(avanz * Mathf.PI) * ParametriFeedback.GIOIA_INTENSITA;
+            sr.color = Color.Lerp(coloreBase, ParametriFeedback.COLORE_GIOIA, k);
         }
         else
         {
@@ -215,13 +240,25 @@ public class Astro : MonoBehaviour
         }
     }
 
-    // La caramella chiama questo metodo: Astro fa un piccolo saltino
-    public static void NotificaSaltoFelice()
+    // ---- Comandi del FEEDBACK PAZIENTE (chiamati da FeedbackPaziente.cs) ----
+
+    // Azione giusta: Astro si gonfia (e brilla di gioia).
+    // Annullo un eventuale feedback negativo, cosi' il segnale resta chiaro.
+    public void Gonfia()
     {
-        if (Istanza != null)
-        {
-            Istanza.timerSalto = 0.35f;
-        }
+        timerGonfia = ParametriFeedback.GONFIA_DURATA;
+        timerSchiaccia = 0f;
+        timerLampeggio = 0f;
+    }
+
+    // Azione sbagliata: Astro si schiaccia e lampeggia di rosso.
+    // Il rosso dura quanto lo schiacciamento e annullo un eventuale gonfiamento,
+    // cosi' non capita mai "forma sbagliata con colore giusto".
+    public void Schiaccia()
+    {
+        timerSchiaccia = ParametriFeedback.SCHIACCIA_DURATA;
+        timerLampeggio = ParametriFeedback.SCHIACCIA_DURATA;
+        timerGonfia = 0f;
     }
 }
 
@@ -265,9 +302,10 @@ public class Caramella : MonoBehaviour
 
         if (GestoreGioco.Istanza != null)
         {
+            // Il GestoreGioco avvisa il FeedbackPaziente, che fa suonare il
+            // suono gradevole e fa gonfiare Astro.
             GestoreGioco.Istanza.SegnalaCaramellaRaccolta();
         }
-        Astro.NotificaSaltoFelice();
         Destroy(gameObject);
     }
 
