@@ -73,11 +73,13 @@ public class Astro : MonoBehaviour
         GestoreGioco gm = GestoreGioco.Istanza;
         if (gm == null) return;
 
-        // 1) Sposto Astro dove sta il mouse
+        // 1) Sposto Astro dove punta il giocatore.
+        // Il comando scelto nella schermata iniziale (mouse, dito o joystick)
+        // decide da dove arriva la posizione. Vedi cartella "schermata start".
         Vector3 posPrecedente = transform.position;
-        Vector3 mouseScreen = Input.mousePosition;
-        mouseScreen.z = distanzaZ;
-        Vector3 mouseMondo = telecamera.ScreenToWorldPoint(mouseScreen);
+        Vector3 puntoSchermo = Comandi.PuntatoreSchermo();
+        puntoSchermo.z = distanzaZ;
+        Vector3 mouseMondo = telecamera.ScreenToWorldPoint(puntoSchermo);
         transform.position = new Vector3(mouseMondo.x, mouseMondo.y, 0f);
 
         // Calcolo la velocita' (mi serve per inclinare lo sprite)

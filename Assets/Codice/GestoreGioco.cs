@@ -54,6 +54,11 @@ public class GestoreGioco : MonoBehaviour
     // Riferimento unico: cosi' gli altri script lo trovano facilmente
     public static GestoreGioco Istanza;
 
+    // ---- Schermata iniziale ----
+    // All'avvio e' true: si vede la schermata di start (scelta del comando).
+    // Diventa false quando si preme GIOCA. Vedi cartella "schermata start".
+    public bool MenuInizialeAperto;
+
     // ---- Stato della partita ----
     public int LivelloCorrente;
     public int CaramelleRaccolte;
@@ -132,12 +137,36 @@ public class GestoreGioco : MonoBehaviour
 
     void Start()
     {
-        // Parto sempre dal primo livello
-        CaricaLivello(0);
+        // Non parto subito: mostro prima la schermata iniziale, dove si sceglie
+        // il comando (mouse / dito / joystick). Dietro al menu metto lo sfondo.
+        MenuInizialeAperto = true;
+        CaricatoreLivelli.MostraSoloSfondo();
+        Cursor.visible = true; // nel menu serve il mouse per cliccare i pulsanti
+    }
+
+    // Chiamato dalla schermata iniziale quando si preme GIOCA.
+    public void IniziaPartita(Comandi.Modalita modalita)
+    {
+        Comandi.Imposta(modalita);     // imposto il comando scelto
+        MenuInizialeAperto = false;
+        Cursor.visible = false;        // in gioco il puntatore e' Astro
+        Punteggio = 0;
+        CaricaLivello(0);              // parto dal primo livello
+    }
+
+    // Torna alla schermata iniziale (per cambiare comando), dal menu di pausa.
+    public void TornaAlMenuIniziale()
+    {
+        MenuInizialeAperto = true;
+        Cursor.visible = true;
+        CaricatoreLivelli.MostraSoloSfondo(); // tolgo la missione, resta lo sfondo
     }
 
     void Update()
     {
+        // Durante la schermata iniziale il gioco e' fermo: niente timer.
+        if (MenuInizialeAperto) return;
+
         // Aggiorno i vari timer
         if (cooldownDanno > 0f)
         {

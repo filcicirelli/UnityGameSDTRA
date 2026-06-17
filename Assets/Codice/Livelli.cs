@@ -209,6 +209,15 @@ public static class CaricatoreLivelli
         return CostruisciCaramelle(dati);
     }
 
+    // Mostra SOLO lo sfondo (la nebulosa), senza Astro ne' oggetti.
+    // La uso dietro alla schermata iniziale, dove non si gioca ancora.
+    public static void MostraSoloSfondo()
+    {
+        Pulisci(); // tolgo l'eventuale missione precedente
+        contenitore = new GameObject("SoloSfondo");
+        CostruisciSfondo();
+    }
+
     public static void Pulisci()
     {
         if (contenitore != null)

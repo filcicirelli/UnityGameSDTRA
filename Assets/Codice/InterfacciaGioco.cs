@@ -111,6 +111,9 @@ public class InterfacciaGioco : MonoBehaviour
         GestoreGioco gm = GestoreGioco.Istanza;
         if (gm == null) return;
 
+        // Durante la schermata iniziale non disegno l'HUD: ci pensa SchermataStart
+        if (gm.MenuInizialeAperto) return;
+
         // Flash rosso su tutto lo schermo quando si prende un colpo
         if (gm.TimerLampeggio > 0f)
         {
@@ -460,7 +463,7 @@ public class InterfacciaGioco : MonoBehaviour
 
     void DisegnaPannelloMenu(GestoreGioco gm)
     {
-        float w = 480f, h = 280f;
+        float w = 480f, h = 350f;
         Rect r = new Rect(
             (Screen.width - w) / 2f,
             (Screen.height - h) / 2f,
@@ -490,6 +493,14 @@ public class InterfacciaGioco : MonoBehaviour
         {
             gm.RicominciaTutto();
             menuAperto = false;
+        }
+
+        // Torna alla schermata iniziale per cambiare comando (mouse/dito/joystick)
+        if (GUI.Button(new Rect(r.x + w / 2f - 200, r.y + 225, 400, 60),
+                       "CAMBIA COMANDO", stileBottone))
+        {
+            menuAperto = false;
+            gm.TornaAlMenuIniziale();
         }
     }
 

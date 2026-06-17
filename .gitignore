@@ -110,3 +110,9 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# File personali (materiale d'esame e immagini di riferimento): non versionati
+/preparazione_esame.pdf
+/preparazione_esame_ORIGINALE.pdf
+/istruzioni_codice.pdf
+/emoji-alien-iphone-monster-space-invaders.jpg
