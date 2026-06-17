@@ -32,8 +32,8 @@ public static class Avvio
         c.backgroundColor = Color.black;
         c.transform.position = new Vector3(0f, 0f, -10f);
 
-        // Nascondo il cursore: nel gioco e' Astro che fa da puntatore
-        Cursor.visible = false;
+        // La visibilita' del cursore la gestisce InterfacciaGioco: lo mostra
+        // quando c'e' un pannello da cliccare e lo nasconde mentre si gioca.
 
         // Creo i due oggetti che fanno funzionare tutto
         new GameObject("GestoreGioco").AddComponent<GestoreGioco>();
@@ -141,7 +141,6 @@ public class GestoreGioco : MonoBehaviour
         // il comando (mouse / dito / joystick). Dietro al menu metto lo sfondo.
         MenuInizialeAperto = true;
         CaricatoreLivelli.MostraSoloSfondo();
-        Cursor.visible = true; // nel menu serve il mouse per cliccare i pulsanti
     }
 
     // Chiamato dalla schermata iniziale quando si preme GIOCA.
@@ -149,7 +148,6 @@ public class GestoreGioco : MonoBehaviour
     {
         Comandi.Imposta(modalita);     // imposto il comando scelto
         MenuInizialeAperto = false;
-        Cursor.visible = false;        // in gioco il puntatore e' Astro
         Punteggio = 0;
         CaricaLivello(0);              // parto dal primo livello
     }
@@ -158,7 +156,6 @@ public class GestoreGioco : MonoBehaviour
     public void TornaAlMenuIniziale()
     {
         MenuInizialeAperto = true;
-        Cursor.visible = true;
         CaricatoreLivelli.MostraSoloSfondo(); // tolgo la missione, resta lo sfondo
     }
 

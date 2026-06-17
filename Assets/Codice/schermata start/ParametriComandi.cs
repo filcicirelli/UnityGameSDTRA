@@ -24,4 +24,10 @@ public static class ParametriComandi
 
     // Se true inverto il su/giu' (alcuni preferiscono il comando "stile aereo").
     public static readonly bool JOYSTICK_INVERTI_Y = false;
+
+    // ---- PULSANTI DEI PANNELLI (fine livello, game over, menu...) ----
+    // Quei pulsanti si possono premere col clic del mouse OPPURE tenendoci sopra
+    // Astro per un po'. Questo "dwell" serve a chi gioca con webcam o joystick,
+    // che non ha il clic del mouse. Qui dico quanti secondi tenerlo fermo.
+    public const float DWELL_SECONDI = 1.2f;
 }

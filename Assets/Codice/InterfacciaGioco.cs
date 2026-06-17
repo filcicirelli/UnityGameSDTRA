@@ -29,6 +29,12 @@ public class InterfacciaGioco : MonoBehaviour
     // Se il menu e' aperto o no
     private bool menuAperto;
 
+    // ---- Dwell: premere un pulsante tenendoci sopra Astro ----
+    // Serve a chi gioca con webcam o joystick (non ha il clic del mouse).
+    private Rect dwellRect;     // su quale pulsante sto tenendo Astro
+    private float dwellTimer;   // da quanto ce lo tengo (secondi)
+    private bool dwellAttivo;   // sto caricando un pulsante?
+
     // Pannello informazioni tecniche (tasto F3, come la schermata di Minecraft)
     private bool debugAperto;
     private float fps = 60f;          // fotogrammi al secondo (valore medio)
@@ -55,6 +61,18 @@ public class InterfacciaGioco : MonoBehaviour
         float fpsOra = 1f / Mathf.Max(Time.unscaledDeltaTime, 0.000001f);
         fps = Mathf.Lerp(fps, fpsOra, 0.1f);
         if (fps < fpsMinimo) fpsMinimo = fps;
+
+        // Mostro il cursore del mouse SOLO quando c'e' un pannello da cliccare
+        // (schermata iniziale, pausa, fine livello, game over, vittoria).
+        // Durante il gioco vero il cursore resta nascosto: il puntatore e' Astro.
+        GestoreGioco gm = GestoreGioco.Istanza;
+        if (gm != null)
+        {
+            bool pannelloAperto = gm.MenuInizialeAperto || menuAperto
+                                  || gm.MissioneCompletata || gm.PartitaFinita
+                                  || gm.VittoriaFinale;
+            Cursor.visible = pannelloAperto;
+        }
     }
 
     // Costruisco gli stili la prima volta che servono
@@ -375,17 +393,20 @@ public class InterfacciaGioco : MonoBehaviour
         GUIStyle stileBottoneGrande = new GUIStyle(stileBottone);
         stileBottoneGrande.fontSize = 24;
 
-        if (GUI.Button(rectBottone, "CLICCA PER GIOCARE DI NUOVO", stileBottoneGrande))
+        if (BottoneAccessibile(rectBottone, "GIOCA DI NUOVO", stileBottoneGrande))
         {
             gm.RicominciaTutto();
         }
+
+        DisegnaSuggerimentoPulsante(
+            new Rect(pannello.x, rectBottone.yMax + 2, pannello.width, 18));
     }
 
     void DisegnaPannelloMissioneCompletata(GestoreGioco gm)
     {
         // Striscia scura
         GUI.DrawTexture(
-            new Rect(0, Screen.height * 0.28f, Screen.width, 220),
+            new Rect(0, Screen.height * 0.28f, Screen.width, 260),
             TexturaPiena(new Color(0f, 0f, 0f, 0.5f)));
 
         GUI.Label(
@@ -405,20 +426,23 @@ public class InterfacciaGioco : MonoBehaviour
         else etichetta = "RICOMINCIA";
 
         float lp = 320f, hpb = 60f;
-        if (GUI.Button(
+        if (BottoneAccessibile(
             new Rect((Screen.width - lp) / 2f, Screen.height * 0.30f + 140, lp, hpb),
             etichetta, stileBottone))
         {
             if (gm.ProssimoLivelloDisponibile) gm.ProssimoLivello();
             else gm.RicominciaTutto();
         }
+
+        DisegnaSuggerimentoPulsante(
+            new Rect(0, Screen.height * 0.30f + 205, Screen.width, 22));
     }
 
     void DisegnaPannelloGameOver(GestoreGioco gm)
     {
         // Striscia rossa scura
         GUI.DrawTexture(
-            new Rect(0, Screen.height * 0.28f, Screen.width, 220),
+            new Rect(0, Screen.height * 0.28f, Screen.width, 260),
             TexturaPiena(new Color(0.35f, 0.05f, 0.05f, 0.85f)));
 
         GUIStyle stileGO = new GUIStyle(stileEnorme);
@@ -447,18 +471,21 @@ public class InterfacciaGioco : MonoBehaviour
 
         // Pulsanti
         float lp = 220f, hpb = 60f;
-        if (GUI.Button(
+        if (BottoneAccessibile(
             new Rect(Screen.width / 2f - lp - 10, Screen.height * 0.30f + 140, lp, hpb),
             "RIPROVA LIVELLO", stileBottone))
         {
             gm.RipetiLivello();
         }
-        if (GUI.Button(
+        if (BottoneAccessibile(
             new Rect(Screen.width / 2f + 10, Screen.height * 0.30f + 140, lp, hpb),
             "DA CAPO", stileBottone))
         {
             gm.RicominciaTutto();
         }
+
+        DisegnaSuggerimentoPulsante(
+            new Rect(0, Screen.height * 0.30f + 205, Screen.width, 22));
     }
 
     void DisegnaPannelloMenu(GestoreGioco gm)
@@ -479,16 +506,16 @@ public class InterfacciaGioco : MonoBehaviour
         stileSotto.alignment = TextAnchor.MiddleCenter;
         stileSotto.fontSize = 18;
         GUI.Label(
-            new Rect(r.x, r.y + 90, r.width, 30),
-            "Premi RIPRENDI per continuare la missione",
+            new Rect(r.x, r.y + 84, r.width, 30),
+            "Clicca, oppure tieni Astro sul pulsante per premerlo",
             stileSotto);
 
-        if (GUI.Button(new Rect(r.x + w / 2f - 200, r.y + 150, 180, 60),
+        if (BottoneAccessibile(new Rect(r.x + w / 2f - 200, r.y + 150, 180, 60),
                        "RIPRENDI", stileBottone))
         {
             menuAperto = false;
         }
-        if (GUI.Button(new Rect(r.x + w / 2f + 20, r.y + 150, 180, 60),
+        if (BottoneAccessibile(new Rect(r.x + w / 2f + 20, r.y + 150, 180, 60),
                        "RIAVVIA", stileBottone))
         {
             gm.RicominciaTutto();
@@ -496,7 +523,7 @@ public class InterfacciaGioco : MonoBehaviour
         }
 
         // Torna alla schermata iniziale per cambiare comando (mouse/dito/joystick)
-        if (GUI.Button(new Rect(r.x + w / 2f - 200, r.y + 225, 400, 60),
+        if (BottoneAccessibile(new Rect(r.x + w / 2f - 200, r.y + 225, 400, 60),
                        "CAMBIA COMANDO", stileBottone))
         {
             menuAperto = false;
@@ -594,6 +621,86 @@ public class InterfacciaGioco : MonoBehaviour
         // la build WebGL a 960x600.
         float xDestra = Mathf.Max(510f, Screen.width - 520f);
         GUI.Label(new Rect(xDestra, 18, Screen.width - xDestra - 20f, Screen.height - 36), destra, stileDebug);
+    }
+
+    // Pulsante "accessibile": si preme col CLIC del mouse, oppure tenendoci
+    // sopra ASTRO per un po' (dwell). Cosi' funziona anche con webcam e joystick,
+    // che non hanno il clic. Mentre tengo Astro sul pulsante, una barra verde si
+    // riempie; quando e' piena, il pulsante scatta.
+    bool BottoneAccessibile(Rect r, string etichetta, GUIStyle stile)
+    {
+        bool premuto = GUI.Button(r, etichetta, stile); // clic del mouse
+
+        if (AstroSopra(r))
+        {
+            // Disegno la barra di avanzamento (quanto manca a "premere")
+            float k = (dwellAttivo && dwellRect == r)
+                      ? Mathf.Clamp01(dwellTimer / ParametriComandi.DWELL_SECONDI)
+                      : 0f;
+            DisegnaBarraDwell(r, k);
+
+            // Faccio scorrere il tempo una volta sola per fotogramma (nel Repaint)
+            if (Event.current.type == EventType.Repaint)
+            {
+                if (!dwellAttivo || dwellRect != r)
+                {
+                    // Ho appena puntato questo pulsante: riparto da zero
+                    dwellAttivo = true;
+                    dwellRect = r;
+                    dwellTimer = 0f;
+                }
+                else
+                {
+                    dwellTimer += Time.unscaledDeltaTime;
+                    if (dwellTimer >= ParametriComandi.DWELL_SECONDI)
+                    {
+                        dwellAttivo = false; // azzero, cosi' non scatta due volte
+                        premuto = true;
+                    }
+                }
+            }
+        }
+        else if (Event.current.type == EventType.Repaint && dwellAttivo && dwellRect == r)
+        {
+            // Astro e' uscito da questo pulsante: annullo il caricamento
+            dwellAttivo = false;
+            dwellTimer = 0f;
+        }
+
+        return premuto;
+    }
+
+    // Scrittina che spiega come premere i pulsanti (clic o Astro)
+    void DisegnaSuggerimentoPulsante(Rect r)
+    {
+        GUIStyle stile = new GUIStyle(GUI.skin.label);
+        stile.fontSize = 14;
+        stile.alignment = TextAnchor.MiddleCenter;
+        stile.normal.textColor = new Color(0.80f, 0.90f, 1f);
+        GUI.Label(r, "Clicca, oppure tieni Astro sul pulsante per premerlo", stile);
+    }
+
+    // Astro sta sopra il rettangolo del pulsante? Converto la sua posizione dal
+    // mondo ai pixel dello schermo e poi nel sistema della GUI (y verso il basso).
+    bool AstroSopra(Rect r)
+    {
+        if (Astro.Istanza == null) return false;
+        Camera cam = Camera.main;
+        if (cam == null) return false;
+
+        Vector3 schermo = cam.WorldToScreenPoint(Astro.Istanza.transform.position);
+        Vector2 puntoGui = new Vector2(schermo.x, Screen.height - schermo.y);
+        return r.Contains(puntoGui);
+    }
+
+    // Barra verde in basso al pulsante che si riempie tenendoci sopra Astro
+    void DisegnaBarraDwell(Rect r, float k)
+    {
+        float h = 6f;
+        GUI.DrawTexture(new Rect(r.x, r.yMax - h, r.width, h),
+                        TexturaPiena(new Color(0f, 0f, 0f, 0.35f)));
+        GUI.DrawTexture(new Rect(r.x, r.yMax - h, r.width * k, h),
+                        TexturaPiena(new Color(0.30f, 0.95f, 0.40f, 0.95f)));
     }
 
     // Piccola texture 1x1 di un colore (utile per sfondi e barre)

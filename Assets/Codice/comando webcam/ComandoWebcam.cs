@@ -9,10 +9,11 @@ using UnityEngine;
 // nella SCHERMATA INIZIALE (vedi SchermataStart e Comandi).
 //
 // Non riconosciamo davvero "il dito" (servirebbe l'intelligenza artificiale):
-// seguiamo un COLORE ACCESO. Il paziente mette sulla punta del dito un
-// oggetto colorato (un ditale/adesivo/cappuccio, di default arancione) e noi,
+// seguiamo un EVIDENZIATORE FLUO tenuto in mano (verde, giallo o fucsia) e,
 // per ogni fotogramma della webcam, cerchiamo i pixel di quel colore e ne
 // calcoliamo il "centro". Quel centro diventa la posizione del puntatore.
+// Gli evidenziatori sono molto piu' saturi della pelle: cosi' non si rischia
+// piu' di confondere il colore con il viso.
 //
 // Questo file:
 //  - si installa DA SOLO all'avvio (come FeedbackPaziente), non va messo in scena;
@@ -48,7 +49,7 @@ public class ComandoWebcam : MonoBehaviour
     private Color32[] pixel;        // i pixel della webcam, riusati ad ogni frame
     private bool avvioInCorso;      // sto gia' accendendo la webcam?
     private string messaggio = "";  // messaggio da mostrare (es. "nessuna webcam")
-    private float tintaBersaglio;   // la tinta (hue) del colore da seguire
+    private float[] tinteBersaglio; // la tinta (hue) di ogni colore dell'evidenziatore
     private float ultimaNx = 0.5f;  // ultima posizione del dito nell'immagine (0..1)
     private float ultimaNy = 0.5f;
     private Texture2D texBianca;    // 1x1 bianca, per riquadri e mirino
@@ -65,11 +66,15 @@ public class ComandoWebcam : MonoBehaviour
     {
         Istanza = this;
 
-        // Mi servo della tinta (hue) del colore scelto: confrontare la tinta
-        // funziona anche se la luce cambia (un arancione resta arancione
-        // sia in ombra che al sole).
-        float s, v;
-        Color.RGBToHSV(ParametriWebcam.COLORE_DA_SEGUIRE, out tintaBersaglio, out s, out v);
+        // Calcolo una volta sola la tinta (hue) di ogni colore dell'evidenziatore.
+        // Confrontare la tinta funziona anche se la luce cambia (un verde resta
+        // verde sia in ombra che al sole).
+        tinteBersaglio = new float[ParametriWebcam.COLORI_EVIDENZIATORE.Length];
+        for (int i = 0; i < tinteBersaglio.Length; i++)
+        {
+            float s, v;
+            Color.RGBToHSV(ParametriWebcam.COLORI_EVIDENZIATORE[i], out tinteBersaglio[i], out s, out v);
+        }
 
         texBianca = new Texture2D(1, 1);
         texBianca.SetPixel(0, 0, Color.white);
@@ -220,22 +225,27 @@ public class ComandoWebcam : MonoBehaviour
         }
     }
 
-    // Un pixel e' "del colore giusto" se la sua TINTA e' vicina a quella scelta
-    // ed e' abbastanza acceso (saturo) e luminoso.
+    // Un pixel e' "del colore giusto" se e' abbastanza acceso (saturo) e luminoso
+    // e la sua TINTA e' vicina a UNO QUALSIASI dei colori dell'evidenziatore.
     bool ColoreGiusto(Color32 c)
     {
         Color col = new Color(c.r / 255f, c.g / 255f, c.b / 255f);
         float h, s, v;
         Color.RGBToHSV(col, out h, out s, out v);
 
-        if (s < ParametriWebcam.SATURAZIONE_MINIMA) return false; // troppo grigio
+        if (s < ParametriWebcam.SATURAZIONE_MINIMA) return false; // poco saturo (es. pelle)
         if (v < ParametriWebcam.LUMINOSITA_MINIMA) return false;  // troppo scuro
 
-        // La tinta e' un cerchio: 0 e 1 sono lo stesso colore (rosso),
-        // quindi misuro la distanza "girando dalla parte piu' corta".
-        float dh = Mathf.Abs(h - tintaBersaglio);
-        if (dh > 0.5f) dh = 1f - dh;
-        return dh <= ParametriWebcam.TOLLERANZA_TINTA;
+        // Provo tutti i colori dell'evidenziatore: basta che ne combaci uno.
+        for (int i = 0; i < tinteBersaglio.Length; i++)
+        {
+            // La tinta e' un cerchio: 0 e 1 sono lo stesso colore (rosso),
+            // quindi misuro la distanza "girando dalla parte piu' corta".
+            float dh = Mathf.Abs(h - tinteBersaglio[i]);
+            if (dh > 0.5f) dh = 1f - dh;
+            if (dh <= ParametriWebcam.TOLLERANZA_TINTA) return true;
+        }
+        return false;
     }
 
     // ---- Disegno a schermo (anteprima webcam) ----
@@ -285,7 +295,7 @@ public class ComandoWebcam : MonoBehaviour
         DisegnaMirino(mx, my, coloreMirino);
 
         // Etichetta sopra l'anteprima
-        string stato = DitoVisto ? "dito: OK" : "mostra il dito colorato";
+        string stato = DitoVisto ? "evidenziatore: OK" : "mostra l'evidenziatore";
         DisegnaEtichetta(new Rect(px, py - 26, pw, 22), "WEBCAM   " + stato);
     }
 

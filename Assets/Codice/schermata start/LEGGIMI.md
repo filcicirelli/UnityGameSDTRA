@@ -24,7 +24,7 @@ da mostrare e spiegare.
 | Modalità | Come si muove Astro | Note |
 |---|---|---|
 | **Mouse** | con il puntatore del mouse | è il modo classico, sempre disponibile |
-| **Dito (webcam)** | seguendo un **oggetto colorato** sul dito davanti alla webcam | vedi cartella `comando webcam` |
+| **Dito (webcam)** | seguendo un **evidenziatore fluo** (verde/giallo/fucsia) davanti alla webcam | vedi cartella `comando webcam` |
 | **Joystick** | con la **leva** del joystick | funziona anche con le **frecce** o i tasti **WASD** |
 
 ---
@@ -81,8 +81,17 @@ L'integrazione è volutamente semplice:
 | `CaricatoreLivelli.MostraSoloSfondo()` | mostra solo la nebulosa dietro al menu |
 | `InterfacciaGioco.OnGUI()` | nasconde l'HUD durante il menu; aggiunge "CAMBIA COMANDO" |
 
-Durante il menu il cursore del mouse torna **visibile** (serve per cliccare i
-pulsanti); quando si gioca torna nascosto, perché il puntatore è Astro.
+Il cursore del mouse lo gestisce **un solo punto** (`InterfacciaGioco.Update`): è
+**visibile** quando c'è un pannello da cliccare (schermata iniziale, pausa, fine
+livello, game over, vittoria) e **nascosto** mentre si gioca, perché lì il
+puntatore è Astro.
+
+### Premere i pulsanti senza mouse (dwell)
+Con webcam o joystick non c'è il clic del mouse, quindi i pulsanti dei pannelli
+(es. "PROSSIMO LIVELLO", "RIPROVA") si possono premere **tenendoci sopra Astro**
+per un po': una barra verde si riempie e quando è piena il pulsante scatta. Col
+mouse funziona anche il **clic** normale. Questo evita di restare bloccati nel
+passaggio da un livello all'altro. Il codice è in `InterfacciaGioco.BottoneAccessibile`.
 
 ---
 
@@ -93,10 +102,12 @@ pulsanti); quando si gioca torna nascosto, perché il puntatore è Astro.
 | `JOYSTICK_VELOCITA` | `1000` | pixel al secondo del puntatore con la leva a fondo corsa |
 | `JOYSTICK_ZONA_MORTA` | `0.15` | ignora i piccoli movimenti della leva a riposo |
 | `JOYSTICK_INVERTI_Y` | `false` | se `true`, inverte il su/giù (stile "aereo") |
+| `DWELL_SECONDI` | `1.2` | quanti secondi tenere Astro sul pulsante per premerlo |
 
 ### Esempi di regolazione
 - Puntatore **troppo veloce** col joystick: abbassa `JOYSTICK_VELOCITA` (es. `600`).
 - La leva fa muovere il puntatore **da sola**: alza `JOYSTICK_ZONA_MORTA`.
+- Il pulsante **scatta troppo presto/tardi** col dito o joystick: regola `DWELL_SECONDI`.
 
 ## Note tecniche
 - **Nessun file o libreria esterna**: il joystick usa gli assi standard di Unity

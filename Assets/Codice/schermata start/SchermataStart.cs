@@ -148,7 +148,7 @@ public class SchermataStart : MonoBehaviour
         switch (modalita)
         {
             case Comandi.Modalita.Dito:
-                return "Muovi davanti alla webcam un oggetto colorato\n(es. arancione) sulla punta del dito.";
+                return "Muovi davanti alla webcam un evidenziatore fluo\n(verde, giallo o fucsia).";
             case Comandi.Modalita.Joystick:
                 return "Usa il joystick.\nVanno bene anche le frecce o i tasti WASD.";
             default:

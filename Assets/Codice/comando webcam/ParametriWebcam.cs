@@ -10,9 +10,11 @@ using UnityEngine;
 //
 // COME FUNZIONA (in breve):
 // non "riconosciamo il dito" (servirebbe l'intelligenza artificiale), ma
-// seguiamo un COLORE ACCESO: il paziente mette sulla punta del dito un
-// oggetto colorato (un ditale, un adesivo, un cappuccio...) e il gioco segue
-// quel colore. Semplice, robusto e senza librerie esterne.
+// seguiamo un EVIDENZIATORE FLUO tenuto in mano: il paziente muove un
+// evidenziatore (verde, giallo o fucsia) e il gioco segue quel colore.
+// Gli evidenziatori vanno benissimo perche' sono molto piu' ACCESI (saturi)
+// della pelle: cosi' il gioco non confonde piu' il colore con il viso.
+// Semplice, robusto e senza librerie esterne.
 //
 // La modalita' "dito" si sceglie nella SCHERMATA INIZIALE (vedi SchermataStart).
 //
@@ -20,17 +22,25 @@ using UnityEngine;
 // ============================================================================
 public static class ParametriWebcam
 {
-    // ---- COLORE DA SEGUIRE ----
-    // Il gioco segue un oggetto di QUESTO colore sulla punta del dito.
-    // Di default arancione acceso: si distingue bene dalla pelle e dallo sfondo.
-    public static readonly Color COLORE_DA_SEGUIRE = new Color(1f, 0.45f, 0.05f);
+    // ---- COLORI DA SEGUIRE ----
+    // Il gioco segue UNO QUALSIASI di questi colori (l'evidenziatore che hai):
+    // verde fluo, giallo fluo o fucsia. Sono colori molto accesi, ben diversi
+    // dalla pelle. Per aggiungerne/cambiarne uno basta modificare la lista.
+    public static readonly Color[] COLORI_EVIDENZIATORE = new Color[]
+    {
+        new Color(0.20f, 1f,    0.20f), // verde fluo
+        new Color(0.85f, 1f,    0.10f), // giallo fluo
+        new Color(1f,    0.10f, 0.70f), // fucsia
+    };
 
-    // Quanto la TINTA del pixel puo' essere diversa dal colore scelto e venire
-    // comunque accettata. La tinta e' un cerchio (0..1): 0 = solo identico,
-    // ~0.08 = un po' di margine, 0.5 = mezza ruota dei colori.
+    // Quanto la TINTA del pixel puo' essere diversa da un colore della lista e
+    // venire comunque accettata. La tinta e' un cerchio (0..1): 0 = solo
+    // identico, ~0.08 = un po' di margine, 0.5 = mezza ruota dei colori.
     public const float TOLLERANZA_TINTA = 0.08f;
-    // Il colore deve essere abbastanza ACCESO (saturo): cosi' scarto i grigi.
-    public const float SATURAZIONE_MINIMA = 0.35f;
+    // Il colore deve essere abbastanza ACCESO (saturo). Tenuta ALTA apposta:
+    // la pelle/il viso sono poco saturi e cosi' vengono scartati, mentre un
+    // evidenziatore fluo e' molto saturo e passa.
+    public const float SATURAZIONE_MINIMA = 0.55f;
     // ...e abbastanza luminoso: cosi' scarto le ombre nere.
     public const float LUMINOSITA_MINIMA = 0.25f;
 
