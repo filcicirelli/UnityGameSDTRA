@@ -31,8 +31,6 @@ public static class ParametriFeedback
     // note che SCENDONO = suono "di errore".
     // Caramella: tre note che salgono (do - mi - sol)
     public static readonly float[] NOTE_CARAMELLA = { 523.25f, 659.25f, 783.99f };
-    // Chiave: piu' acute e brillanti (sol - do - mi)
-    public static readonly float[] NOTE_CHIAVE    = { 783.99f, 1046.50f, 1318.51f };
     // Vittoria: una piccola fanfara (do - mi - sol - do alto)
     public static readonly float[] NOTE_VITTORIA  = { 523.25f, 659.25f, 783.99f, 1046.50f };
     // Errore: due note che SCENDONO (suono "sbagliato", ma non aggressivo)

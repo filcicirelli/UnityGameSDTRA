@@ -28,9 +28,6 @@ public static class FabbricaImmagini
     private const string NOME_PERSONAGGIO = "shipBlue_manned";  // l'omino-UFO del giocatore (ex Astro)
     private const string NOME_CARAMELLA    = "laserBeige_burst"; // la "stellina" da raccogliere (ex caramella)
 
-    // Memorizzo le immagini gia' caricate cosi' non le ricarico ogni volta.
-    static readonly Dictionary<string, Sprite> CACHE = new Dictionary<string, Sprite>();
-
     // ---- LEGENDA COLORI: una lettera = un colore ----
     static readonly Dictionary<char, Color> LEGENDA = new Dictionary<char, Color>
     {
@@ -108,27 +105,6 @@ public static class FabbricaImmagini
         "....+######+....",
         ".....+####+.....",
         "......++++......",
-        "................",
-        "................",
-    };
-
-    // CHIAVE dorata: testa tonda con buco, asta e dentini
-    static readonly string[] CHIAVE =
-    {
-        "................",
-        "...ggg..........",
-        "..gWGGg.........",
-        "..gG.Gg.........",
-        "..gGGGgGGGGGGG..",
-        "..gGGGGGGGGGGGg.",
-        "..gGGGgGGGGGGGg.",
-        "...ggg.....G.G.G",
-        "...........G.G..",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
         "................",
         "................",
     };
@@ -246,7 +222,6 @@ public static class FabbricaImmagini
     // Il personaggio ora e' un'immagine del pacchetto alieni-UFO.
     // Se l'immagine non si trova, ridisegno il vecchio Astro (cosi' il gioco non si rompe).
     public static Sprite CreaAstro()        { return CaricaDaResources(NOME_PERSONAGGIO) ?? Disegna(ASTRO); }
-    public static Sprite CreaChiave()        { return Disegna(CHIAVE); }
     public static Sprite CreaPorta()         { return Disegna(PORTA); }
     public static Sprite CreaBomba()         { return Disegna(BOMBA); }
     public static Sprite CreaPianetaAmico()  { return Disegna(PIANETA_AMICO); }
@@ -284,26 +259,19 @@ public static class FabbricaImmagini
     // Ritorna null se l'immagine non c'e' (chi chiama usa un ripiego).
     static Sprite CaricaDaResources(string nome)
     {
-        Sprite gia;
-        if (CACHE.TryGetValue(nome, out gia)) return gia;
-
         Texture2D tex = Resources.Load<Texture2D>(nome);
         if (tex == null)
         {
             Debug.LogWarning("FabbricaImmagini: non trovo l'immagine '" + nome + "' in Assets/Resources.");
-            CACHE[nome] = null; // ricordo che manca, non riprovo a ogni oggetto
             return null;
         }
 
         float latoLungo = Mathf.Max(tex.width, tex.height);
-        Sprite s = Sprite.Create(
+        return Sprite.Create(
             tex,
             new Rect(0, 0, tex.width, tex.height),
             new Vector2(0.5f, 0.5f),
             latoLungo); // PPU = lato piu' lungo  ->  immagine alta circa 1 unita'
-
-        CACHE[nome] = s;
-        return s;
     }
 
     // Trasforma un disegno (lettere) in uno sprite usando la LEGENDA

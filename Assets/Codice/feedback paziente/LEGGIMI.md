@@ -6,8 +6,7 @@ del paziente:
 | Azione del paziente | Suono | Effetto su Astro |
 |---|---|---|
 | Prende una **caramella** | tre note che **salgono** (do‑mi‑sol), allegre | si **gonfia** e brilla di verde 🟢 |
-| Prende la **chiave** | note acute e brillanti (sol‑do‑mi) | si **gonfia** e brilla 🟢 |
-| Apre la **porta** / vince | piccola **fanfara** (do‑mi‑sol‑do) | si **gonfia** e brilla 🟢 |
+| Raggiunge la **porta** / vince | piccola **fanfara** (do‑mi‑sol‑do) | si **gonfia** e brilla 🟢 |
 | Tocca **asteroide / bomba** | due note **basse** che scendono | si **schiaccia** e lampeggia di rosso 🔴 |
 | **Tempo scaduto** | come l'errore | si schiaccia 🔴 |
 
@@ -43,13 +42,12 @@ All'avvio:
   telecamera da zero e quella di default verrebbe distrutta, quindi il sistema
   rimuove eventuali orecchie e ne mette una sola su di sé (così funziona sempre,
   a prescindere dall'ordine di avvio);
-- crea un **`AudioSource`** ("l'altoparlante") e i quattro suoni una volta sola.
+- crea un **`AudioSource`** ("l'altoparlante") e i tre suoni una volta sola.
 
-Espone quattro comandi semplici che gli altri file chiamano con **una riga**:
+Espone tre comandi semplici che gli altri file chiamano con **una riga**:
 
 ```csharp
 FeedbackPaziente.CaramellaPresa();    // azione giusta
-FeedbackPaziente.ChiavePresa();       // azione giusta
 FeedbackPaziente.MissioneCompiuta();  // vittoria
 FeedbackPaziente.AzioneSbagliata();   // errore
 ```
@@ -67,7 +65,6 @@ quando un'azione era giusta o sbagliata. Ho aggiunto **una sola riga** per event
 | File / metodo | Riga aggiunta |
 |---|---|
 | `GestoreGioco.SegnalaCaramellaRaccolta()` | `FeedbackPaziente.CaramellaPresa();` |
-| `GestoreGioco.SegnalaChiaveRaccolta()` | `FeedbackPaziente.ChiavePresa();` |
 | `GestoreGioco.SegnalaPortaRaggiunta()` | `FeedbackPaziente.MissioneCompiuta();` |
 | `GestoreGioco.AttivaVittoriaFinale()` | `FeedbackPaziente.MissioneCompiuta();` |
 | `GestoreGioco.SegnalaAsteroideToccato()` | `FeedbackPaziente.AzioneSbagliata();` |
@@ -94,7 +91,6 @@ I metodi sono `Astro.Gonfia()` e `Astro.Schiaccia()`, e leggono i numeri da
 | `VOLUME_SBAGLIATO` | `0.45` | volume degli errori (più basso = più gentile) |
 | **Note dei suoni (Hz)** | | |
 | `NOTE_CARAMELLA` | do‑mi‑sol | melodia della caramella |
-| `NOTE_CHIAVE` | sol‑do‑mi acuti | melodia della chiave |
 | `NOTE_VITTORIA` | do‑mi‑sol‑do | fanfara di vittoria |
 | `NOTE_ERRORE` | due note basse | suono dell'errore (scendono) |
 | `DURATA_NOTA_GIUSTO` | `0.10` s | durata di ogni nota positiva |

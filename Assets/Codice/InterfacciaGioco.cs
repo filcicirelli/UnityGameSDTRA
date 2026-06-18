@@ -422,7 +422,7 @@ public class InterfacciaGioco : MonoBehaviour
         stileSotto.alignment = TextAnchor.MiddleCenter;
         GUI.Label(
             new Rect(0, Screen.height * 0.30f + 80, Screen.width, 40),
-            "Hai aperto la porta: ottimo lavoro, Astro!",
+            "Hai raggiunto la porta: ottimo lavoro, Astro!",
             stileSotto);
 
         // Pulsante per andare avanti
@@ -549,12 +549,10 @@ public class InterfacciaGioco : MonoBehaviour
         // --- Dati di Astro e del mouse ---
         Vector2 posAstro = Vector2.zero;
         float velAstro = 0f;
-        bool haChiave = false;
         if (Astro.Istanza != null)
         {
             posAstro = Astro.Istanza.transform.position;
             velAstro = Astro.Istanza.Velocita.magnitude;
-            haChiave = Astro.Istanza.HaChiave;
         }
         Vector3 mouse = Input.mousePosition;
 
@@ -579,7 +577,6 @@ public class InterfacciaGioco : MonoBehaviour
             "Astro Y: " + posAstro.y.ToString("0.00") + "\n" +
             "Velocita' Astro: " + velAstro.ToString("0.0") + "\n" +
             "Mouse (pixel): " + (int)mouse.x + " , " + (int)mouse.y + "\n" +
-            "Ha la chiave: " + (haChiave ? "si" : "no") + "\n" +
             "Bombe attive: " + (gm.BombeAttive ? "si" : "no") + "\n" +
             "\n" +
             "Oggetti in scena:\n" +

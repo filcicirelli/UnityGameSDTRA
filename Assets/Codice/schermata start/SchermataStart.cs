@@ -177,10 +177,8 @@ public class SchermataStart : MonoBehaviour
             "\n" +
             "=== RAGGI DI PRESA ===\n" +
             "Caramella: " + Impostazioni.RAGGIO_CARAMELLA + "\n" +
-            "Chiave: " + Impostazioni.RAGGIO_CHIAVE + "\n" +
             "Porta: " + Impostazioni.RAGGIO_PORTA + "\n" +
             "Bomba: " + Impostazioni.RAGGIO_BOMBA + "\n" +
-            "Porta si sposta ogni: " + Impostazioni.PORTA_SECONDI_FERMA + " s\n" +
             "\n" +
             "=== FEEDBACK PAZIENTE ===\n" +
             "Suono: " + (ParametriFeedback.SUONO_ATTIVO ? "acceso" : "spento") + "\n" +

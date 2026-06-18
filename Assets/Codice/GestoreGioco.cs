@@ -45,10 +45,9 @@ public static class Avvio
 // Decide cosa succede quando una caramella viene presa, quando si
 // tocca un asteroide o una bomba, quando si arriva alla porta, etc.
 //
-// Ogni livello ha 3 fasi:
+// Ogni livello ha 2 fasi:
 //   FASE 1: raccogli tutte le caramelle
-//   FASE 2: prendi la chiave che appare al centro
-//   FASE 3: porta la chiave alla porta
+//   FASE 2: raggiungi la porta che appare
 public class GestoreGioco : MonoBehaviour
 {
     // Riferimento unico: cosi' gli altri script lo trovano facilmente
@@ -77,9 +76,9 @@ public class GestoreGioco : MonoBehaviour
     // Motivo per cui ho perso (lo mostro nel Game Over)
     public string MotivoSconfitta;
 
-    // ---- Chiave e porta ----
-    public bool ChiaveApparsa;
-    public bool ChiavePresa;
+    // ---- Porta ----
+    // Diventa true quando, raccolte tutte le caramelle, compare la porta.
+    public bool PortaApparsa;
 
     // Lampeggio rosso quando prendo un colpo
     public float TimerLampeggio;
@@ -114,13 +113,9 @@ public class GestoreGioco : MonoBehaviour
     {
         get
         {
-            if (ChiaveApparsa && !ChiavePresa)
+            if (PortaApparsa && !MissioneCompletata)
             {
-                return "PRENDI LA CHIAVE";
-            }
-            if (ChiavePresa && !MissioneCompletata)
-            {
-                return "PORTA LA CHIAVE ALLA PORTA";
+                return "RAGGIUNGI LA PORTA";
             }
             if (LivelloAttuale != null)
             {
@@ -206,8 +201,7 @@ public class GestoreGioco : MonoBehaviour
         PartitaFinita = false;
         VittoriaFinale = false;
         MotivoSconfitta = "";
-        ChiaveApparsa = false;
-        ChiavePresa = false;
+        PortaApparsa = false;
         TimerLampeggio = 0f;
         cooldownDanno = 0f;
         TempoIniziale = Impostazioni.TEMPO_PRONTI;
@@ -258,9 +252,9 @@ public class GestoreGioco : MonoBehaviour
         // FEEDBACK: azione giusta -> suono gradevole + Astro si gonfia
         FeedbackPaziente.CaramellaPresa();
 
-        // Se ho raccolto tutto passo alla fase chiave/porta,
+        // Se ho raccolto tutto faccio comparire la porta da raggiungere,
         // oppure vinco se era l'ultimo livello
-        if (CaramelleRaccolte >= TotaleCaramelle && !ChiaveApparsa && !VittoriaFinale)
+        if (CaramelleRaccolte >= TotaleCaramelle && !PortaApparsa && !VittoriaFinale)
         {
             if (!ProssimoLivelloDisponibile)
             {
@@ -268,24 +262,13 @@ public class GestoreGioco : MonoBehaviour
             }
             else
             {
-                CreaChiaveEPorta();
+                CreaPorta();
             }
         }
     }
 
-    public void SegnalaChiaveRaccolta()
-    {
-        if (!ChiaveApparsa) return;
-        ChiavePresa = true;
-
-        // FEEDBACK: hai preso la chiave -> suono brillante + Astro si gonfia
-        FeedbackPaziente.ChiavePresa();
-    }
-
     public void SegnalaPortaRaggiunta()
     {
-        // La porta si apre solo se sto portando la chiave
-        if (!ChiavePresa) return;
         if (MissioneCompletata) return;
 
         MissioneCompletata = true;
@@ -355,10 +338,9 @@ public class GestoreGioco : MonoBehaviour
         }
     }
 
-    void CreaChiaveEPorta()
+    void CreaPorta()
     {
-        ChiaveApparsa = true;
-        CaricatoreLivelli.GeneraChiave();
+        PortaApparsa = true;
         CaricatoreLivelli.GeneraPorta();
     }
 

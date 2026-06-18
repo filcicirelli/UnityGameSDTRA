@@ -39,7 +39,7 @@ ogni fotogramma della webcam il programma:
    effetto **specchio** (muovi a destra → punti a destra) e un movimento **morbido**.
 
 Da lì in poi Astro segue quel punto **esattamente come seguiva il mouse**: tutto il
-resto del gioco (caramelle, chiave, porta, bombe, feedback) funziona identico.
+resto del gioco (caramelle, porta, bombe, feedback) funziona identico.
 
 > **Perché proprio un evidenziatore?** Con un colore vicino a quello della pelle
 > (es. arancione) il gioco a volte confondeva il **viso** con il bersaglio. Gli

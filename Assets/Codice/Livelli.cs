@@ -164,8 +164,8 @@ public static class DefinizioneLivelli
 // CARICATORE LIVELLI
 // Da un DatiLivello costruisce in scena tutti gli oggetti:
 // sfondo, Astro, asteroidi, bombe e caramelle.
-// La chiave e la porta vengono create dopo, quando il GestoreGioco
-// segnala che tutte le caramelle sono state raccolte.
+// La porta viene creata dopo, quando il GestoreGioco segnala che
+// tutte le caramelle sono state raccolte.
 // =============================================================
 public static class CaricatoreLivelli
 {
@@ -422,24 +422,7 @@ public static class CaricatoreLivelli
         return false;
     }
 
-    // ---- Chiave e porta (vengono create dopo) ----
-
-    public static void GeneraChiave()
-    {
-        if (contenitore == null) return;
-
-        GameObject go = new GameObject("Chiave");
-        go.transform.SetParent(contenitore.transform);
-        go.transform.localScale = new Vector3(1.6f, 1.6f, 1f);
-
-        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = FabbricaImmagini.CreaChiave();
-        sr.sortingOrder = 5;
-
-        Chiave k = go.AddComponent<Chiave>();
-        // y=2.0: cosi' resta sotto il "soffitto" dei livelli 2 e 3
-        k.Inizializza(new Vector2(0f, 2.0f));
-    }
+    // ---- Porta (viene creata dopo le caramelle) ----
 
     public static void GeneraPorta()
     {
@@ -453,13 +436,21 @@ public static class CaricatoreLivelli
         sr.sprite = FabbricaImmagini.CreaPorta();
         sr.sortingOrder = 5;
 
+        // La porta nasce LONTANA da dove si trova Astro adesso, cosi' il
+        // giocatore deve muoversi per raggiungerla. (Se nascesse addosso ad
+        // Astro, il livello finirebbe subito senza il movimento da fare.)
+        Vector2 posizioneAstro = (Astro.Istanza != null)
+            ? (Vector2)Astro.Istanza.transform.position
+            : Vector2.zero;
+
         Porta p = go.AddComponent<Porta>();
-        p.Inizializza(ScegliPosizionePortaCasuale(Vector2.zero));
+        p.Inizializza(ScegliPosizionePortaCasuale(posizioneAstro));
     }
 
     // Sceglie una posizione "buona" per la porta:
-    // lontana dalla posizione attuale, fuori dagli asteroidi, lontana dalle bombe
-    public static Vector2 ScegliPosizionePortaCasuale(Vector2 daEvitare)
+    // lontana dal punto da evitare (di solito dov'e' Astro), fuori dagli
+    // asteroidi, lontana dalle bombe.
+    static Vector2 ScegliPosizionePortaCasuale(Vector2 daEvitare)
     {
         if (livelloCorrente == null) return new Vector2(0f, 2f);
 

@@ -10,7 +10,6 @@ public static class Impostazioni
     // Sono i "raggi" entro i quali Astro raccoglie/tocca un oggetto.
     // Piu' grandi = piu' facile.
     public const float RAGGIO_CARAMELLA = 0.85f;
-    public const float RAGGIO_CHIAVE    = 1.80f;
     public const float RAGGIO_PORTA     = 1.80f;
     public const float RAGGIO_BOMBA     = 0.55f;
 
@@ -20,10 +19,6 @@ public static class Impostazioni
 
     // ---- CARAMELLE NEL LIVELLO 1 (generate a caso) ----
     public const int CARAMELLE_LIV1 = 10;
-
-    // ---- PORTA ----
-    // Ogni quanti secondi la porta si sposta da sola
-    public const float PORTA_SECONDI_FERMA = 3f;
 
     // ---- PERIODO INIZIALE "PRONTI..." ----
     public const float TEMPO_PRONTI = 1.5f;

@@ -27,9 +27,8 @@ public class FeedbackPaziente : MonoBehaviour
     // L'altoparlante del gioco
     private AudioSource sorgente;
 
-    // I quattro suoni, creati una sola volta all'avvio
+    // I tre suoni, creati una sola volta all'avvio
     private AudioClip suonoCaramella;
-    private AudioClip suonoChiave;
     private AudioClip suonoVittoria;
     private AudioClip suonoErrore;
 
@@ -68,8 +67,6 @@ public class FeedbackPaziente : MonoBehaviour
         // Creo i suoni da codice usando le note scritte in ParametriFeedback
         suonoCaramella = FabbricaSuoni.CreaMelodia("caramella",
             ParametriFeedback.NOTE_CARAMELLA, ParametriFeedback.DURATA_NOTA_GIUSTO, false);
-        suonoChiave = FabbricaSuoni.CreaMelodia("chiave",
-            ParametriFeedback.NOTE_CHIAVE, ParametriFeedback.DURATA_NOTA_GIUSTO, false);
         suonoVittoria = FabbricaSuoni.CreaMelodia("vittoria",
             ParametriFeedback.NOTE_VITTORIA, ParametriFeedback.DURATA_NOTA_GIUSTO, false);
         suonoErrore = FabbricaSuoni.CreaMelodia("errore",
@@ -91,7 +88,6 @@ public class FeedbackPaziente : MonoBehaviour
     // ========================================================================
 
     public static void CaramellaPresa()   { if (Istanza != null) Istanza.Giusto(Istanza.suonoCaramella); }
-    public static void ChiavePresa()       { if (Istanza != null) Istanza.Giusto(Istanza.suonoChiave); }
     public static void MissioneCompiuta()  { if (Istanza != null) Istanza.Giusto(Istanza.suonoVittoria); }
     public static void AzioneSbagliata()   { if (Istanza != null) Istanza.Sbagliato(); }
 
