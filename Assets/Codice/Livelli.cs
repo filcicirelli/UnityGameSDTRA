@@ -379,7 +379,10 @@ public static class CaricatoreLivelli
         c.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
 
         SpriteRenderer sr = c.AddComponent<SpriteRenderer>();
-        sr.sprite = FabbricaImmagini.CreaCaramella(colore);
+        sr.sprite = FabbricaImmagini.CreaCaramella();
+        // La stellina e' chiara: il colore del renderer la tinge (giallo, azzurro, ...)
+        // cosi' ogni livello mantiene le sue caramelle colorate.
+        sr.color = colore;
         sr.sortingOrder = 2;
 
         Caramella cr = c.AddComponent<Caramella>();

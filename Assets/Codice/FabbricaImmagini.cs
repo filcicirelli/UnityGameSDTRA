@@ -16,6 +16,21 @@ public static class FabbricaImmagini
     private const int LATO = 16; // i disegni sono griglie 16x16
     private const int PPU = 16;  // 16 pixel = 1 unita' di Unity
 
+    // =========================================================
+    // PERSONAGGIO e OGGETTI presi dal pacchetto "kenney_alien-ufo-pack"
+    // (le immagini stanno in Assets/Resources, vedi sotto).
+    //
+    // PER CAMBIARE il personaggio o le "caramelle" basta scrivere qui il
+    // nome di un'altra immagine messa in Assets/Resources (SENZA estensione).
+    // Esempi gia' pronti dal pacchetto: "shipGreen_manned", "shipPink_manned",
+    // "shipYellow_manned"  oppure  "laserBlue_burst", "laserPink_burst".
+    // =========================================================
+    private const string NOME_PERSONAGGIO = "shipBlue_manned";  // l'omino-UFO del giocatore (ex Astro)
+    private const string NOME_CARAMELLA    = "laserBeige_burst"; // la "stellina" da raccogliere (ex caramella)
+
+    // Memorizzo le immagini gia' caricate cosi' non le ricarico ogni volta.
+    static readonly Dictionary<string, Sprite> CACHE = new Dictionary<string, Sprite>();
+
     // ---- LEGENDA COLORI: una lettera = un colore ----
     static readonly Dictionary<char, Color> LEGENDA = new Dictionary<char, Color>
     {
@@ -228,15 +243,22 @@ public static class FabbricaImmagini
     // I METODI che il resto del gioco chiama
     // =========================================================
 
-    public static Sprite CreaAstro()        { return Disegna(ASTRO); }
+    // Il personaggio ora e' un'immagine del pacchetto alieni-UFO.
+    // Se l'immagine non si trova, ridisegno il vecchio Astro (cosi' il gioco non si rompe).
+    public static Sprite CreaAstro()        { return CaricaDaResources(NOME_PERSONAGGIO) ?? Disegna(ASTRO); }
     public static Sprite CreaChiave()        { return Disegna(CHIAVE); }
     public static Sprite CreaPorta()         { return Disegna(PORTA); }
     public static Sprite CreaBomba()         { return Disegna(BOMBA); }
     public static Sprite CreaPianetaAmico()  { return Disegna(PIANETA_AMICO); }
     public static Sprite CreaEsplosione()    { return Disegna(ESPLOSIONE); }
 
-    // Questi prendono un colore: il disegno usa '#' (colore), '+' (scuro), 'o' (chiaro)
-    public static Sprite CreaCaramella(Color tinta)      { return DisegnaColorato(CARAMELLA, tinta); }
+    // La "caramella" ora e' una stellina del pacchetto. Il colore non viene
+    // messo qui: lo applica chi crea l'oggetto (vedi Livelli.cs) tramite il
+    // colore dello SpriteRenderer, cosi' ogni stellina puo' avere una tinta diversa.
+    // Se l'immagine manca, ridisegno la vecchia caramella (bianca, poi tinta dal colore).
+    public static Sprite CreaCaramella()                 { return CaricaDaResources(NOME_CARAMELLA) ?? DisegnaColorato(CARAMELLA, Color.white); }
+
+    // Questo prende un colore: il disegno usa '#' (colore), '+' (scuro), 'o' (chiaro)
     public static Sprite CreaTesseraAsteroide(Color c)   { return DisegnaColorato(ASTEROIDE, c); }
 
     // Quadrato pieno di un colore (lo uso per coriandoli e aloni)
@@ -253,6 +275,36 @@ public static class FabbricaImmagini
     // =========================================================
     // Funzioni di supporto
     // =========================================================
+
+    // Carica una immagine vera dalla cartella Assets/Resources e ne fa uno
+    // sprite (stessa tecnica usata per lo sfondo, vedi CaricatoreLivelli).
+    // Normalizzo la dimensione: il lato piu' lungo diventa 1 unita' di Unity,
+    // cosi' immagini di misure diverse appaiono grandi piu' o meno uguali e
+    // si possono ingrandire con localScale come prima.
+    // Ritorna null se l'immagine non c'e' (chi chiama usa un ripiego).
+    static Sprite CaricaDaResources(string nome)
+    {
+        Sprite gia;
+        if (CACHE.TryGetValue(nome, out gia)) return gia;
+
+        Texture2D tex = Resources.Load<Texture2D>(nome);
+        if (tex == null)
+        {
+            Debug.LogWarning("FabbricaImmagini: non trovo l'immagine '" + nome + "' in Assets/Resources.");
+            CACHE[nome] = null; // ricordo che manca, non riprovo a ogni oggetto
+            return null;
+        }
+
+        float latoLungo = Mathf.Max(tex.width, tex.height);
+        Sprite s = Sprite.Create(
+            tex,
+            new Rect(0, 0, tex.width, tex.height),
+            new Vector2(0.5f, 0.5f),
+            latoLungo); // PPU = lato piu' lungo  ->  immagine alta circa 1 unita'
+
+        CACHE[nome] = s;
+        return s;
+    }
 
     // Trasforma un disegno (lettere) in uno sprite usando la LEGENDA
     static Sprite Disegna(string[] disegno)
