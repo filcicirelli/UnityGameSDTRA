@@ -1,0 +1,34 @@
+# Fine-riga uniformi su Mac, Windows e Linux.
+# Spostando il progetto tra sistemi diversi, cosi' i file di testo non
+# si "sporcano" (Windows usa CRLF, Mac/Linux usano LF). Qui diciamo a git
+# di normalizzare tutto a LF dentro il repository.
+
+# Impostazione predefinita: file di testo, fine-riga normalizzata.
+* text=auto eol=lf
+
+# Codice e file di progetto Unity = sempre trattati come TESTO.
+*.cs        text
+*.meta      text
+*.unity     text
+*.asset     text
+*.prefab    text
+*.mat       text
+*.shader    text
+*.json      text
+*.md        text
+*.txt       text
+
+# File BINARI: git non deve mai toccarli (niente conversione fine-riga).
+*.jpg       binary
+*.jpeg      binary
+*.png       binary
+*.gif       binary
+*.bmp       binary
+*.pdf       binary
+*.wav       binary
+*.mp3       binary
+*.ogg       binary
+*.ttf       binary
+*.otf       binary
+*.dll       binary
+*.unitypackage binary
