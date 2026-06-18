@@ -1,0 +1,214 @@
+{
+  "tipoRiabilitazione": "Il gioco «Astro» supporta principalmente la riabilitazione motoria dell'arto superiore e la coordinazione occhio-mano in età pediatrica. La modalità a webcam, in cui il bambino muove un evidenziatore fluo davanti alla telecamera, allena gesti ampi del braccio nello spazio (reaching, escursione articolare, controllo prossimale di spalla e gomito): si tratta di un sistema markerless a basso costo, di tipo exergame, utilizzabile anche a domicilio per la tele-riabilitazione. Le modalità a mouse e joystick allenano invece la motricità più fine, la destrezza manuale e il controllo del gesto guidato dallo sguardo. La raccolta delle stelline come bersagli e l'evitamento degli ostacoli configurano un compito orientato all'obiettivo (task-oriented) con richieste visuomotorie progressive. Il feedback immediato sonoro e visivo per ogni azione, insieme ai parametri regolabili (difficoltà, morbidezza per il tremore, volumi), rende il gioco un supporto complementare alla terapia convenzionale — non un suo sostituto — coerente con i principi dell'apprendimento motorio: feedback aumentato, ripetizione intensiva e difficoltà progressiva personalizzata.",
+  "vantaggi": [
+    "Aumentano la motivazione, l'engagement e l'aderenza al trattamento: l'aspetto ludico spinge il bambino a praticare di più e a iniziare attivamente più movimenti, traducendosi in maggiore intensità e ripetizione, fattori correlati a esiti motori migliori (Kilcioglu et al., 2023; Iosa et al., 2022).",
+    "Migliorano la funzione della mano, la presa e la destrezza fine come complemento alla terapia convenzionale, con effetti documentati in meta-analisi su bambini con paralisi cerebrale (Vezér et al., 2024; Avcil et al., 2021).",
+    "Migliorano la funzione motoria grossolana e diversi parametri dell'arto superiore, incluso il range di movimento, con un buon profilo di sicurezza e nessun evento avverso riportato (Tobaiqi et al., 2023; Bajpai et al., 2025).",
+    "Permettono l'uso di sistemi a webcam/telecamera markerless a basso costo, fattibili e ben accettati anche a domicilio, utili per la tele-riabilitazione (Knippenberg et al., 2017; Gerber et al., 2016; da Silva et al., 2021).",
+    "Consentono di applicare i principi dell'apprendimento motorio (feedback aumentato, compiti funzionali ripetuti, difficoltà progressiva personalizzata), che rendono il gioco più efficace dei prodotti commerciali generici: i sistemi sviluppati ad hoc risultano più efficaci delle piattaforme «off-the-shelf» (Demers et al., 2021; Doumas et al., 2021; Chen et al., 2018).",
+    "Sfruttano il feedback aumentato multimodale: suono e immagine simultanei vengono percepiti più rapidamente e producono una ritenzione più duratura dell'apprendimento motorio rispetto a un singolo canale sensoriale (Moinuddin et al., 2021; Sigrist et al., 2013).",
+    "Migliorano l'autopercezione di competenza fisica e sono ben graditi anche dai bambini con disturbo della coordinazione (DCD), favorendo l'aderenza (Straker et al., 2015; Mentiplay et al., 2019)."
+  ],
+  "evidenze": [
+    {
+      "punto": "I videogiochi basati sul movimento migliorano la funzione della mano nei bambini con paralisi cerebrale, in particolare la presa (SMD 0,80) e la motricità fine dell'arto superiore (SMD 0,42), come complemento alla terapia tradizionale.",
+      "riferimento": "Vezér et al., 2024 (meta-analisi di 22 RCT, 785 bambini)"
+    },
+    {
+      "punto": "L'exergaming in realtà virtuale/assistito da telecamera migliora la funzione motoria grossolana (GMFM-88) e diversi parametri dell'arto superiore, incluso il range di movimento (scala Melbourne MA-2), senza eventi avversi riportati.",
+      "riferimento": "Tobaiqi et al., 2023 (meta-analisi di 45 studi, 1.580 bambini)"
+    },
+    {
+      "punto": "Gli active video game sono efficaci soprattutto come aggiunta alla fisioterapia, non come sostituto, con miglioramento significativo della funzione motoria grossolana (Z=3,33; p<0,001), pur con certezza dell'evidenza molto bassa.",
+      "riferimento": "Bajpai et al., 2025 (meta-analisi di 12 studi)"
+    },
+    {
+      "punto": "Il gioco a controllo di movimento offre un vantaggio specifico sulla destrezza manuale rispetto alla terapia tradizionale (Minnesota Manual Dexterity Test).",
+      "riferimento": "Avcil et al., 2021 (RCT, 30 bambini con paralisi cerebrale)"
+    },
+    {
+      "punto": "Aggiungere un gioco in realtà virtuale orientato al compito alla terapia occupazionale migliora la motricità fine (p<0,001) e la forza di presa (p=0,011).",
+      "riferimento": "Daliri et al., 2025 (RCT, 30 bambini)"
+    },
+    {
+      "punto": "La realtà virtuale/serious game produce miglioramenti motori clinicamente rilevanti (effetto ampio sulla funzione dell'arto, d=0,835; sul controllo posturale, d=1,003); i sistemi sviluppati ad hoc sono più efficaci delle piattaforme commerciali generiche.",
+      "riferimento": "Chen et al., 2018 (meta-analisi di 19 RCT)"
+    },
+    {
+      "punto": "La motivazione e l'engagement sono il meccanismo che porta a maggiore intensità e ripetizione della pratica attiva; l'intensità (dose) è correlata a esiti migliori e più duraturi.",
+      "riferimento": "Kilcioglu et al., 2023 (meta-analisi, 258 bambini con paralisi cerebrale)"
+    },
+    {
+      "punto": "I benefici dipendono da come il gioco è progettato: feedback potenziato, pratica variabile e compiti funzionali rilevanti sono spesso integrati, mentre la progressione di difficoltà e il conteggio delle ripetizioni restano spesso carenti.",
+      "riferimento": "Demers et al., 2021 (revisione sistematica di 26 studi)"
+    },
+    {
+      "punto": "I serious game migliorano la funzione dell'arto superiore più della terapia convenzionale solo se rispettano i principi di neuroriabilitazione (compito-specifico, pratica ripetitiva intensa, feedback sulla prestazione).",
+      "riferimento": "Doumas et al., 2021 (meta-analisi di 42 RCT, 1.760 partecipanti, adulti post-ictus)"
+    },
+    {
+      "punto": "Il feedback aumentato multimodale (visivo + uditivo insieme) viene percepito più rapidamente e ritenuto più a lungo del singolo canale: sostiene direttamente il feedback sonoro e visivo immediato del gioco.",
+      "riferimento": "Moinuddin et al., 2021; Sigrist et al., 2013 (revisioni)"
+    },
+    {
+      "punto": "I sistemi di motion capture markerless a basso costo basati su webcam/Kinect aumentano la motivazione e il coinvolgimento durante il training; il limite segnalato è la scarsa personalizzazione.",
+      "riferimento": "Knippenberg et al., 2017 (revisione sistematica di 18 studi)"
+    },
+    {
+      "punto": "Un exergame per l'arto superiore usato a casa da bambini con disturbi neuromotori è ben accettato e percepito come utile, ma l'affidabilità tecnica è critica (problemi tecnici in circa il 67% delle sessioni).",
+      "riferimento": "Gerber et al., 2016 (studio di fattibilità domiciliare, 15 famiglie)"
+    },
+    {
+      "punto": "La tele-riabilitazione domiciliare con serious game è fattibile per giovani con paralisi cerebrale, che hanno seguito la terapia da remoto, si sono divertiti e hanno aumentato l'intensità dell'attività fisica.",
+      "riferimento": "da Silva et al., 2021 (studio pilota, 44 partecipanti, durante il COVID-19)"
+    },
+    {
+      "punto": "Per allenare davvero la coordinazione occhio-mano servono livelli a difficoltà crescente con compiti complessi, sequenze, vincoli temporali e bersagli mobili: i semplici puntamenti su bersagli fissi non sono sufficienti.",
+      "riferimento": "Abid et al., 2025 (revisione sistematica di 12 studi, 427 partecipanti)"
+    },
+    {
+      "punto": "Il training con giochi attivi produce miglioramenti moderati sulle abilità motorie (SMD 0,54) e sull'equilibrio (SMD 0,69) nei bambini con DCD, utile come complemento alla fisioterapia; l'efficacia dipende dal compito specifico allenato.",
+      "riferimento": "Chang et al., 2025; Cavalcante Neto et al., 2020"
+    },
+    {
+      "punto": "Associare un suono in tempo reale al movimento del corpo migliora l'apprendimento spaziale e la mobilità nei bambini, con benefici persistenti; un cueing uditivo ritmico guida il gesto motorio.",
+      "riferimento": "Cappagli et al., 2019; Ghai et al., 2018"
+    },
+    {
+      "punto": "La sola esposizione al gioco non garantisce guadagni motori reali, anche se migliora l'autopercezione di competenza fisica: servono dosaggio e qualità dell'esercizio mirati.",
+      "riferimento": "Straker et al., 2015; Mentiplay et al., 2019"
+    },
+    {
+      "punto": "Le tecnologie con feedback aumentato sono efficaci quanto la terapia tradizionale, ma non c'è prova della superiorità netta di un tipo di feedback sull'altro: serve cautela nelle affermazioni.",
+      "riferimento": "Welsby et al., 2024 (revisione sistematica su DCD)"
+    }
+  ],
+  "risultatiAttesi": [
+    "Miglioramento della destrezza manuale e della motricità fine dell'arto superiore con le modalità mouse/joystick, come complemento alla terapia (atteso per analogia con Vezér et al., 2024; Avcil et al., 2021; Daliri et al., 2025).",
+    "Miglioramento del controllo dei gesti ampi del braccio, del reaching e dell'escursione articolare di spalla e gomito tramite la modalità webcam, che richiede movimenti ampi nello spazio (coerente con i parametri dell'arto superiore migliorati in Tobaiqi et al., 2023).",
+    "Miglioramento della coordinazione occhio-mano nel colpire i bersagli (stelline) ed evitare gli ostacoli, a condizione di una difficoltà progressiva con bersagli mobili e vincoli temporali (Abid et al., 2025).",
+    "Maggiore motivazione, engagement e aderenza al trattamento, con conseguente aumento dell'intensità e del numero di ripetizioni attive (Kilcioglu et al., 2023; Iosa et al., 2022; da Silva et al., 2021).",
+    "Possibile miglioramento della funzione motoria grossolana se il gioco viene usato come aggiunta alla fisioterapia (Bajpai et al., 2025; Ren e Wu, 2019).",
+    "Apprendimento motorio più rapido e con migliore ritenzione grazie al feedback multimodale immediato, sonoro e visivo (Moinuddin et al., 2021; Sigrist et al., 2013).",
+    "Aumento dell'autopercezione di competenza fisica del bambino (Straker et al., 2015).",
+    "Buona fattibilità e accettazione anche a domicilio, a condizione di garantire l'affidabilità tecnica del tracking via webcam e un supporto iniziale alle famiglie (Gerber et al., 2016)."
+  ],
+  "bibliografia": [
+    {
+      "citazione": "Vezér M, Gresits O, Engh MA, Szabó B, Molnár Z, Hegyi P, Terebessy T. Effectiveness of Video-Game-Based Therapy to Improve Hand Function in Children with Cerebral Palsy: A Systematic Review and Meta-Analysis. Journal of Clinical Medicine. 2024;13(24):7524. DOI: 10.3390/jcm13247524.",
+      "nota": ""
+    },
+    {
+      "citazione": "Tobaiqi MA, Albadawi EA, Fadlalmola HA, Albadrani MS. Application of Virtual Reality-Assisted Exergaming on the Rehabilitation of Children with Cerebral Palsy: A Systematic Review and Meta-Analysis. Journal of Clinical Medicine. 2023;12(22):7091. DOI: 10.3390/jcm12227091.",
+      "nota": ""
+    },
+    {
+      "citazione": "Bajpai S, Firouzeh P, Pritchard L. Effectiveness of Active Video Games Used to Augment Physical Therapy for Improving Gross Motor Outcomes of Children with Cerebral Palsy: A Systematic Review and Meta-Analysis. Games for Health Journal. 2025;14(5):415-428. DOI: 10.1089/g4h.2024.0137.",
+      "nota": "Sottolinea che la certezza dell'evidenza e molto bassa: usare con cautela."
+    },
+    {
+      "citazione": "Johansen T, Strøm V, Simic J, Rike PO. Effectiveness of training with motion-controlled commercial video games for hand and arm function in people with cerebral palsy: A systematic review and meta-analysis. Journal of Rehabilitation Medicine. 2020;52(1):jrm00012. DOI: 10.2340/16501977-2633.",
+      "nota": "Risultato favorevole ai giochi ma alto rischio di bias e qualita GRADE molto bassa."
+    },
+    {
+      "citazione": "Daliri M, Salehi Nasab F, Fatorehchy S, Farzad M, Moradi A. Impact of Virtual Reality Task-Oriented Training on Upper Extremity Motor Function in Children With Cerebral Palsy: A Randomised Controlled Trial. Pediatric Neurology. 2025;163:85-92. DOI: 10.1016/j.pediatrneurol.2024.12.001.",
+      "nota": ""
+    },
+    {
+      "citazione": "Avcil E, Tarakci D, Arman N, Tarakci E. Upper extremity rehabilitation using video games in cerebral palsy: a randomized clinical trial. Acta Neurologica Belgica. 2021;121(4):1053-1060. DOI: 10.1007/s13760-020-01400-8.",
+      "nota": ""
+    },
+    {
+      "citazione": "Chen Y, Fanchiang HD, Howard A. Effectiveness of Virtual Reality in Children With Cerebral Palsy: A Systematic Review and Meta-Analysis of Randomized Controlled Trials. Physical Therapy. 2018;98(1):63-77. DOI: 10.1093/ptj/pzx107.",
+      "nota": "I sistemi sviluppati ad hoc da ingegneri risultano piu efficaci delle piattaforme commerciali generiche."
+    },
+    {
+      "citazione": "Kilcioglu S, Schiltz B, Araneda R, Bleyenheuft Y. Short- to Long-Term Effects of Virtual Reality on Motor Skill Learning in Children With Cerebral Palsy: Systematic Review and Meta-Analysis. JMIR Serious Games. 2023;11:e42067. DOI: 10.2196/42067.",
+      "nota": ""
+    },
+    {
+      "citazione": "Demers M, Fung K, Subramanian SK, Lemay M, Robert MT. Integration of Motor Learning Principles Into Virtual Reality Interventions for Individuals With Cerebral Palsy: Systematic Review. JMIR Serious Games. 2021;9(2):e23822. DOI: 10.2196/23822.",
+      "nota": ""
+    },
+    {
+      "citazione": "Choi JY, Yi SH, Ao L, Tang X, Xu X, Shim D, Yoo B, Park ES, Rha DW. Virtual reality rehabilitation in children with brain injury: a randomized controlled trial. Developmental Medicine & Child Neurology. 2021;63(4):480-487. DOI: 10.1111/dmcn.14762.",
+      "nota": ""
+    },
+    {
+      "citazione": "Li S, Song Y, Cai Z, Zhang Q. Are active video games useful in the development of gross motor skills among non-typically developing children? A meta-analysis. BMC Sports Science, Medicine and Rehabilitation. 2022;14:140. DOI: 10.1186/s13102-022-00532-z.",
+      "nota": ""
+    },
+    {
+      "citazione": "Moinuddin A, Goel A, Sethi Y. The Role of Augmented Feedback on Motor Learning: A Systematic Review. Cureus. 2021;13(11):e19695. DOI: 10.7759/cureus.19695.",
+      "nota": "Prevalentemente adulti/atleti: applicazione ai bambini come estrapolazione del principio multimodale."
+    },
+    {
+      "citazione": "Doumas I, Everard G, Dehem S, Lejeune T. Serious games for upper limb rehabilitation after stroke: a meta-analysis. Journal of NeuroEngineering and Rehabilitation. 2021;18(1):100. DOI: 10.1186/s12984-021-00889-1.",
+      "nota": "Popolazione adulta post-ictus: il principio trasferibile e che il design centrato sui principi neuroriabilitativi conta piu della tecnologia."
+    },
+    {
+      "citazione": "Xue Z, Zhang W, Zhou N, Ma P, Yuan K, Zheng P, Li J, Chang J. Effects of virtual reality motor games on motor skills in children with cerebral palsy: a systematic review and meta-analysis. Frontiers in Psychology. 2025;15:1483370. DOI: 10.3389/fpsyg.2024.1483370.",
+      "nota": ""
+    },
+    {
+      "citazione": "Ren Z, Wu J. The Effect of Virtual Reality Games on the Gross Motor Skills of Children with Cerebral Palsy: A Meta-Analysis of Randomized Controlled Trials. International Journal of Environmental Research and Public Health. 2019;16(20):3885. DOI: 10.3390/ijerph16203885.",
+      "nota": ""
+    },
+    {
+      "citazione": "Iosa M, Verrelli CM, Gentile AE, Ruggieri M, Polizzi A. Gaming Technology for Pediatric Neurorehabilitation: A Systematic Review. Frontiers in Pediatrics. 2022;10:775356. DOI: 10.3389/fped.2022.775356.",
+      "nota": ""
+    },
+    {
+      "citazione": "Knippenberg E, Verbrugghe J, Lamers I, Palmaers S, Timmermans A, Spooren A. Markerless motion capture systems as training device in neurological rehabilitation: a systematic review of their use, application, target population and efficacy. Journal of NeuroEngineering and Rehabilitation. 2017;14(1):61. DOI: 10.1186/s12984-017-0270-x.",
+      "nota": "Prevalentemente adulti post-ictus: evidenza diretta su bambini non affermabile da questa fonte."
+    },
+    {
+      "citazione": "Gerber CN, Kunz B, van Hedel HJA. Preparing a neuropediatric upper limb exergame rehabilitation system for home-use: a feasibility study. Journal of NeuroEngineering and Rehabilitation. 2016;13:33. DOI: 10.1186/s12984-016-0141-x.",
+      "nota": "Problemi tecnici in circa il 67% delle sessioni: l'affidabilita del tracking e un fattore critico per l'uso domiciliare."
+    },
+    {
+      "citazione": "da Silva TD, da Silva PL, Valenzuela EJ, Dias ED, Simcsik AO, de Carvalho MG, Fontes AMGG, Alberissi CAO, de Araujo LV, da Costa Brandão MV, Dawes H, Monteiro CBM. Serious Game Platform as a Possibility for Home-Based Telerehabilitation for Individuals With Cerebral Palsy During COVID-19 Quarantine - A Cross-Sectional Pilot Study. Frontiers in Psychology. 2021;12:622678. DOI: 10.3389/fpsyg.2021.622678.",
+      "nota": ""
+    },
+    {
+      "citazione": "Ahn SN. A Scoping Review of the Serious Game-Based Rehabilitation of People with Cerebral Palsy. International Journal of Environmental Research and Public Health. 2023;20(21):7006. DOI: 10.3390/ijerph20217006.",
+      "nota": ""
+    },
+    {
+      "citazione": "Mentiplay BF, FitzGerald TL, Clark RA, Bower KJ, Denehy L, Spittle AJ. Do video game interventions improve motor outcomes in children with developmental coordination disorder? A systematic review using the ICF framework. BMC Pediatrics. 2019;19:22. DOI: 10.1186/s12887-018-1381-7.",
+      "nota": ""
+    },
+    {
+      "citazione": "Cavalcante Neto JL, Steenbergen B, Wilson P, Zamuner AR, Tudella E. Is Wii-based motor training better than task-specific matched training for children with developmental coordination disorder? A randomized controlled trial. Disability and Rehabilitation. 2020;42(18):2611-2620. DOI: 10.1080/09638288.2019.1572794.",
+      "nota": ""
+    },
+    {
+      "citazione": "Straker L, Howie E, Smith A, Jensen L, Piek J, Campbell A. A crossover randomised and controlled trial of the impact of active video games on motor coordination and perceptions of physical ability in children at risk of Developmental Coordination Disorder. Human Movement Science. 2015;42:146-160. DOI: 10.1016/j.humov.2015.04.011.",
+      "nota": ""
+    },
+    {
+      "citazione": "Chang J, Lei Z, Ma P, Cui J, Zhu W. Effects of Wii-Fit games training on motor skills, balance, and agility in children with developmental coordination disorder: a systematic review and meta-analysis. BMC Sports Science, Medicine and Rehabilitation. 2025;17:326. DOI: 10.1186/s13102-025-01384-z.",
+      "nota": ""
+    },
+    {
+      "citazione": "Abid M, Poitras I, Gagnon M, Mercier C. Eye-hand coordination during upper limb motor tasks in individuals with or without a neurodevelopmental disorder: a systematic review. Frontiers in Neurology. 2025;16:1569438. DOI: 10.3389/fneur.2025.1569438.",
+      "nota": ""
+    },
+    {
+      "citazione": "Sigrist R, Rauter G, Riener R, Wolf P. Augmented visual, auditory, haptic, and multimodal feedback in motor learning: a review. Psychonomic Bulletin & Review. 2013;20(1):21-53. DOI: 10.3758/s13423-012-0333-8.",
+      "nota": ""
+    },
+    {
+      "citazione": "Ghai S, Ghai I, Effenberg AO. Effect of rhythmic auditory cueing on gait in cerebral palsy: a systematic review and meta-analysis. Neuropsychiatric Disease and Treatment. 2018;14:43-59. DOI: 10.2147/NDT.S148053.",
+      "nota": ""
+    },
+    {
+      "citazione": "Cappagli G, Finocchietti S, Cocchi E, Giammari G, Zumiani R, Cuppone AV, Baud-Bovy G, Gori M. Audio motor training improves mobility and spatial cognition in visually impaired children. Scientific Reports. 2019;9:3303. DOI: 10.1038/s41598-019-39981-x.",
+      "nota": "Popolazione con disabilita visiva: supporta il principio del feedback sonoro legato al movimento, non un esito diretto su CP/DCD."
+    },
+    {
+      "citazione": "Welsby E, Hordacre B, Hobbs D, Bouckley J, Ward E, Hillier S. Evaluating the influence of feedback on motor skill learning and motor performance for children with developmental coordination disorder: a systematic review. Frontiers in Pediatrics. 2024;12:1327445. DOI: 10.3389/fped.2024.1327445.",
+      "nota": "Nessuna superiorita netta di un tipo di feedback sull'altro: evidenza limitata e di bassa qualita."
+    }
+  ]
+}

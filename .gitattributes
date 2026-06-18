@@ -32,3 +32,10 @@
 *.otf       binary
 *.dll       binary
 *.unitypackage binary
+
+# Documenti Office (sono archivi zip): trattati come binari.
+*.pptx      binary
+*.ppt       binary
+*.docx      binary
+*.doc       binary
+*.xlsx      binary
