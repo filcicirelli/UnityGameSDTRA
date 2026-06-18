@@ -53,7 +53,7 @@ public class FeedbackPaziente : MonoBehaviour
         // tolgo quelle che trovo e ne metto una su questo oggetto (che resta
         // vivo per tutta la partita). Cosi' non dipendo dall'ordine di avvio.
         AudioListener[] orecchieVecchie =
-            Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+            Object.FindObjectsByType<AudioListener>();
         for (int i = 0; i < orecchieVecchie.Length; i++)
         {
             Object.Destroy(orecchieVecchie[i]);

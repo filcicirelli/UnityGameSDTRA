@@ -136,7 +136,10 @@ public class SchermataStart : MonoBehaviour
         Color vecchio = GUI.backgroundColor;
         if (selezionata) GUI.backgroundColor = new Color(0.30f, 0.85f, 0.40f);
 
-        string etichetta = (selezionata ? "▶ " : "") + testo;
+        // Il comando scelto si riconosce gia' dal colore verde del pulsante;
+        // aggiungo "> " come piccolo segnale in piu'. Uso ">" (un carattere
+        // normale della tastiera) cosi' si vede uguale su Windows e Mac.
+        string etichetta = (selezionata ? "> " : "") + testo;
         bool premuto = GUI.Button(r, etichetta, stileBottone);
 
         GUI.backgroundColor = vecchio;

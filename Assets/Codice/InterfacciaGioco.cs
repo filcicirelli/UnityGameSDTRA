@@ -228,13 +228,18 @@ public class InterfacciaGioco : MonoBehaviour
         // Vite (cuori)
         GUIStyle stileCuori = new GUIStyle(stileGrande);
         stileCuori.fontSize = 30;
-        stileCuori.normal.textColor = new Color(1f, 0.45f, 0.55f);
+        stileCuori.richText = true; // permette di colorare i cuori uno per uno
 
+        // Uso SEMPRE lo stesso simbolo "♥" (il cuore pieno), che e' presente in
+        // tutti i sistemi (Windows, Mac): cosi' si vede sempre uguale. Distinguo
+        // la vita che ho da quella persa solo con il COLORE (acceso / grigio).
+        // Evito il simbolo del cuore "vuoto", che su alcuni PC Windows non
+        // esiste e apparirebbe come un quadratino.
         string cuori = "VITE: ";
         for (int i = 0; i < Impostazioni.VITE; i++)
         {
-            if (i < gm.Vite) cuori = cuori + "♥"; // pieno
-            else cuori = cuori + "♡";              // vuoto
+            if (i < gm.Vite) cuori = cuori + "<color=#FF7388>♥</color>"; // vita: cuore acceso
+            else cuori = cuori + "<color=#555562>♥</color>";             // persa: cuore grigio
         }
         GUI.Label(new Rect(20, 96, 360, 40), cuori, stileCuori);
     }

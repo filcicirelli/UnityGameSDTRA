@@ -9,13 +9,13 @@ public static class Avvio
     private static void Inizia()
     {
         // Pulisco eventuali telecamere e luci di default
-        Camera[] cam = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
+        Camera[] cam = Object.FindObjectsByType<Camera>();
         for (int i = 0; i < cam.Length; i++)
         {
             Object.Destroy(cam[i].gameObject);
         }
 
-        Light[] luci = Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
+        Light[] luci = Object.FindObjectsByType<Light>();
         for (int i = 0; i < luci.Length; i++)
         {
             Object.Destroy(luci[i].gameObject);
