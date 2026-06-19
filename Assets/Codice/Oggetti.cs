@@ -472,8 +472,10 @@ public class Asteroide : MonoBehaviour
     public void Inizializza(Vector2 centro, Vector2 dimensione)
     {
         transform.position = new Vector3(centro.x, centro.y, 0f);
-        // Lo sprite e' 1x1, lo ridimensiono in base a quanto deve essere grande
-        transform.localScale = new Vector3(dimensione.x, dimensione.y, 1f);
+        // La grandezza visiva la mette lo SpriteRenderer (drawMode Tiled + size,
+        // vedi Livelli.cs), quindi qui la scala resta 1. Il rettangolo qui sotto
+        // serve solo per capire se Astro tocca la barriera (la collisione).
+        transform.localScale = Vector3.one;
 
         Rettangolo = new Rect(
             centro.x - dimensione.x / 2f,
@@ -618,7 +620,8 @@ public class Coriandoli : MonoBehaviour
 
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         Color colore = COLORI[Random.Range(0, COLORI.Length)];
-        sr.sprite = FabbricaImmagini.CreaQuadratoPieno(colore);
+        sr.sprite = FabbricaImmagini.CreaCoriandolo(); // stellina chiara...
+        sr.color = colore;                             // ...tinta del colore scelto
         sr.sortingOrder = 10;
 
         float scala = Random.Range(0.12f, 0.22f);

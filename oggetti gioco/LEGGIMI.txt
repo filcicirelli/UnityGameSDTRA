@@ -1,0 +1,85 @@
+============================================================
+  OGGETTI GIOCO  -  immagini pronte (sprite) per il gioco
+============================================================
+
+Questa cartella contiene le immagini "vere" (file PNG) che hanno sostituito
+gli oggetti prima DISEGNATI DA CODICE in Assets/Codice/FabbricaImmagini.cs.
+
+Ogni oggetto del gioco ha un file con il suo nome in italiano.
+Le immagini usate dal gioco sono anche copiate in Assets/Resources/.
+
+Ho scelto apposta le grafiche piu' SEMPLICI e RICONOSCIBILI possibili
+(una forma chiara per ogni oggetto) e tutte GRATUITE, quasi tutte CC0
+(pubblico dominio: utilizzo libero anche commerciale, nessuna attribuzione
+obbligatoria).
+
+
+------------------------------------------------------------
+ FILE PRINCIPALI  (uno per oggetto, quelli usati nel gioco)
+------------------------------------------------------------
+
+OGGETTO       FILE              DA DOVE VIENE (file originale)              PACCHETTO / AUTORE              LICENZA
+-----------   ---------------   -----------------------------------------   -----------------------------   -------
+personaggio   personaggio.png   playerShip1_blue.png                        Kenney - Space Shooter Redux    CC0
+stella        stella.png        star_silver.png (chiara: si colora bene)    Kenney - Space Shooter Redux    CC0
+pianeta       pianeta.png       Planets/planet03.png (tipo Terra)           Kenney - Planets                CC0
+asteroide     asteroide.png     Meteors/meteorGrey_big1.png                 Kenney - Space Shooter Redux    CC0
+bomba         bomba.png         Bomb_anim0001.png (1 fotogramma)            "Bomb sprite" di Znevs (OGA)    CC0
+esplosione    esplosione.png    fire_01.png  (vedi NOTA esplosione)         Kenney - Particle Pack          CC0
+coriandolo    coriandolo.png    star_silver.png (stessa stella, colorata)   Kenney - Space Shooter Redux    CC0
+porta         porta.png         1 anello ritagliato da portalRings2.png     "Portals" di LetargicDev (OGA)  CC0
+
+
+------------------------------------------------------------
+ LINK DELLE FONTI (pagine ufficiali da cui ho scaricato)
+------------------------------------------------------------
+
+Kenney - Space Shooter Redux : https://opengameart.org/content/space-shooter-redux
+Kenney - Planets             : https://kenney.nl/assets/planets
+Kenney - Particle Pack       : https://www.kenney.nl/assets/particle-pack
+"Bomb sprite" (Znevs)        : https://opengameart.org/content/bomb-sprite
+"Portals" (LetargicDev)      : https://opengameart.org/content/portals
+
+CC0 = Creative Commons Zero (pubblico dominio):
+      http://creativecommons.org/publicdomain/zero/1.0/
+
+
+------------------------------------------------------------
+ NOTE
+------------------------------------------------------------
+
+* NOTA esplosione: il file originale del Particle Pack (fire_01.png) ha lo
+  SFONDO NERO PIENO (gli sprite del Particle Pack sono fatti per i "sistemi
+  di particelle" di Unity, non come immagini normali). Da immagine normale
+  apparirebbe un quadrato nero. Quindi l'ho LAVORATA: ho reso trasparente il
+  nero e l'ho colorata a fiammata (arancio/giallo), cosi' si legge subito come
+  uno scoppio. Trattandosi di materiale CC0, modificarlo e' permesso.
+
+* PORTA: portalRings1/2 sono "fogli di animazione" (tanti fotogrammi in una
+  griglia). Ho ritagliato UN solo fotogramma (un anello) per avere un'immagine
+  singola pulita.
+
+* CORIANDOLI e STELLA: usano la stessa stella chiara (star_silver). E' chiara
+  apposta: il gioco la COLORA (giallo, azzurro, ...) tramite lo SpriteRenderer,
+  e una stella chiara prende bene ogni colore (una dorata diventerebbe scura).
+
+* CARTELLA "varianti": contiene alternative (altri colori/modelli, altri 9
+  pianeti, altre rocce, ecc.). ATTENZIONE: i file presi dal Particle Pack di
+  Kenney (fiamma_*, fumo_*, bruciatura, scintilla_NON_USATA, coriandolo_02..09)
+  hanno lo SFONDO NERO: vanno usati SOLO dentro un Particle System di Unity
+  (blending additivo), non come sprite normali, altrimenti si vede il nero.
+
+
+------------------------------------------------------------
+ COME USARLE / CAMBIARLE NEL GIOCO
+------------------------------------------------------------
+
+Le immagini usate dal gioco stanno in Assets/Resources/ con questi nomi:
+  personaggio, stella, pianeta, asteroide, bomba, esplosione, coriandolo, porta
+  (+ sfondo.jpg per lo sfondo).
+
+Per cambiare un'immagine:
+ 1) metti un altro PNG in Assets/Resources/ (es. pianeta.png);
+ 2) se usi un nome diverso, aggiorna la costante in cima a
+    Assets/Codice/FabbricaImmagini.cs.
+Nessun altro codice da toccare. Vedi PERCORSO_MODIFICHE.md per i dettagli.

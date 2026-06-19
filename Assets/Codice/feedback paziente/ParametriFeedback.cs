@@ -26,19 +26,14 @@ public static class ParametriFeedback
     public const float VOLUME_GIUSTO    = 0.80f; // azioni corrette (suono gradevole)
     public const float VOLUME_SBAGLIATO = 0.45f; // errori: piu' basso, cosi' e' gentile
 
-    // ---- NOTE DEI SUONI (in Hz) ----
-    // Sono semplici note musicali. Note che SALGONO = suono allegro;
-    // note che SCENDONO = suono "di errore".
-    // Caramella: tre note che salgono (do - mi - sol)
-    public static readonly float[] NOTE_CARAMELLA = { 523.25f, 659.25f, 783.99f };
-    // Vittoria: una piccola fanfara (do - mi - sol - do alto)
-    public static readonly float[] NOTE_VITTORIA  = { 523.25f, 659.25f, 783.99f, 1046.50f };
-    // Errore: due note che SCENDONO (suono "sbagliato", ma non aggressivo)
-    public static readonly float[] NOTE_ERRORE    = { 220.00f, 174.61f };
-
-    // ---- DURATA DELLE NOTE (secondi per ogni nota) ----
-    public const float DURATA_NOTA_GIUSTO = 0.10f; // note corte e vivaci
-    public const float DURATA_NOTA_ERRORE = 0.18f; // note piu' lunghe e morbide
+    // ---- FILE DEI SUONI (in Assets/Resources, nome SENZA estensione) ----
+    // Prima i suoni erano creati da codice (note in Hz); ora sono file audio
+    // veri e gratuiti (CC0), vedi la cartella "suoni gioco" e il suo LEGGIMI.
+    // Per cambiare un suono: metti un altro file in Assets/Resources e scrivi
+    // qui sotto il suo nome.
+    public const string SUONO_RACCOLTA = "raccolta"; // azione giusta: stellina raccolta
+    public const string SUONO_VITTORIA = "vittoria"; // livello completato
+    public const string SUONO_ERRORE   = "errore";   // azione sbagliata (gentile)
 
     // ---- ASTRO SI GONFIA (feedback POSITIVO) ----
     // Quando il paziente fa la cosa giusta, Astro si gonfia e poi torna normale.

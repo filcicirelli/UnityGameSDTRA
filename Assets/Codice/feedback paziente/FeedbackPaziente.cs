@@ -17,7 +17,8 @@ using UnityEngine;
 //     FeedbackPaziente.AzioneSbagliata();
 //
 // I numeri che regolano tutto stanno in ParametriFeedback.cs (la "pagina").
-// I suoni vengono creati da FabbricaSuoni.cs.
+// I suoni sono file audio veri (CC0) in Assets/Resources, vedi la cartella
+// "suoni gioco" e il suo LEGGIMI.
 // ============================================================================
 public class FeedbackPaziente : MonoBehaviour
 {
@@ -64,13 +65,18 @@ public class FeedbackPaziente : MonoBehaviour
         sorgente.playOnAwake = false;
         sorgente.spatialBlend = 0f;
 
-        // Creo i suoni da codice usando le note scritte in ParametriFeedback
-        suonoCaramella = FabbricaSuoni.CreaMelodia("caramella",
-            ParametriFeedback.NOTE_CARAMELLA, ParametriFeedback.DURATA_NOTA_GIUSTO, false);
-        suonoVittoria = FabbricaSuoni.CreaMelodia("vittoria",
-            ParametriFeedback.NOTE_VITTORIA, ParametriFeedback.DURATA_NOTA_GIUSTO, false);
-        suonoErrore = FabbricaSuoni.CreaMelodia("errore",
-            ParametriFeedback.NOTE_ERRORE, ParametriFeedback.DURATA_NOTA_ERRORE, true);
+        // Carico i suoni veri (file audio) dalla cartella Assets/Resources.
+        // I nomi dei file stanno in ParametriFeedback (la "pagina parametri").
+        // Se un file manca, il clip resta null: il gioco NON si blocca,
+        // semplicemente quel feedback sonoro non parte (vedi metodo Suona).
+        suonoCaramella = Resources.Load<AudioClip>(ParametriFeedback.SUONO_RACCOLTA);
+        suonoVittoria  = Resources.Load<AudioClip>(ParametriFeedback.SUONO_VITTORIA);
+        suonoErrore    = Resources.Load<AudioClip>(ParametriFeedback.SUONO_ERRORE);
+        if (suonoCaramella == null || suonoVittoria == null || suonoErrore == null)
+        {
+            Debug.LogWarning("FeedbackPaziente: manca un file audio in Assets/Resources " +
+                             "(servono: raccolta, vittoria, errore).");
+        }
     }
 
     void OnDestroy()

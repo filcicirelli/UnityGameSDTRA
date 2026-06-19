@@ -313,7 +313,10 @@ public static class CaricatoreLivelli
             go.transform.SetParent(contenitoreAsteroidi);
 
             SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = FabbricaImmagini.CreaTesseraAsteroide(d.colore);
+            sr.sprite = FabbricaImmagini.CreaTesseraAsteroide();
+            sr.color = d.colore;                 // tinta della roccia (cambia da un livello all'altro)
+            sr.drawMode = SpriteDrawMode.Tiled;  // RIPETO la roccia a mosaico invece di deformarla
+            sr.size = d.dimensione;              // la barriera e' grande quanto dicono i suoi dati
             sr.sortingOrder = 0;
 
             Asteroide a = go.AddComponent<Asteroide>();
