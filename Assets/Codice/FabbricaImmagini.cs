@@ -1,9 +1,8 @@
 using UnityEngine;
 
 // Carica le immagini (sprite) del gioco dai file PNG che stanno in
-// Assets/Resources. Prima molte immagini erano DISEGNATE da codice
-// (pixel per pixel); ora ogni oggetto usa un'immagine vera, presa dai
-// pacchetti gratuiti CC0 (vedi la cartella "oggetti gioco" e il suo LEGGIMI).
+// Assets/Resources. Ogni oggetto usa un'immagine vera, presa dai pacchetti
+// gratuiti CC0 (vedi la cartella "oggetti gioco" e il suo LEGGIMI).
 //
 // PER CAMBIARE un'immagine: metti un altro file PNG in Assets/Resources e
 // scrivi qui sotto il suo nome (SENZA l'estensione .png). Tutto qui.
@@ -64,8 +63,8 @@ public static class FabbricaImmagini
     // =========================================================
     // Resources.Load vuole il nome SENZA estensione.
     // Normalizzo la dimensione: il lato piu' lungo diventa 1 unita' di Unity,
-    // cosi' immagini di misure diverse appaiono grandi all'incirca uguali e si
-    // possono poi ingrandire con localScale come prima.
+    // cosi' immagini di misure diverse appaiono grandi all'incirca uguali e chi
+    // le usa puo' poi ridimensionarle con localScale.
     // Se l'immagine manca NON blocco il gioco: mostro un quadrato magenta
     // (il classico segnale "immagine non trovata") e scrivo un avviso.
     static Sprite Carica(string nome)

@@ -15,11 +15,17 @@ public static class Impostazioni
 
     // ---- PUNTI ----
     public const int PUNTI_CARAMELLA   = 10; // punti guadagnati
-    public const int PUNTI_PERSI_HIT   = 5;  // punti persi se prendi un asteroide
+    public const int PUNTI_PERSI_HIT   = 5;  // punti persi se vieni colpito (asteroide o bomba)
 
     // ---- CARAMELLE NEL LIVELLO 1 (generate a caso) ----
     public const int CARAMELLE_LIV1 = 10;
 
     // ---- PERIODO INIZIALE "PRONTI..." ----
     public const float TEMPO_PRONTI = 1.5f;
+
+    // ---- INVULNERABILITA' DOPO UN COLPO ----
+    // Secondi di "respiro" dopo un colpo: in questo tempo un altro asteroide o
+    // una bomba non toglie una seconda vita. Piu' alto = piu' facile (utile in
+    // riabilitazione).
+    public const float COOLDOWN_DANNO = 1.0f;
 }

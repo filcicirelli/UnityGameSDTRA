@@ -165,7 +165,7 @@ public class Astro : MonoBehaviour
             if (a != null && a.Contiene(pos))
             {
                 GestoreGioco.Istanza.SegnalaAsteroideToccato();
-                timerLampeggio = 0.20f;
+                timerLampeggio = ParametriFeedback.LAMPEGGIO_ASTRO_DURATA;
                 return; // basta un asteroide alla volta
             }
         }
@@ -206,7 +206,7 @@ public class Astro : MonoBehaviour
         if (timerLampeggio > 0f)
         {
             timerLampeggio = timerLampeggio - Time.deltaTime;
-            float k = Mathf.Clamp01(timerLampeggio / 0.20f);
+            float k = Mathf.Clamp01(timerLampeggio / ParametriFeedback.LAMPEGGIO_ASTRO_DURATA);
             sr.color = Color.Lerp(coloreBase, ParametriFeedback.COLORE_ERRORE, k);
         }
         else if (timerGonfia > 0f)
@@ -373,6 +373,9 @@ public class Bomba : MonoBehaviour
     // Zona di pericolo attorno alla bomba (oltre lo sprite)
     public float raggioPericolo = 0.5f;
 
+    // Quanto e' grande l'alone rosso pulsante rispetto alla bomba
+    private const float SCALA_ALONE = 2.4f;
+
     private Vector3 posizioneBase;
     private SpriteRenderer sr;
     private SpriteRenderer alone;
@@ -400,7 +403,7 @@ public class Bomba : MonoBehaviour
         GameObject aloneGo = new GameObject("Alone");
         aloneGo.transform.SetParent(transform, false);
         aloneGo.transform.localPosition = Vector3.zero;
-        aloneGo.transform.localScale = new Vector3(2.4f, 2.4f, 1f);
+        aloneGo.transform.localScale = new Vector3(SCALA_ALONE, SCALA_ALONE, 1f);
 
         alone = aloneGo.AddComponent<SpriteRenderer>();
         alone.sprite = FabbricaImmagini.CreaQuadratoPieno(new Color(1f, 0.20f, 0.20f, 0.30f));
@@ -418,7 +421,7 @@ public class Bomba : MonoBehaviour
         float pulse = 0.85f + Mathf.Sin(Time.time * 5f + fase) * 0.25f;
         if (alone != null)
         {
-            alone.transform.localScale = new Vector3(2.4f * pulse, 2.4f * pulse, 1f);
+            alone.transform.localScale = new Vector3(SCALA_ALONE * pulse, SCALA_ALONE * pulse, 1f);
             Color col = alone.color;
             col.a = 0.20f + 0.20f * Mathf.Sin(Time.time * 5f + fase);
             alone.color = col;
@@ -507,6 +510,10 @@ public class Esplosione : MonoBehaviour
     {
         sr = GetComponent<SpriteRenderer>();
         transform.localScale = Vector3.one * 0.2f; // parto piccolino
+
+        // Mi distruggo da solo dopo "durata" secondi: lo fa Unity con l'overload
+        // Destroy(oggetto, tempo). Prima contavo il tempo a mano in Update.
+        Destroy(gameObject, durata);
     }
 
     void Update()
@@ -525,11 +532,6 @@ public class Esplosione : MonoBehaviour
             Color col = sr.color;
             col.a = 1f - k;
             sr.color = col;
-        }
-
-        if (eta >= durata)
-        {
-            Destroy(gameObject);
         }
     }
 }
@@ -641,7 +643,6 @@ public class PezzoCoriandolo : MonoBehaviour
     public float velocitaAngolare;
     public float vita;
 
-    private float eta;
     private float fase;
 
     void Awake()
@@ -649,10 +650,15 @@ public class PezzoCoriandolo : MonoBehaviour
         fase = Random.Range(0f, Mathf.PI * 2f);
     }
 
+    void Start()
+    {
+        // Mi distruggo da solo dopo "vita" secondi con l'overload di Unity
+        // Destroy(oggetto, tempo): prima contavo il tempo a mano in Update.
+        Destroy(gameObject, vita);
+    }
+
     void Update()
     {
-        eta = eta + Time.deltaTime;
-
         // Gravita' leggera
         velocita.y = velocita.y - 1.2f * Time.deltaTime;
 
@@ -661,10 +667,5 @@ public class PezzoCoriandolo : MonoBehaviour
         float dy = velocita.y * Time.deltaTime;
         transform.position = transform.position + new Vector3(dx, dy, 0f);
         transform.Rotate(0f, 0f, velocitaAngolare * Time.deltaTime);
-
-        if (eta >= vita)
-        {
-            Destroy(gameObject);
-        }
     }
 }

@@ -22,7 +22,7 @@ public static class ParametriFeedback
     public const bool VISIVO_ATTIVO = true;
 
     // ---- VOLUMI (0 = muto, 1 = massimo) ----
-    public const float VOLUME_GENERALE  = 0.90f; // volume di TUTTO il feedback
+    public const float VOLUME_GENERALE  = 0.90f; // volume generale dei SUONI (moltiplica gli altri)
     public const float VOLUME_GIUSTO    = 0.80f; // azioni corrette (suono gradevole)
     public const float VOLUME_SBAGLIATO = 0.45f; // errori: piu' basso, cosi' e' gentile
 
@@ -40,7 +40,7 @@ public static class ParametriFeedback
     public const float GONFIA_QUANTITA = 0.45f; // 0.45 = fino a +45% di dimensione
     public const float GONFIA_DURATA   = 0.45f; // durata del gonfiamento (secondi)
 
-    // Bagliore di gioia: per un istante Astro si colora di verde/oro.
+    // Bagliore di gioia: per un istante Astro si colora di verde acceso.
     public static readonly Color COLORE_GIOIA = new Color(0.70f, 1f, 0.55f);
     public const float GIOIA_INTENSITA = 0.80f; // quanto e' forte il bagliore (0..1)
 
@@ -51,4 +51,7 @@ public static class ParametriFeedback
 
     // Lampeggio rosso quando si sbaglia.
     public static readonly Color COLORE_ERRORE = new Color(1f, 0.30f, 0.30f);
+
+    // Quanto dura (secondi) il lampeggio rosso di Astro quando viene colpito.
+    public const float LAMPEGGIO_ASTRO_DURATA = 0.20f;
 }

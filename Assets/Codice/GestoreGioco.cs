@@ -286,7 +286,7 @@ public class GestoreGioco : MonoBehaviour
         if (PartitaFinita || MissioneCompletata) return;
         if (cooldownDanno > 0f) return;
 
-        cooldownDanno = 1.0f;
+        cooldownDanno = Impostazioni.COOLDOWN_DANNO;
         TimerLampeggio = 0.30f;
 
         // FEEDBACK: azione sbagliata -> suono basso/gentile + Astro si schiaccia
@@ -301,7 +301,7 @@ public class GestoreGioco : MonoBehaviour
         if (PartitaFinita || MissioneCompletata) return;
         if (cooldownDanno > 0f) return;
 
-        cooldownDanno = 1.0f;
+        cooldownDanno = Impostazioni.COOLDOWN_DANNO;
         TimerLampeggio = 0.30f;
 
         // FEEDBACK: azione sbagliata -> suono basso/gentile + Astro si schiaccia

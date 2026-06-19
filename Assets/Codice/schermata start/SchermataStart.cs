@@ -31,8 +31,6 @@ public class SchermataStart : MonoBehaviour
     private GUIStyle stileBottoneGrande;
     private GUIStyle stileInfo;
     private GUIStyle stileDescrizione;
-    private Texture2D texVelo;     // velo scuro su tutto lo schermo
-    private Texture2D texPannello; // sfondo dei riquadri
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Installa()
@@ -64,7 +62,7 @@ public class SchermataStart : MonoBehaviour
         if (stileTitolo == null) CostruisciStili();
 
         // Velo scuro sopra lo sfondo, cosi' i testi si leggono bene
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texVelo);
+        Riquadro(new Rect(0, 0, Screen.width, Screen.height), new Color(0f, 0f, 0.05f, 0.72f));
 
         // --- Titolo ---
         GUI.Label(new Rect(0, 24, Screen.width, 70), "ASTRO", stileTitolo);
@@ -104,7 +102,7 @@ public class SchermataStart : MonoBehaviour
             scelta = Comandi.Modalita.Mouse;
         }
         y += h + gap;
-        if (BottoneModalita(new Rect(area.x, y, area.width, h), "DITO (WEBCAM)", Comandi.Modalita.Dito))
+        if (BottoneModalita(new Rect(area.x, y, area.width, h), "WEBCAM", Comandi.Modalita.Dito))
         {
             scelta = Comandi.Modalita.Dito;
         }
@@ -229,7 +227,7 @@ public class SchermataStart : MonoBehaviour
     // Disegna un riquadro con un titolo e sotto un testo su piu' righe
     void PannelloInfo(Rect r, string titolo, string testo)
     {
-        GUI.DrawTexture(r, texPannello);
+        Riquadro(r, new Color(0.05f, 0.07f, 0.18f, 0.85f));
         GUI.Label(new Rect(r.x + 12, r.y + 8, r.width - 24, 26), titolo, stileSezione);
         GUI.Label(new Rect(r.x + 12, r.y + 38, r.width - 24, r.height - 46), testo, stileInfo);
     }
@@ -271,16 +269,15 @@ public class SchermataStart : MonoBehaviour
         stileInfo.alignment = TextAnchor.UpperLeft;
         stileInfo.wordWrap = false;
         stileInfo.normal.textColor = new Color(0.80f, 1f, 0.80f);
-
-        texVelo = TexturaPiena(new Color(0f, 0f, 0.05f, 0.72f));
-        texPannello = TexturaPiena(new Color(0.05f, 0.07f, 0.18f, 0.85f));
     }
 
-    static Texture2D TexturaPiena(Color colore)
+    // Disegna un rettangolo pieno di un colore senza creare texture nuove:
+    // uso la texture bianca gia' pronta di Unity e la coloro con GUI.color.
+    static void Riquadro(Rect r, Color colore)
     {
-        Texture2D t = new Texture2D(1, 1);
-        t.SetPixel(0, 0, colore);
-        t.Apply();
-        return t;
+        Color vecchio = GUI.color;
+        GUI.color = colore;
+        GUI.DrawTexture(r, Texture2D.whiteTexture);
+        GUI.color = vecchio;
     }
 }

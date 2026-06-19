@@ -52,7 +52,6 @@ public class ComandoWebcam : MonoBehaviour
     private float[] tinteBersaglio; // la tinta (hue) di ogni colore dell'evidenziatore
     private float ultimaNx = 0.5f;  // ultima posizione del dito nell'immagine (0..1)
     private float ultimaNy = 0.5f;
-    private Texture2D texBianca;    // 1x1 bianca, per riquadri e mirino
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Installa()
@@ -75,10 +74,6 @@ public class ComandoWebcam : MonoBehaviour
             float s, v;
             Color.RGBToHSV(ParametriWebcam.COLORI_EVIDENZIATORE[i], out tinteBersaglio[i], out s, out v);
         }
-
-        texBianca = new Texture2D(1, 1);
-        texBianca.SetPixel(0, 0, Color.white);
-        texBianca.Apply();
 
         Posizione = new Vector2(Screen.width / 2f, Screen.height / 2f);
     }
@@ -280,7 +275,7 @@ public class ComandoWebcam : MonoBehaviour
         float py = 130f;
 
         // Bordo bianco
-        GUI.DrawTexture(new Rect(px - 2, py - 2, pw + 4, ph + 4), texBianca);
+        GUI.DrawTexture(new Rect(px - 2, py - 2, pw + 4, ph + 4), Texture2D.whiteTexture);
 
         // Immagine della webcam (specchiata se SPECCHIA, cosi' combacia col mirino)
         Rect riquadro = new Rect(px, py, pw, ph);
@@ -304,8 +299,8 @@ public class ComandoWebcam : MonoBehaviour
     {
         Color vecchio = GUI.color;
         GUI.color = colore;
-        GUI.DrawTexture(new Rect(x - 12, y - 2, 24, 4), texBianca); // barra orizzontale
-        GUI.DrawTexture(new Rect(x - 2, y - 12, 4, 24), texBianca); // barra verticale
+        GUI.DrawTexture(new Rect(x - 12, y - 2, 24, 4), Texture2D.whiteTexture); // barra orizzontale
+        GUI.DrawTexture(new Rect(x - 2, y - 12, 4, 24), Texture2D.whiteTexture); // barra verticale
         GUI.color = vecchio;
     }
 

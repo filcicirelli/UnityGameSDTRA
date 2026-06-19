@@ -21,11 +21,6 @@ public class InterfacciaGioco : MonoBehaviour
     private GUIStyle stileBadge;
     private GUIStyle stileBottone;
 
-    // Texture monocolore per sfondi e barre
-    private Texture2D texSfondoBarra;
-    private Texture2D texRiempimentoBarra;
-    private Texture2D texPannello;
-
     // Se il menu e' aperto o no
     private bool menuAperto;
 
@@ -37,8 +32,9 @@ public class InterfacciaGioco : MonoBehaviour
 
     // Pannello informazioni tecniche (tasto F3, come la schermata di Minecraft)
     private bool debugAperto;
-    private float fps = 60f;          // fotogrammi al secondo (valore medio)
-    private float fpsMinimo = 99999f; // FPS piu' basso visto da quando l'ho aperto
+    private const float FPS_INIZIALE = 99999f; // "infinito" di partenza per il minimo FPS
+    private float fps = 60f;          // fotogrammi al secondo (parto da 60, poi media morbida)
+    private float fpsMinimo = FPS_INIZIALE; // FPS piu' basso visto da quando l'ho aperto
     private GUIStyle stileDebug;
 
     void Awake()
@@ -53,7 +49,7 @@ public class InterfacciaGioco : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F3) || Input.GetKeyDown(KeyCode.BackQuote))
         {
             debugAperto = !debugAperto;
-            fpsMinimo = 99999f; // riparto a contare il minimo
+            fpsMinimo = FPS_INIZIALE; // riparto a contare il minimo
         }
 
         // FPS = 1 diviso il tempo passato dall'ultimo frame.
@@ -106,10 +102,6 @@ public class InterfacciaGioco : MonoBehaviour
         stileBottone.fontSize = 22;
         stileBottone.fontStyle = FontStyle.Bold;
 
-        texSfondoBarra = TexturaPiena(new Color(0.10f, 0.10f, 0.15f, 0.85f));
-        texRiempimentoBarra = TexturaPiena(new Color(0.30f, 0.95f, 0.40f, 1f));
-        texPannello = TexturaPiena(new Color(0.05f, 0.05f, 0.15f, 0.92f));
-
         // Stile del testo del pannello informazioni (verdino, piccolo)
         stileDebug = new GUIStyle(GUI.skin.label);
         stileDebug.fontSize = 15;
@@ -137,7 +129,7 @@ public class InterfacciaGioco : MonoBehaviour
         {
             float intensita = 0.35f * Mathf.Clamp01(gm.TimerLampeggio / 0.25f);
             Color colore = new Color(1f, 0.20f, 0.20f, intensita);
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), TexturaPiena(colore));
+            Riquadro(new Rect(0, 0, Screen.width, Screen.height), colore);
         }
 
         // HUD principale
@@ -170,7 +162,7 @@ public class InterfacciaGioco : MonoBehaviour
                            "INFO (F3)", stileBottone))
             {
                 debugAperto = !debugAperto;
-                fpsMinimo = 99999f;
+                fpsMinimo = FPS_INIZIALE;
             }
         }
 
@@ -274,11 +266,11 @@ public class InterfacciaGioco : MonoBehaviour
         GUI.Label(new Rect(x, 12, larghezza, 28), "ENERGIA ASTRO", stileGrande);
 
         // Sfondo della barra
-        GUI.DrawTexture(new Rect(x, 46, larghezza, altezza), texSfondoBarra);
+        Riquadro(new Rect(x, 46, larghezza, altezza), new Color(0.10f, 0.10f, 0.15f, 0.85f));
 
         // Riempimento in base all'energia
         float riemp = Mathf.Max(0, (larghezza - 6) * Mathf.Clamp01(gm.Energia));
-        GUI.DrawTexture(new Rect(x + 3, 49, riemp, altezza - 6), texRiempimentoBarra);
+        Riquadro(new Rect(x + 3, 49, riemp, altezza - 6), new Color(0.30f, 0.95f, 0.40f, 1f));
 
         // Tempo: rosso e lampeggiante sotto i 10 secondi
         int secondi = Mathf.CeilToInt(gm.TempoRimasto);
@@ -312,9 +304,9 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaBannerPronti(GestoreGioco gm)
     {
         // Striscia scura
-        GUI.DrawTexture(
+        Riquadro(
             new Rect(0, Screen.height * 0.45f, Screen.width, 70),
-            TexturaPiena(new Color(0f, 0f, 0f, 0.55f)));
+            new Color(0f, 0f, 0f, 0.55f));
 
         GUIStyle stileBanner = new GUIStyle(stileEnorme);
         stileBanner.fontSize = 40;
@@ -329,9 +321,9 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaPannelloVittoriaFinale(GestoreGioco gm)
     {
         // Sfondo blu-viola a tutto schermo
-        GUI.DrawTexture(
+        Riquadro(
             new Rect(0, 0, Screen.width, Screen.height),
-            TexturaPiena(new Color(0.04f, 0.05f, 0.20f, 0.92f)));
+            new Color(0.04f, 0.05f, 0.20f, 0.92f));
 
         // Pannello centrale
         float wp = Mathf.Min(820f, Screen.width - 60f);
@@ -341,14 +333,14 @@ public class InterfacciaGioco : MonoBehaviour
             (Screen.height - hp) / 2f,
             wp, hp);
 
-        GUI.DrawTexture(pannello, TexturaPiena(new Color(0.08f, 0.10f, 0.30f, 0.95f)));
+        Riquadro(pannello, new Color(0.08f, 0.10f, 0.30f, 0.95f));
 
         // Bordo giallo (4 rettangoli sottili)
-        Texture2D bordo = TexturaPiena(new Color(1f, 0.85f, 0.30f, 1f));
-        GUI.DrawTexture(new Rect(pannello.x, pannello.y, pannello.width, 4), bordo);
-        GUI.DrawTexture(new Rect(pannello.x, pannello.y + pannello.height - 4, pannello.width, 4), bordo);
-        GUI.DrawTexture(new Rect(pannello.x, pannello.y, 4, pannello.height), bordo);
-        GUI.DrawTexture(new Rect(pannello.x + pannello.width - 4, pannello.y, 4, pannello.height), bordo);
+        Color bordo = new Color(1f, 0.85f, 0.30f, 1f);
+        Riquadro(new Rect(pannello.x, pannello.y, pannello.width, 4), bordo);
+        Riquadro(new Rect(pannello.x, pannello.y + pannello.height - 4, pannello.width, 4), bordo);
+        Riquadro(new Rect(pannello.x, pannello.y, 4, pannello.height), bordo);
+        Riquadro(new Rect(pannello.x + pannello.width - 4, pannello.y, 4, pannello.height), bordo);
 
         // Titolo
         GUIStyle stileTitoloV = new GUIStyle(stileEnorme);
@@ -410,9 +402,9 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaPannelloMissioneCompletata(GestoreGioco gm)
     {
         // Striscia scura
-        GUI.DrawTexture(
+        Riquadro(
             new Rect(0, Screen.height * 0.28f, Screen.width, 260),
-            TexturaPiena(new Color(0f, 0f, 0f, 0.5f)));
+            new Color(0f, 0f, 0f, 0.5f));
 
         GUI.Label(
             new Rect(0, Screen.height * 0.30f, Screen.width, 80),
@@ -446,9 +438,9 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaPannelloGameOver(GestoreGioco gm)
     {
         // Striscia rossa scura
-        GUI.DrawTexture(
+        Riquadro(
             new Rect(0, Screen.height * 0.28f, Screen.width, 260),
-            TexturaPiena(new Color(0.35f, 0.05f, 0.05f, 0.85f)));
+            new Color(0.35f, 0.05f, 0.05f, 0.85f));
 
         GUIStyle stileGO = new GUIStyle(stileEnorme);
         stileGO.normal.textColor = new Color(1f, 0.6f, 0.6f);
@@ -501,7 +493,7 @@ public class InterfacciaGioco : MonoBehaviour
             (Screen.height - h) / 2f,
             w, h);
 
-        GUI.DrawTexture(r, texPannello);
+        Riquadro(r, new Color(0.05f, 0.05f, 0.15f, 0.92f));
 
         GUIStyle stileTitoloMenu = new GUIStyle(stileEnorme);
         stileTitoloMenu.fontSize = 40;
@@ -542,9 +534,9 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaPannelloDebug(GestoreGioco gm)
     {
         // Sfondo nero semitrasparente, cosi' il testo si legge bene
-        GUI.DrawTexture(
+        Riquadro(
             new Rect(0, 0, Screen.width, Screen.height),
-            TexturaPiena(new Color(0f, 0f, 0f, 0.55f)));
+            new Color(0f, 0f, 0f, 0.55f));
 
         // --- Dati di Astro e del mouse ---
         Vector2 posAstro = Vector2.zero;
@@ -699,13 +691,27 @@ public class InterfacciaGioco : MonoBehaviour
     void DisegnaBarraDwell(Rect r, float k)
     {
         float h = 6f;
-        GUI.DrawTexture(new Rect(r.x, r.yMax - h, r.width, h),
-                        TexturaPiena(new Color(0f, 0f, 0f, 0.35f)));
-        GUI.DrawTexture(new Rect(r.x, r.yMax - h, r.width * k, h),
-                        TexturaPiena(new Color(0.30f, 0.95f, 0.40f, 0.95f)));
+        Riquadro(new Rect(r.x, r.yMax - h, r.width, h),
+                 new Color(0f, 0f, 0f, 0.35f));
+        Riquadro(new Rect(r.x, r.yMax - h, r.width * k, h),
+                 new Color(0.30f, 0.95f, 0.40f, 0.95f));
     }
 
-    // Piccola texture 1x1 di un colore (utile per sfondi e barre)
+    // Disegna un rettangolo pieno di un colore SENZA creare texture nuove ad
+    // ogni fotogramma: uso la texture bianca gia' pronta di Unity
+    // (Texture2D.whiteTexture) e la coloro con GUI.color. Prima creavo una
+    // Texture2D nuova per ogni rettangolo, ad ogni frame: era uno spreco.
+    static void Riquadro(Rect r, Color colore)
+    {
+        Color vecchio = GUI.color;
+        GUI.color = colore;
+        GUI.DrawTexture(r, Texture2D.whiteTexture);
+        GUI.color = vecchio;
+    }
+
+    // Texture 1x1 di un colore: serve SOLO come sfondo di uno stile GUI
+    // (lo stile vuole una texture vera, GUI.color non basta). La creo una
+    // volta sola in CostruisciStili, quindi qui non c'e' spreco.
     static Texture2D TexturaPiena(Color colore)
     {
         Texture2D t = new Texture2D(1, 1);

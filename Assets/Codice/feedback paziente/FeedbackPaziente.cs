@@ -14,6 +14,7 @@ using UnityEngine;
 // SI INSTALLA DA SOLO: non serve trascinarlo nella scena in Unity.
 // Gli altri file lo chiamano con i metodi statici qui sotto, per esempio:
 //     FeedbackPaziente.CaramellaPresa();
+//     FeedbackPaziente.MissioneCompiuta();
 //     FeedbackPaziente.AzioneSbagliata();
 //
 // I numeri che regolano tutto stanno in ParametriFeedback.cs (la "pagina").
