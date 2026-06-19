@@ -33,7 +33,7 @@ Da pacchetti audio gratuiti **Kenney** (lo stesso autore della grafica), tutti
 | Evento | File usato | Pacchetto |
 |---|---|---|
 | raccolta | `raccolta.ogg` (confirmation_001) | Kenney – Interface Sounds |
-| vittoria | `vittoria.ogg` (jingles_NES00) | Kenney – Music Jingles |
+| vittoria | `vittoria.ogg` (jingles_PIZZI12, pizzicato) | Kenney – Music Jingles |
 | errore | `errore.ogg` (error_007) | Kenney – Interface Sounds |
 
 Li ho prima raccolti e rinominati in italiano nella cartella **`suoni gioco/`**.
@@ -86,7 +86,10 @@ Da questo ambiente non posso riprodurre l'audio. Allora ho scelto in modo
 **durata** e l'**andamento del suono** (se l'altezza sale = allegro, se scende =
 negativo). Così:
 - **raccolta** = breve e in salita → conferma positiva;
-- **vittoria** = la più lunga e in salita forte → fanfara di vittoria;
+- **vittoria** = jingle "pizzicato" morbido e in salita → allegro ma gentile
+  (in un secondo momento ho sostituito l'8-bit, troppo stridulo, con questo
+  pizzicato più piacevole; misurando il "timbro" l'8-bit aveva frequenze molto
+  più alte/aspre);
 - **errore** = breve e in leggera discesa → negativo ma gentile (adatto alla
   riabilitazione: deve segnalare, non spaventare).
 

@@ -21,7 +21,7 @@ grafica (Kenney), per coerenza.
 EVENTO        FILE           QUANDO SUONA             FILE ORIGINALE           PACCHETTO / AUTORE              LICENZA
 -----------   ------------   ----------------------   ----------------------   -----------------------------   -------
 raccolta      raccolta.ogg   stellina raccolta        confirmation_001.ogg     Kenney - Interface Sounds       CC0
-vittoria      vittoria.ogg   livello completato       jingles_NES00.ogg        Kenney - Music Jingles          CC0
+vittoria      vittoria.ogg   livello completato       jingles_PIZZI12.ogg      Kenney - Music Jingles          CC0
 errore        errore.ogg     azione sbagliata         error_007.ogg            Kenney - Interface Sounds       CC0
 
 
@@ -45,7 +45,9 @@ Non potendo riprodurre l'audio, ho scelto i file in modo "misurato": per ogni
 candidato ho calcolato la DURATA e l'ANDAMENTO DEL SUONO (se l'altezza/le note
 SALGONO = allegro, se SCENDONO = negativo). Cosi' ho preso:
   - raccolta: breve (0.3s) e in salita  -> suono positivo di conferma
-  - vittoria: ~1.8s e in salita forte   -> fanfara "livello completato"
+  - vittoria: jingle "pizzicato" morbido e in salita (~1s) -> allegro ma GENTILE
+              (scelto al posto dell'8-bit, troppo stridulo; l'8-bit resta in
+               varianti/vittoria_8bit_classica.ogg)
   - errore:   breve (0.2s) e in leggera discesa -> negativo ma GENTILE
 
 IMPORTANTE: il giudizio finale "suona bene?" lo fai TU ascoltandoli in Unity.
