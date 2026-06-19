@@ -67,7 +67,7 @@ Ogni slide ha già delle **note del relatore** (in PowerPoint: menu *Visualizza 
 - **«Perché non usi l'intelligenza artificiale per la mano?»** → Perché serve un riconoscimento robusto e fatto da codice: inseguire un colore acceso è semplice, affidabile e senza dipendenze esterne. La pelle è meno satura dell'evidenziatore, quindi il viso non viene confuso.
 - **«Come misureresti se funziona davvero?»** → Salvando metriche oggettive (tempi, errori, ampiezza dei movimenti) e confrontando le sessioni; poi uno studio pilota con i terapisti.
 - **«Che ruolo ha il terapista?»** → Sceglie la modalità di comando e tara i parametri (difficoltà, anti-tremore, volumi) sul singolo paziente.
-- **«Perché tutto generato da codice?»** → Nessun file esterno: applicazione leggera, portabile (Windows/Mac) e completamente sotto controllo; è anche una dimostrazione di competenza tecnica.
+- **«Da dove vengono grafica e suoni?»** → Sono asset gratuiti **CC0** (pubblico dominio), inclusi nel progetto in `Assets/Resources`; la **logica** (livelli, tracciamento della webcam, feedback) è invece tutta scritta da me in C#. Nessuna dipendenza o libreria esterna: applicazione leggera e portabile (Windows/Mac).
 
 ---
 
@@ -75,4 +75,4 @@ Ogni slide ha già delle **note del relatore** (in PowerPoint: menu *Visualizza 
 
 I due documenti sono generati da script Python (`build_pptx.py`, `build_docx.py`) con le librerie
 `python-pptx` e `python-docx`. Per rigenerarli basta rieseguire gli script; i contenuti scientifici
-stanno nel file `lit.json`.
+stanno nei file `lit_ppt.json` (slide) e `lit_docx.json` (tesina), nella cartella `sorgenti/`.

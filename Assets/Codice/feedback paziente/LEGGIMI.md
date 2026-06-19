@@ -5,9 +5,9 @@ del paziente:
 
 | Azione del paziente | Suono | Effetto su Astro |
 |---|---|---|
-| Prende una **caramella** | tre note che **salgono** (do‑mi‑sol), allegre | si **gonfia** e brilla di verde 🟢 |
-| Raggiunge la **porta** / vince | piccola **fanfara** (do‑mi‑sol‑do) | si **gonfia** e brilla 🟢 |
-| Tocca **asteroide / bomba** | due note **basse** che scendono | si **schiaccia** e lampeggia di rosso 🔴 |
+| Prende una **stellina** | suono breve e allegro che **sale** | si **gonfia** e brilla di verde 🟢 |
+| Raggiunge la **porta** / vince | piccolo **jingle** di vittoria (pizzicato) | si **gonfia** e brilla 🟢 |
+| Tocca **asteroide / bomba** | suono basso e gentile che **scende** | si **schiaccia** e lampeggia di rosso 🔴 |
 | **Tempo scaduto** | come l'errore | si schiaccia 🔴 |
 
 > **Perché serve nella riabilitazione**
@@ -20,34 +20,36 @@ del paziente:
 
 ## Il corpo del codice (spiegato in breve)
 
-Tutto è generato **da codice**, senza file audio o immagini esterne — esattamente
-come il resto del gioco (vedi `FabbricaImmagini.cs`). Tre file:
+Due file di codice, nello stesso stile del resto del progetto:
 
 ### 1. `ParametriFeedback.cs` — la *pagina dei valori*
 È l'unico file da toccare per regolare il feedback (come `Impostazioni.cs` per il
-gioco). Contiene **solo numeri**, nessuna logica: volumi, note, durate, quanto Astro
-si gonfia/schiaccia, i colori. La tabella completa è più sotto.
+gioco). Contiene **solo numeri/valori**, nessuna logica: volumi, interruttori
+(suono/visivo on-off), i **nomi dei file audio** e quanto Astro si
+gonfia/schiaccia (con i colori). La tabella completa è più sotto.
 
-### 2. `FabbricaSuoni.cs` — costruisce i suoni
-Un suono è una lista di numeri fra ‑1 e +1 (i *campioni*). Il metodo
-`CreaMelodia(...)` mette in fila una o più note (onde sinusoidali) e ci applica un
-*inviluppo* (il volume sale in fretta e poi scende piano, così la nota non fa
-"click"). Per l'errore usa l'opzione `ruvido`, che somma una seconda onda un po'
-stonata: le due "battono" insieme e il suono diventa volutamente sgradevole.
-
-### 3. `FeedbackPaziente.cs` — il *cervello* del feedback
+### 2. `FeedbackPaziente.cs` — il *cervello* del feedback
 È un oggetto che **si installa da solo** all'avvio (non serve trascinarlo in scena).
 All'avvio:
 - garantisce **un solo `AudioListener`** ("le orecchie"): il gioco ricrea la
   telecamera da zero e quella di default verrebbe distrutta, quindi il sistema
   rimuove eventuali orecchie e ne mette una sola su di sé (così funziona sempre,
   a prescindere dall'ordine di avvio);
-- crea un **`AudioSource`** ("l'altoparlante") e i tre suoni una volta sola.
+- crea un **`AudioSource`** ("l'altoparlante") e **carica i tre suoni** una volta
+  sola dai file audio in `Assets/Resources` (`Resources.Load<AudioClip>`).
+
+I suoni sono **file audio veri** (`.ogg`, gratuiti e CC0): si trovano nella
+cartella **`suoni gioco/`** (con il loro `LEGGIMI.txt` su fonti e licenze) e sono
+copiati in `Assets/Resources/` con i nomi `raccolta`, `vittoria`, `errore`.
+
+> Rete di sicurezza: se un file audio mancasse, il clip resta vuoto e il gioco
+> **non si blocca** (semplicemente quel feedback sonoro non parte), con un avviso
+> nel log.
 
 Espone tre comandi semplici che gli altri file chiamano con **una riga**:
 
 ```csharp
-FeedbackPaziente.CaramellaPresa();    // azione giusta
+FeedbackPaziente.CaramellaPresa();    // azione giusta (stellina raccolta)
 FeedbackPaziente.MissioneCompiuta();  // vittoria
 FeedbackPaziente.AzioneSbagliata();   // errore
 ```
@@ -60,7 +62,7 @@ schiacciarsi (rispettando gli interruttori `SUONO_ATTIVO` / `VISIVO_ATTIVO`).
 ## Come è collegato al resto del gioco
 
 Il feedback parte sempre dal "cervello" del gioco, `GestoreGioco.cs`, che già sapeva
-quando un'azione era giusta o sbagliata. Ho aggiunto **una sola riga** per evento:
+quando un'azione era giusta o sbagliata. C'è **una sola riga** per evento:
 
 | File / metodo | Riga aggiunta |
 |---|---|
@@ -89,12 +91,10 @@ I metodi sono `Astro.Gonfia()` e `Astro.Schiaccia()`, e leggono i numeri da
 | `VOLUME_GENERALE` | `0.90` | volume di tutto il feedback |
 | `VOLUME_GIUSTO` | `0.80` | volume delle azioni corrette |
 | `VOLUME_SBAGLIATO` | `0.45` | volume degli errori (più basso = più gentile) |
-| **Note dei suoni (Hz)** | | |
-| `NOTE_CARAMELLA` | do‑mi‑sol | melodia della caramella |
-| `NOTE_VITTORIA` | do‑mi‑sol‑do | fanfara di vittoria |
-| `NOTE_ERRORE` | due note basse | suono dell'errore (scendono) |
-| `DURATA_NOTA_GIUSTO` | `0.10` s | durata di ogni nota positiva |
-| `DURATA_NOTA_ERRORE` | `0.18` s | durata di ogni nota di errore |
+| **File dei suoni** (in `Assets/Resources`, nome senza estensione) | | |
+| `SUONO_RACCOLTA` | `"raccolta"` | suono quando si prende una stellina |
+| `SUONO_VITTORIA` | `"vittoria"` | suono di livello completato |
+| `SUONO_ERRORE` | `"errore"` | suono di azione sbagliata (gentile) |
 | **Astro si gonfia (positivo)** | | |
 | `GONFIA_QUANTITA` | `0.45` | quanto cresce (0.45 = +45%) |
 | `GONFIA_DURATA` | `0.45` s | quanto dura il gonfiamento |
@@ -113,8 +113,10 @@ I metodi sono `Astro.Gonfia()` e `Astro.Schiaccia()`, e leggono i numeri da
 ---
 
 ## Note tecniche
-- **Nessun file esterno**: suoni e immagini sono creati da codice.
-- Le immagini `.meta` di Unity per questa cartella e per i nuovi script vengono
-  generate **automaticamente** la prima volta che apri il progetto in Unity.
-- Per aggiungere un nuovo suono: aggiungi le note in `ParametriFeedback`, crealo
-  in `FeedbackPaziente.Awake()` con `FabbricaSuoni.CreaMelodia(...)` e richiamalo.
+- I **suoni** sono file `.ogg` (CC0) in `Assets/Resources`; gli **effetti visivi**
+  (gonfia/schiaccia) sono fatti da codice nella classe `Astro`.
+- I file `.meta` di Unity per questa cartella e per i nuovi script vengono
+  generati **automaticamente** la prima volta che apri il progetto in Unity.
+- Per cambiare un suono: metti un altro file in `Assets/Resources` e aggiorna la
+  costante corrispondente in `ParametriFeedback.cs` (es. `SUONO_VITTORIA`).
+  Vedi anche `suoni gioco/LEGGIMI.txt`.

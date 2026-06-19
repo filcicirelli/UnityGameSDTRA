@@ -2,8 +2,8 @@
   OGGETTI GIOCO  -  immagini pronte (sprite) per il gioco
 ============================================================
 
-Questa cartella contiene le immagini "vere" (file PNG) che hanno sostituito
-gli oggetti prima DISEGNATI DA CODICE in Assets/Codice/FabbricaImmagini.cs.
+Questa cartella contiene le immagini "vere" (file PNG) usate per gli oggetti
+del gioco.
 
 Ogni oggetto del gioco ha un file con il suo nome in italiano.
 Le immagini usate dal gioco sono anche copiate in Assets/Resources/.
@@ -82,4 +82,4 @@ Per cambiare un'immagine:
  1) metti un altro PNG in Assets/Resources/ (es. pianeta.png);
  2) se usi un nome diverso, aggiorna la costante in cima a
     Assets/Codice/FabbricaImmagini.cs.
-Nessun altro codice da toccare. Vedi PERCORSO_MODIFICHE.md per i dettagli.
+Nessun altro codice da toccare.

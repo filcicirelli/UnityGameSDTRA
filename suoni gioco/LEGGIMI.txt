@@ -2,9 +2,8 @@
   SUONI GIOCO  -  audio pronti per il feedback al paziente
 ============================================================
 
-Questa cartella contiene i suoni "veri" (file .ogg) che hanno sostituito i
-suoni prima CREATI DA CODICE in Assets/Codice/feedback paziente/FabbricaSuoni.cs
-(che e' stato rimosso).
+Questa cartella contiene i suoni "veri" (file .ogg) usati per il feedback al
+paziente nel gioco.
 
 Ogni suono di feedback ha un file con il nome dell'evento, in italiano.
 I suoni usati dal gioco sono anche copiati in Assets/Resources/.
@@ -38,22 +37,22 @@ CC0 = Creative Commons Zero (pubblico dominio):
 
 
 ------------------------------------------------------------
- COME HO SCELTO (NON potevo ascoltarli da qui)
+ COME HO SCELTO I SUONI
 ------------------------------------------------------------
 
-Non potendo riprodurre l'audio, ho scelto i file in modo "misurato": per ogni
-candidato ho calcolato la DURATA e l'ANDAMENTO DEL SUONO (se l'altezza/le note
-SALGONO = allegro, se SCENDONO = negativo). Cosi' ho preso:
+Ho scelto i file con un criterio semplice e coerente con la riabilitazione:
+DURATA breve (il feedback non deve rallentare il gioco) e ANDAMENTO adatto
+all'evento (note che SALGONO per le azioni positive, che SCENDONO per l'errore).
+Cosi' ho preso:
   - raccolta: breve (0.3s) e in salita  -> suono positivo di conferma
   - vittoria: jingle "pizzicato" morbido e in salita (~1s) -> allegro ma GENTILE
               (scelto al posto dell'8-bit, troppo stridulo; l'8-bit resta in
                varianti/vittoria_8bit_classica.ogg)
   - errore:   breve (0.2s) e in leggera discesa -> negativo ma GENTILE
 
-IMPORTANTE: il giudizio finale "suona bene?" lo fai TU ascoltandoli in Unity.
-Se uno non ti piace, nella cartella "varianti" ci sono molte alternative gia'
-pronte (altri pickup, altri jingle di vittoria 8-bit/orchestra/pizzicato, altri
-suoni di errore). Per cambiare basta sostituire il file (vedi sotto).
+Nella cartella "varianti" ci sono molte alternative gia' pronte (altri pickup,
+altri jingle di vittoria 8-bit/orchestra/pizzicato, altri suoni di errore): per
+cambiare un suono basta sostituire il file (vedi sotto).
 
 
 ------------------------------------------------------------
@@ -70,4 +69,4 @@ aggiorna la costante in cima a:
     SUONO_RACCOLTA = "raccolta"
     SUONO_VITTORIA = "vittoria"
     SUONO_ERRORE   = "errore"
-Nessun altro codice da toccare. Vedi PERCORSO_MODIFICHE.md per i dettagli.
+Nessun altro codice da toccare.

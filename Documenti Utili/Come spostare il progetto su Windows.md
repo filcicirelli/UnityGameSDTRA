@@ -4,10 +4,10 @@ Questa guida spiega come portare il gioco "ASTRO" da questo Mac a un altro
 computer (per esempio Windows) e farlo funzionare **senza problemi**, usando
 sempre il programma **Unity**.
 
-Il progetto e' stato scritto apposta per essere facile da spostare: quasi tutto
-(immagini, suoni, livelli) viene **creato dal codice**, quindi non ci sono file
-sparsi che si possono perdere. L'unico file esterno e' lo sfondo
-(`Assets/Resources/sfondo.jpg`), che viaggia gia' dentro la cartella `Assets`.
+Il progetto e' stato scritto apposta per essere facile da spostare: tutti i file
+che servono (immagini, suoni, sfondo) stanno dentro la cartella `Assets`, in
+`Assets/Resources/`, quindi non ci sono file sparsi che si possono perdere. I
+livelli, invece, sono definiti dal codice.
 
 
 ## 1) Cosa serve sul computer nuovo
@@ -84,11 +84,11 @@ Windows. Solo due cose da sapere:
 
 - **Niente percorsi fissi del computer.** Nel codice non ci sono percorsi tipo
   `C:\...` o `/Users/...`: Unity trova i file da solo, su qualsiasi sistema.
-- **Quasi tutto e' generato dal codice.** Le immagini (Astro, caramelle, bombe...)
-  e i suoni nascono da codice; non ci sono file da perdere o da ritrovare.
-- **Un solo file esterno**, lo sfondo, e sta dentro `Assets/Resources/`. Il nome
-  nel codice (`"sfondo"`) combacia esattamente con il file (`sfondo.jpg`), quindi
-  si carica anche sui sistemi che distinguono maiuscole/minuscole.
+- **Tutti i file stanno dentro `Assets/`.** Immagini e suoni (CC0) sono in
+  `Assets/Resources/`; non ci sono file sparsi da perdere o da ritrovare.
+- **I nomi combaciano.** Ogni nome scritto nel codice (es. `"sfondo"`, `"asteroide"`)
+  corrisponde esattamente al file (`sfondo.jpg`, `asteroide.png`), quindi tutto si
+  carica anche sui sistemi che distinguono maiuscole/minuscole.
 - **Nessun carattere "strano" nel codice.** Il testo a schermo usa solo simboli
   comuni a tutti i sistemi (per esempio il cuore "♥" delle vite), cosi' si vede
   uguale su Windows e su Mac.
