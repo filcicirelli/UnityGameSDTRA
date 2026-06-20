@@ -29,10 +29,10 @@ public static class FabbricaImmagini
     public static Sprite CreaPorta()          { return Carica(PORTA); }
     public static Sprite CreaCoriandolo()     { return Carica(CORIANDOLO); }
 
-    // L'asteroide e' una sola immagine di roccia: chi la usa (Livelli.cs) la
-    // RIPETE a mosaico (drawMode Tiled) per formare le barriere, e ne sceglie
-    // il colore con lo SpriteRenderer. Quindi qui non serve passare un colore.
-    public static Sprite CreaTesseraAsteroide() { return Carica(ASTEROIDE); }
+    // L'asteroide e' una sola immagine di roccia INTERA: chi la usa (Livelli.cs)
+    // la disegna tutta, scalandola in modo uniforme (cosi' resta tonda, non si
+    // taglia), e ne sceglie il colore con lo SpriteRenderer.
+    public static Sprite CreaAsteroide() { return Carica(ASTEROIDE); }
 
     // Quadrato pieno di un colore. NON e' un "disegno": e' solo un rettangolo
     // colorato, lo uso per l'alone rosso che pulsa attorno alla bomba.
@@ -84,6 +84,6 @@ public static class FabbricaImmagini
             new Vector2(0.5f, 0.5f),
             latoLungo,              // PPU = lato piu' lungo -> immagine alta circa 1 unita'
             0,
-            SpriteMeshType.FullRect); // FullRect serve perche' l'asteroide viene ripetuto a mosaico
+            SpriteMeshType.FullRect); // sprite a rettangolo pieno (semplice e prevedibile)
     }
 }

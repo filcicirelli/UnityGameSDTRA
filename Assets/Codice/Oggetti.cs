@@ -7,7 +7,7 @@ using UnityEngine;
 //   - Caramella    (da raccogliere)
 //   - Porta        (appare alla fine: basta raggiungerla)
 //   - Bomba        (da non toccare)
-//   - Asteroide    (rettangolo che fa male)
+//   - Asteroide    (roccia tonda che fa male)
 //   - Esplosione, PianetaAmico, Coriandoli  (effetti)
 
 
@@ -81,12 +81,12 @@ public class Astro : MonoBehaviour
         float dt = Mathf.Max(Time.deltaTime, 0.000001f);
         Velocita = ((Vector2)(transform.position - posPrecedente)) / dt;
 
-        // 2) Animazioni: respiro + feedback (gonfiamento / schiacciamento)
+        // 2) Animazioni di feedback (gonfiamento / schiacciamento).
         // Vedi la cartella "feedback paziente": i valori stanno in ParametriFeedback.
-        float respiro = 1f + Mathf.Sin(Time.time * 2f) * 0.04f;
-
-        float fattoreX = respiro;
-        float fattoreY = respiro;
+        // A riposo Astro resta fermo (niente "respiro"): si deforma solo quando
+        // c'e' un feedback da mostrare.
+        float fattoreX = 1f;
+        float fattoreY = 1f;
 
         // GONFIAMENTO (azione giusta): Astro cresce e torna, con una curva "a campana"
         if (timerGonfia > 0f)
@@ -247,15 +247,13 @@ public class Astro : MonoBehaviour
 
 // =============================================================
 // CARAMELLA spaziale. Si raccoglie passando vicino con Astro.
-// Galleggia nello spazio con un piccolo movimento sinusoidale.
+// Sta ferma nel punto in cui viene messa (nessuna animazione).
 // =============================================================
 public class Caramella : MonoBehaviour
 {
     // Lista di tutte le caramelle attive nel livello
     public static List<Caramella> Attive = new List<Caramella>();
 
-    private Vector3 punto;   // posizione attorno a cui oscilla
-    private float fase;
     private bool raccolta;
 
     void OnEnable()
@@ -270,10 +268,7 @@ public class Caramella : MonoBehaviour
 
     public void Inizializza(Vector3 posizione)
     {
-        punto = posizione;
         transform.position = posizione;
-        // Fase diversa per ogni caramella, cosi' non si muovono tutte uguali
-        fase = Random.Range(0f, Mathf.PI * 2f);
     }
 
     // Chiamata da Astro quando si avvicina abbastanza
@@ -289,24 +284,6 @@ public class Caramella : MonoBehaviour
             GestoreGioco.Istanza.SegnalaCaramellaRaccolta();
         }
         Destroy(gameObject);
-    }
-
-    void Update()
-    {
-        // Galleggiamento + scintillio
-        float t = Time.time * 1.5f + fase;
-
-        float dx = Mathf.Sin(t) * 0.10f;
-        float dy = Mathf.Cos(t * 0.8f) * 0.12f;
-        transform.position = punto + new Vector3(dx, dy, 0f);
-
-        // Piccola rotazione avanti-indietro
-        float angolo = Mathf.Sin(Time.time * 3f + fase) * 8f;
-        transform.rotation = Quaternion.Euler(0f, 0f, angolo);
-
-        // Pulsa di dimensione, sembra che brilli
-        float scala = 1f + Mathf.Sin(Time.time * 6f + fase) * 0.08f;
-        transform.localScale = new Vector3(scala, scala, 1f);
     }
 }
 
@@ -451,16 +428,17 @@ public class Bomba : MonoBehaviour
 
 
 // =============================================================
-// ASTEROIDE: rettangolo che fa male se viene toccato.
-// Non uso la fisica di Unity, faccio io il controllo "punto dentro rettangolo".
+// ASTEROIDE: roccia tonda INTERA che fa male se viene toccata.
+// Non uso la fisica di Unity, faccio io il controllo "punto dentro cerchio".
 // =============================================================
 public class Asteroide : MonoBehaviour
 {
     // Lista di tutti gli asteroidi presenti nel livello
     public static List<Asteroide> Tutti = new List<Asteroide>();
 
-    // Rettangolo nello spazio del gioco
-    public Rect Rettangolo;
+    // Collisione a CERCHIO (centro + raggio), come la forma della roccia
+    private Vector2 centro;
+    private float raggio;
 
     void OnEnable()
     {
@@ -472,24 +450,19 @@ public class Asteroide : MonoBehaviour
         Tutti.Remove(this);
     }
 
-    public void Inizializza(Vector2 centro, Vector2 dimensione)
+    public void Inizializza(Vector2 centro, float diametro)
     {
+        this.centro = centro;
         transform.position = new Vector3(centro.x, centro.y, 0f);
-        // La grandezza visiva la mette lo SpriteRenderer (drawMode Tiled + size,
-        // vedi Livelli.cs), quindi qui la scala resta 1. Il rettangolo qui sotto
-        // serve solo per capire se Astro tocca la barriera (la collisione).
-        transform.localScale = Vector3.one;
-
-        Rettangolo = new Rect(
-            centro.x - dimensione.x / 2f,
-            centro.y - dimensione.y / 2f,
-            dimensione.x,
-            dimensione.y);
+        // La grandezza VISIVA la mette lo SpriteRenderer con localScale (vedi
+        // Livelli.cs). Qui calcolo solo il raggio di collisione: un po' piu'
+        // piccolo del disegno (vedi Impostazioni.RAGGIO_ASTEROIDE_FATTORE).
+        raggio = diametro * Impostazioni.RAGGIO_ASTEROIDE_FATTORE;
     }
 
     public bool Contiene(Vector2 punto)
     {
-        return Rettangolo.Contains(punto);
+        return (punto - centro).sqrMagnitude <= raggio * raggio;
     }
 }
 

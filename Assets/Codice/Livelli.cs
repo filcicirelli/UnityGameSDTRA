@@ -41,8 +41,6 @@ public static class DefinizioneLivelli
         new Color(1f,    0.55f, 0.30f),
     };
 
-    // Colore degli asteroidi (uguale per tutti)
-    static readonly Color COLORE_ASTEROIDE = new Color(0.55f, 0.50f, 0.45f);
 
     // =========================================================
     // LIVELLO 1 - PRIMO VOLO
@@ -67,27 +65,28 @@ public static class DefinizioneLivelli
         l.titolo = "LIVELLO 2 - TRA GLI ASTEROIDI";
         l.obiettivo = "EVITA GLI ASTEROIDI";
 
-        // Asteroidi: due muri laterali, un soffitto, due ostacoli al centro.
-        // Formato: NuovoAsteroide(centroX, centroY, larghezza, altezza)
-        l.asteroidi.Add(NuovoAsteroide(-7.5f,  0.0f, 1.2f, 5.0f));
-        l.asteroidi.Add(NuovoAsteroide( 7.5f,  0.0f, 1.2f, 5.0f));
-        l.asteroidi.Add(NuovoAsteroide( 0.0f,  4.5f, 9.0f, 1.0f));
-        l.asteroidi.Add(NuovoAsteroide(-2.5f,  1.0f, 1.5f, 1.5f));
-        l.asteroidi.Add(NuovoAsteroide( 2.5f, -1.5f, 1.8f, 1.0f));
+        // Asteroidi: rocce tonde INTERE sparse nel campo (mai tagliate, tutte
+        // dentro lo schermo). Formato: NuovoAsteroide(centroX, centroY, diametro)
+        l.asteroidi.Add(NuovoAsteroide(-4.6f,  2.7f, 1.4f));
+        l.asteroidi.Add(NuovoAsteroide( 3.9f,  3.1f, 2.0f));
+        l.asteroidi.Add(NuovoAsteroide(-3.2f, -2.6f, 2.4f));
+        l.asteroidi.Add(NuovoAsteroide( 5.1f, -1.0f, 1.6f));
+        l.asteroidi.Add(NuovoAsteroide( 0.2f,  3.9f, 1.8f));
+        l.asteroidi.Add(NuovoAsteroide( 1.4f, -3.2f, 1.3f));
 
-        // Posizioni delle caramelle (scelte a mano nei "vuoti")
+        // Posizioni delle caramelle (scelte nei "vuoti" tra le rocce)
         Vector2[] posizioni = new Vector2[]
         {
-            new Vector2(-5.5f,  3.0f),
-            new Vector2(-3.0f,  3.5f),
-            new Vector2( 3.0f,  3.5f),
-            new Vector2( 5.5f,  3.0f),
-            new Vector2(-5.0f,  0.0f),
-            new Vector2( 0.0f,  2.5f),
-            new Vector2( 5.0f,  0.5f),
-            new Vector2(-3.5f, -2.0f),
-            new Vector2( 0.0f, -3.0f),
-            new Vector2( 4.5f, -3.0f),
+            new Vector2(-6.2f,  0.0f),
+            new Vector2(-1.6f,  1.9f),
+            new Vector2( 1.9f,  1.4f),
+            new Vector2( 6.3f,  1.6f),
+            new Vector2(-5.8f, -2.3f),
+            new Vector2(-0.4f, -1.7f),
+            new Vector2( 3.4f, -3.4f),
+            new Vector2( 6.4f, -3.0f),
+            new Vector2(-2.5f,  3.9f),
+            new Vector2( 4.2f,  0.6f),
         };
         AggiungiCaramelle(l, posizioni);
 
@@ -104,32 +103,33 @@ public static class DefinizioneLivelli
         l.titolo = "LIVELLO 3 - CAMPO MINATO";
         l.obiettivo = "ATTENZIONE ALLE BOMBE";
 
-        // Riuso gli stessi asteroidi del livello 2
-        l.asteroidi.Add(NuovoAsteroide(-7.5f,  0.0f, 1.2f, 5.0f));
-        l.asteroidi.Add(NuovoAsteroide( 7.5f,  0.0f, 1.2f, 5.0f));
-        l.asteroidi.Add(NuovoAsteroide( 0.0f,  4.5f, 9.0f, 1.0f));
-        l.asteroidi.Add(NuovoAsteroide(-2.5f,  1.0f, 1.5f, 1.5f));
-        l.asteroidi.Add(NuovoAsteroide( 2.5f, -1.5f, 1.8f, 1.0f));
+        // Rocce tonde INTERE disposte a lasciare dei "vicoli" liberi
+        l.asteroidi.Add(NuovoAsteroide(-4.3f, -3.2f, 2.5f));
+        l.asteroidi.Add(NuovoAsteroide( 4.4f,  3.1f, 2.4f));
+        l.asteroidi.Add(NuovoAsteroide(-3.9f,  2.9f, 1.5f));
+        l.asteroidi.Add(NuovoAsteroide( 4.0f, -3.0f, 1.4f));
+        l.asteroidi.Add(NuovoAsteroide(-0.2f,  3.5f, 1.3f));
+        l.asteroidi.Add(NuovoAsteroide( 0.3f, -3.6f, 1.3f));
 
-        // Bombe (lontane dal centro dove parte Astro)
-        l.bombe.Add(new Vector2(-6.0f,  2.5f));
-        l.bombe.Add(new Vector2( 6.0f,  2.5f));
-        l.bombe.Add(new Vector2(-4.0f, -3.5f));
-        l.bombe.Add(new Vector2( 4.0f, -3.5f));
+        // Bombe (lontane dal centro dove parte Astro, nei vicoli liberi)
+        l.bombe.Add(new Vector2(-2.2f, -2.9f));
+        l.bombe.Add(new Vector2( 2.3f,  2.6f));
+        l.bombe.Add(new Vector2( 2.8f, -1.6f));
+        l.bombe.Add(new Vector2(-2.8f,  1.7f));
 
-        // Caramelle (nei "vicoli" tra le bombe)
+        // Caramelle (nei "vicoli" tra rocce e bombe)
         Vector2[] posizioni = new Vector2[]
         {
-            new Vector2(-4.0f,  3.0f),
-            new Vector2(-1.5f,  3.0f),
-            new Vector2( 1.5f,  3.0f),
-            new Vector2( 4.0f,  3.0f),
-            new Vector2(-5.0f,  0.0f),
-            new Vector2( 0.0f,  2.5f),
-            new Vector2( 5.0f,  0.0f),
-            new Vector2(-1.5f, -3.0f),
-            new Vector2( 1.5f, -3.0f),
-            new Vector2( 0.0f, -3.5f),
+            new Vector2(-1.6f,  1.2f),
+            new Vector2( 1.6f, -1.2f),
+            new Vector2(-1.4f, -1.5f),
+            new Vector2( 1.5f,  1.4f),
+            new Vector2(-2.6f,  0.2f),
+            new Vector2( 2.6f, -0.2f),
+            new Vector2(-0.2f,  1.9f),
+            new Vector2( 0.2f, -2.0f),
+            new Vector2(-5.8f,  0.4f),
+            new Vector2( 5.8f, -0.4f),
         };
         AggiungiCaramelle(l, posizioni);
 
@@ -138,12 +138,11 @@ public static class DefinizioneLivelli
 
     // ---- Funzioni di aiuto ----
 
-    static DatiAsteroide NuovoAsteroide(float cx, float cy, float larghezza, float altezza)
+    static DatiAsteroide NuovoAsteroide(float cx, float cy, float diametro)
     {
         DatiAsteroide a = new DatiAsteroide();
         a.centro = new Vector2(cx, cy);
-        a.dimensione = new Vector2(larghezza, altezza);
-        a.colore = COLORE_ASTEROIDE;
+        a.diametro = diametro;
         return a;
     }
 
@@ -303,6 +302,16 @@ public static class CaricatoreLivelli
 
     // ---- Asteroidi ----
 
+    // Tinte naturali per le rocce: le faccio variare a turno cosi' il campo
+    // di asteroidi sembra fatto di pietre diverse (piu' bello, piu' vero).
+    static readonly Color[] COLORI_ASTEROIDE = new Color[]
+    {
+        new Color(0.62f, 0.60f, 0.58f), // grigio chiaro
+        new Color(0.55f, 0.50f, 0.45f), // grigio-bruno
+        new Color(0.60f, 0.52f, 0.44f), // sabbia
+        new Color(0.50f, 0.50f, 0.52f), // grigio freddo
+    };
+
     static void CostruisciAsteroidi(DatiLivello dati)
     {
         for (int i = 0; i < dati.asteroidi.Count; i++)
@@ -312,15 +321,18 @@ public static class CaricatoreLivelli
             GameObject go = new GameObject("Asteroide");
             go.transform.SetParent(contenitoreAsteroidi);
 
+            // La roccia e' un'UNICA immagine intera: la scalo in modo UNIFORME
+            // (stesso fattore in X e Y) cosi' resta tonda e intera, senza
+            // deformazioni ne' tagli ai bordi.
+            go.transform.localScale = new Vector3(d.diametro, d.diametro, 1f);
+
             SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = FabbricaImmagini.CreaTesseraAsteroide();
-            sr.color = d.colore;                 // tinta della roccia (cambia da un livello all'altro)
-            sr.drawMode = SpriteDrawMode.Tiled;  // RIPETO la roccia a mosaico invece di deformarla
-            sr.size = d.dimensione;              // la barriera e' grande quanto dicono i suoi dati
+            sr.sprite = FabbricaImmagini.CreaAsteroide();
+            sr.color = COLORI_ASTEROIDE[i % COLORI_ASTEROIDE.Length];
             sr.sortingOrder = 0;
 
             Asteroide a = go.AddComponent<Asteroide>();
-            a.Inizializza(d.centro, d.dimensione);
+            a.Inizializza(d.centro, d.diametro);
         }
     }
 
@@ -404,23 +416,22 @@ public static class CaricatoreLivelli
             Vector2 p = new Vector2(x, y);
 
             if (p.magnitude < 1.2f) continue;
-            if (DentroAsteroide(p, dati)) continue;
+            if (DentroAsteroide(p, dati, Impostazioni.RAGGIO_CARAMELLA)) continue;
             return p;
         }
         // Se proprio non trovo (quasi impossibile)
         return new Vector2(3f, 3f);
     }
 
-    static bool DentroAsteroide(Vector2 punto, DatiLivello dati)
+    // Vero se il punto cade dentro un asteroide (cerchio), allargato di
+    // "margine" per lasciare un po' di spazio libero attorno alla roccia.
+    static bool DentroAsteroide(Vector2 punto, DatiLivello dati, float margine)
     {
         for (int i = 0; i < dati.asteroidi.Count; i++)
         {
             DatiAsteroide a = dati.asteroidi[i];
-            Rect r = new Rect(
-                a.centro.x - a.dimensione.x / 2f,
-                a.centro.y - a.dimensione.y / 2f,
-                a.dimensione.x, a.dimensione.y);
-            if (r.Contains(punto)) return true;
+            float raggio = a.diametro * Impostazioni.RAGGIO_ASTEROIDE_FATTORE + margine;
+            if ((punto - a.centro).sqrMagnitude <= raggio * raggio) return true;
         }
         return false;
     }
@@ -464,7 +475,8 @@ public static class CaricatoreLivelli
             Vector2 p = new Vector2(x, y);
 
             if (Vector2.Distance(p, daEvitare) < 3f) continue;
-            if (DentroAsteroide(p, livelloCorrente)) continue;
+            // margine ampio: la porta e' grande, non deve toccare una roccia
+            if (DentroAsteroide(p, livelloCorrente, 1.0f)) continue;
             if (TroppoVicinoBomba(p)) continue;
             return p;
         }
@@ -552,6 +564,5 @@ public class DatiCaramella
 public class DatiAsteroide
 {
     public Vector2 centro;
-    public Vector2 dimensione; // larghezza x altezza
-    public Color colore;
+    public float diametro; // la roccia e' tonda e intera: basta una misura
 }

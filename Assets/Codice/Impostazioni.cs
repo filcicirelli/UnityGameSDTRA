@@ -13,6 +13,12 @@ public static class Impostazioni
     public const float RAGGIO_PORTA     = 1.80f;
     public const float RAGGIO_BOMBA     = 0.55f;
 
+    // ---- ASTEROIDI ----
+    // Ogni asteroide e' una roccia tonda INTERA. Il suo raggio di collisione
+    // e' il diametro per questo fattore: piu' piccolo del disegno, cosi' i
+    // "quasi tocchi" non tolgono una vita (riabilitazione = piu' indulgente).
+    public const float RAGGIO_ASTEROIDE_FATTORE = 0.42f;
+
     // ---- PUNTI ----
     public const int PUNTI_CARAMELLA   = 10; // punti guadagnati
     public const int PUNTI_PERSI_HIT   = 5;  // punti persi se vieni colpito (asteroide o bomba)

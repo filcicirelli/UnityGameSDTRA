@@ -82,9 +82,9 @@ Sono i mattoni di Unity: ogni cosa in scena è un `GameObject`, a cui si
 
 | Funzione | Cosa fa | Dove la uso |
 |---|---|---|
-| `transform.position` | Posizione nel mondo. La leggo e la scrivo per **muovere** Astro, le caramelle, le bombe. | Astro.Update, Caramella.Update, Bomba.Update... |
-| `transform.localScale` | Dimensione dell'oggetto. La cambio per gli effetti "respiro", gonfia/schiaccia, pulsazioni. | Astro, Caramella, Porta, Esplosione, PianetaAmico. |
-| `transform.localRotation` / `transform.rotation` / `transform.Rotate(...)` | Rotazione dell'oggetto. | Astro (inclinazione), Caramella (dondolio), PezzoCoriandolo (giravolte). |
+| `transform.position` | Posizione nel mondo. La leggo e la scrivo per **muovere** Astro e le bombe, e per posizionare gli oggetti del livello. | Astro.Update, Bomba.Update, Livelli... |
+| `transform.localScale` | Dimensione dell'oggetto. La cambio per gli effetti gonfia/schiaccia e per le pulsazioni, e la imposto per dare la misura a rocce e oggetti. | Astro (gonfia/schiaccia), asteroidi, Porta, Esplosione, PianetaAmico. |
+| `transform.localRotation` / `transform.rotation` / `transform.Rotate(...)` | Rotazione dell'oggetto. | Astro (inclinazione), PezzoCoriandolo (giravolte). |
 | `transform.SetParent(genitore)` | Mette l'oggetto "dentro" un altro, per tenere ordinata la gerarchia. | Livelli.cs (contenitori Caramelle/Asteroidi/Bombe), Coriandoli, alone della bomba. |
 | `transform.localPosition` | Posizione **rispetto al genitore**. | Alone della bomba, coriandoli. |
 
@@ -117,8 +117,7 @@ più), abbassandolo si "avvicina".
 |---|---|---|
 | `Resources.Load<T>("nome")` | Carica un file (immagine o suono) dalla cartella `Assets/Resources`, usando il nome **senza estensione**. | FabbricaImmagini (PNG), FeedbackPaziente (audio), Livelli (sfondo). |
 | `Sprite.Create(texture, rect, pivot, ppu, ...)` | Trasforma una texture in uno **sprite** disegnabile in scena. | FabbricaImmagini, Livelli (sfondo). |
-| `SpriteRenderer` | Il componente che **disegna** uno sprite. Proprietà che uso: `.sprite`, `.color` (tinta), `.sortingOrder` (chi sta davanti), `.drawMode`, `.size`. | Astro, caramelle, bombe, asteroidi, porta, ecc. |
-| `SpriteDrawMode.Tiled` + `.size` | Ripete l'immagine "a mosaico" invece di deformarla: così con una sola roccia costruisco barriere di qualsiasi dimensione. | Livelli.cs (asteroidi). |
+| `SpriteRenderer` | Il componente che **disegna** uno sprite. Proprietà che uso: `.sprite`, `.color` (tinta), `.sortingOrder` (chi sta davanti). | Astro, caramelle, bombe, asteroidi, porta, ecc. |
 | `Texture2D` | Un'immagine in memoria. Metodi che uso: `new Texture2D(...)`, `.SetPixel`, `.SetPixels`, `.Apply`, `.filterMode`, `.wrapMode`. | FabbricaImmagini (quadrato pieno per l'alone della bomba). |
 | `Texture2D.whiteTexture` | Una texture bianca 1×1 **già pronta** di Unity. La coloro con `GUI.color` per disegnare rettangoli pieni senza crearne una nuova ogni volta. | InterfacciaGioco, SchermataStart, ComandoWebcam (metodo `Riquadro`/mirino). |
 | `TextureFormat.RGBA32`, `FilterMode.Point`, `TextureWrapMode.Clamp` | Impostazioni della texture: formato colore con trasparenza, niente sfocatura, niente ripetizione ai bordi. | FabbricaImmagini.CreaQuadratoPieno. |
@@ -142,7 +141,7 @@ più), abbassandolo si "avvicina".
 | `Mathf.Clamp(v, min, max)` / `Mathf.Clamp01(v)` | Tiene un numero dentro un intervallo (Clamp01 = fra 0 e 1). | Indice livello, barra energia, inclinazione di Astro, avanzamento animazioni. |
 | `Mathf.Max(...)` / `Mathf.Min(...)` | Il più grande / il più piccolo fra due numeri. | Punteggio (non sotto 0), vite, dimensione sfondo, guardia su deltaTime. |
 | `Mathf.Abs(v)` | Valore assoluto (toglie il segno). | Distanza dalla telecamera, zona morta del joystick, distanza fra tinte. |
-| `Mathf.Sin(x)` / `Mathf.Cos(x)` | Seno e coseno: danno onde che salgono e scendono, perfette per **respiro, pulsazioni, dondolii**. | Quasi tutte le animazioni (Astro, caramelle, bombe, porta). |
+| `Mathf.Sin(x)` / `Mathf.Cos(x)` | Seno e coseno: danno onde che salgono e scendono, perfette per **pulsazioni e dondolii**. | Le animazioni (Astro gonfia/schiaccia, bombe, porta, coriandoli). |
 | `Mathf.Lerp(a, b, t)` | Valore intermedio fra `a` e `b` (t da 0 a 1): movimenti **morbidi** invece che a scatti. | Inclinazione di Astro, esplosione, media FPS, colore del tempo. |
 | `Mathf.Pow(base, esp)` | Elevamento a potenza. | Smoothing della webcam indipendente dagli FPS. |
 | `Mathf.PI` | Il pi greco (3,14...). | Fasi casuali delle animazioni, "campana" del gonfiamento. |
@@ -155,18 +154,18 @@ più), abbassandolo si "avvicina".
 | `Vector2` / `Vector3` | Coppie/terne di numeri (x,y) o (x,y,z): posizioni, dimensioni, velocità. | Ovunque. |
 | `Vector2.Distance(a, b)` | Distanza fra due punti. | **Collisioni** caramella/bomba/porta, scelta posizioni. |
 | `Vector2.Lerp(a, b, t)` | Punto intermedio fra due posizioni (movimento morbido). | Smoothing del puntatore webcam. |
-| `.magnitude` | Lunghezza di un vettore (es. quanto è veloce Astro). | Velocità di Astro nel pannello F3, distanza dal centro. |
+| `.magnitude` / `.sqrMagnitude` | Lunghezza di un vettore (al quadrato per la versione veloce, senza radice). | Velocità di Astro, distanza dal centro, **collisione con gli asteroidi**. |
 | `Vector3.zero` / `Vector3.one` | Le scorciatoie (0,0,0) e (1,1,1). | Inizializzazioni di scala/posizione. |
-| `Quaternion.Euler(x, y, z)` | Costruisce una rotazione a partire dai gradi. | Inclinazione di Astro, dondolio delle caramelle. |
+| `Quaternion.Euler(x, y, z)` | Costruisce una rotazione a partire dai gradi. | Inclinazione di Astro. |
 | `Color` / `Color32` | Un colore (rosso, verde, blu, trasparenza). `Color32` usa numeri 0–255 per i pixel della webcam. | Tinte, feedback, analisi webcam. |
 | `Color.Lerp(a, b, t)` | Colore intermedio fra due colori. | Lampeggio rosso di Astro, bagliore di gioia, tempo che diventa rosso. |
 | `Color.RGBToHSV(...)` | Converte un colore da RGB a **tinta/saturazione/luminosità**: serve per riconoscere l'evidenziatore alla webcam anche se cambia la luce. | ComandoWebcam. |
-| `Rect` + `.Contains(punto)` | Un rettangolo e il test "questo punto è dentro?". | **Collisione con gli asteroidi**, posizioni valide, aree dei pulsanti. |
+| `Rect` + `.Contains(punto)` | Un rettangolo e il test "questo punto è dentro?". | Aree dei pulsanti (il dwell). |
 | `Random.Range(min, max)` | Numero a caso (intero o decimale). | Posizioni casuali di caramelle/porta, fasi e colori delle animazioni, coriandoli. |
 
 **Come modificarli:** sono strumenti generali. Esempi pratici:
 - l'ampiezza di un'oscillazione è il numero che moltiplica `Mathf.Sin` (es.
-  `* 0.04f` = respiro leggero; alzandolo "respira" di più);
+  `* 0.05f` = oscillazione leggera della porta; alzandolo si muove di più);
 - la velocità di un'oscillazione è il numero che moltiplica `Time.time` dentro
   il seno (più alto = più veloce);
 - la "morbidezza" di un movimento con `Lerp` dipende dal terzo valore `t`: più
@@ -180,7 +179,7 @@ più), abbassandolo si "avvicina".
 |---|---|---|
 | `Time.deltaTime` | Secondi passati dall'**ultimo fotogramma**. Moltiplicando per `deltaTime` i movimenti vanno uguali su PC lenti e veloci. | Tutti i timer e i movimenti. |
 | `Time.unscaledDeltaTime` | Come sopra, ma **non** risente di un'eventuale pausa/rallentamento del gioco. | Conteggio FPS, barra dwell. |
-| `Time.time` | Secondi totali dall'avvio. La uso come "orologio" per le onde delle animazioni. | Animazioni (respiro, pulsazioni, lampeggi). |
+| `Time.time` | Secondi totali dall'avvio. La uso come "orologio" per le onde delle animazioni. | Animazioni (pulsazioni, dondolii, lampeggi). |
 | `Time.timeScale` | Velocità del tempo di gioco (1 = normale). La **leggo** soltanto, per mostrarla nel pannello F3. | InterfacciaGioco (debug). |
 | `Time.realtimeSinceStartup` | Tempo reale dall'avvio, in secondi. | Pannello F3 ("tempo di gioco"). |
 
@@ -299,9 +298,9 @@ completezza, ecco le alternative Unity e il motivo della scelta.
 
 | Cosa faccio a mano | Funzione/sistema Unity che potrebbe sostituirlo | Perché l'ho tenuto a mano |
 |---|---|---|
-| **Collisioni** (distanze e "punto dentro rettangolo") | Fisica 2D: `CircleCollider2D`/`BoxCollider2D` + `Rigidbody2D` + `OnTriggerEnter2D`, oppure `Physics2D.OverlapCircle`. | Il controllo a mano è preciso, prevedibile e mostra la matematica. La fisica completa qui sarebbe sovradimensionata. |
+| **Collisioni** (distanze e "punto dentro cerchio") | Fisica 2D: `CircleCollider2D`/`BoxCollider2D` + `Rigidbody2D` + `OnTriggerEnter2D`, oppure `Physics2D.OverlapCircle`. | Il controllo a mano è preciso, prevedibile e mostra la matematica. La fisica completa qui sarebbe sovradimensionata. |
 | **Interfaccia con OnGUI** | UI moderna `uGUI` (Canvas, Button, Text/Image, Slider) o UI Toolkit. | OnGUI tiene tutta l'interfaccia nel codice, senza costruire Canvas/prefab: si legge tutto in un file. |
-| **Animazioni con `Mathf.Sin`** | `Animator` + clip di animazione, o `AnimationCurve`. | Poche righe di codice danno respiro/pulsazioni; l'Animator richiederebbe lavoro in editor e mostrerebbe meno codice. |
+| **Animazioni con `Mathf.Sin`** | `Animator` + clip di animazione, o `AnimationCurve`. | Poche righe di codice danno pulsazioni e dondolii; l'Animator richiederebbe lavoro in editor e mostrerebbe meno codice. |
 | **Oggetti costruiti da codice** (`new GameObject` + `AddComponent`) | **Prefab** + `Instantiate`. | Costruire da codice rende esplicito ogni passo e non dipende da file di scena. |
 | **Coriandoli ed esplosione** | **Particle System** (Shuriken). | La versione a mano funziona e fa vedere come gestisco tanti oggetti e la loro durata di vita. |
 
