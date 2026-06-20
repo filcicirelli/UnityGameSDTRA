@@ -699,8 +699,7 @@ public class InterfacciaGioco : MonoBehaviour
 
     // Disegna un rettangolo pieno di un colore SENZA creare texture nuove ad
     // ogni fotogramma: uso la texture bianca gia' pronta di Unity
-    // (Texture2D.whiteTexture) e la coloro con GUI.color. Prima creavo una
-    // Texture2D nuova per ogni rettangolo, ad ogni frame: era uno spreco.
+    // (Texture2D.whiteTexture) e la coloro con GUI.color.
     static void Riquadro(Rect r, Color colore)
     {
         Color vecchio = GUI.color;

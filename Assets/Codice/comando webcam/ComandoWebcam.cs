@@ -17,7 +17,7 @@ using UnityEngine;
 //
 // Questo file:
 //  - si installa DA SOLO all'avvio (come FeedbackPaziente), non va messo in scena;
-//  - accende la webcam solo quando serve (modalita' "dito" attiva);
+//  - accende la webcam solo quando serve;
 //  - espone agli altri file la posizione del dito (Posizione) e se lo vede
 //    (DitoVisto); ci pensa Comandi a passarla ad Astro;
 //  - disegna in un angolo un'anteprima della webcam con un mirino sul dito.

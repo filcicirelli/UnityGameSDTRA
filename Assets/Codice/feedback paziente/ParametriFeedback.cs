@@ -27,8 +27,7 @@ public static class ParametriFeedback
     public const float VOLUME_SBAGLIATO = 0.45f; // errori: piu' basso, cosi' e' gentile
 
     // ---- FILE DEI SUONI (in Assets/Resources, nome SENZA estensione) ----
-    // Prima i suoni erano creati da codice (note in Hz); ora sono file audio
-    // veri e gratuiti (CC0), vedi la cartella "suoni gioco" e il suo LEGGIMI.
+    // Sono file audio gratuiti (CC0) dentro Assets/Resources.
     // Per cambiare un suono: metti un altro file in Assets/Resources e scrivi
     // qui sotto il suo nome.
     public const string SUONO_RACCOLTA = "raccolta"; // azione giusta: stellina raccolta

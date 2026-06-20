@@ -1,16 +1,16 @@
 using UnityEngine;
 
 // Carica le immagini (sprite) del gioco dai file PNG che stanno in
-// Assets/Resources. Ogni oggetto usa un'immagine vera, presa dai pacchetti
-// gratuiti CC0 (vedi la cartella "oggetti gioco" e il suo LEGGIMI).
+// Assets/Resources. Ogni oggetto usa un'immagine vera, presa da pacchetti
+// grafici gratuiti.
 //
 // PER CAMBIARE un'immagine: metti un altro file PNG in Assets/Resources e
 // scrivi qui sotto il suo nome (SENZA l'estensione .png). Tutto qui.
 public static class FabbricaImmagini
 {
     // ---- Nomi dei file in Assets/Resources (pagina parametri centralizzata) ----
-    private const string PERSONAGGIO = "personaggio"; // la navicella del giocatore (ex Astro)
-    private const string STELLA      = "stella";      // la stellina da raccogliere (ex caramella)
+    private const string PERSONAGGIO = "personaggio"; // la navicella del giocatore
+    private const string STELLA      = "stella";      // la stellina da raccogliere
     private const string PIANETA     = "pianeta";     // il pianeta amico di fine missione
     private const string ASTEROIDE   = "asteroide";   // la roccia delle barriere
     private const string BOMBA       = "bomba";       // l'ostacolo bomba
@@ -29,8 +29,8 @@ public static class FabbricaImmagini
     public static Sprite CreaPorta()          { return Carica(PORTA); }
     public static Sprite CreaCoriandolo()     { return Carica(CORIANDOLO); }
 
-    // L'asteroide e' una sola immagine di roccia INTERA: chi la usa (Livelli.cs)
-    // la disegna tutta, scalandola in modo uniforme (cosi' resta tonda, non si
+    // L'asteroide e' un'unica immagine di roccia: chi la usa (Livelli.cs) la
+    // disegna tutta, scalandola in modo uniforme (cosi' resta tonda, non si
     // taglia), e ne sceglie il colore con lo SpriteRenderer.
     public static Sprite CreaAsteroide() { return Carica(ASTEROIDE); }
 

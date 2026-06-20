@@ -314,15 +314,7 @@ public class Porta : MonoBehaviour
     public void Inizializza(Vector2 posizione)
     {
         transform.position = new Vector3(posizione.x, posizione.y, -0.5f);
-    }
-
-    void Update()
-    {
-        if (aperta) return;
-
-        // Piccolo "respiro" della porta (sta ferma: basta raggiungerla)
-        float wobble = 1f + Mathf.Sin(Time.time * 3f) * 0.05f;
-        transform.localScale = new Vector3(1.8f * wobble, 1.8f * wobble, 1f);
+        transform.localScale = new Vector3(1.8f, 1.8f, 1f); // la porta sta ferma: basta raggiungerla
     }
 
     // Chiamata da Astro quando la raggiunge.
@@ -485,7 +477,7 @@ public class Esplosione : MonoBehaviour
         transform.localScale = Vector3.one * 0.2f; // parto piccolino
 
         // Mi distruggo da solo dopo "durata" secondi: lo fa Unity con l'overload
-        // Destroy(oggetto, tempo). Prima contavo il tempo a mano in Update.
+        // Destroy(oggetto, tempo).
         Destroy(gameObject, durata);
     }
 
@@ -626,7 +618,7 @@ public class PezzoCoriandolo : MonoBehaviour
     void Start()
     {
         // Mi distruggo da solo dopo "vita" secondi con l'overload di Unity
-        // Destroy(oggetto, tempo): prima contavo il tempo a mano in Update.
+        // Destroy(oggetto, tempo).
         Destroy(gameObject, vita);
     }
 

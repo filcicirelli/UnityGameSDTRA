@@ -18,8 +18,7 @@ using UnityEngine;
 //     FeedbackPaziente.AzioneSbagliata();
 //
 // I numeri che regolano tutto stanno in ParametriFeedback.cs (la "pagina").
-// I suoni sono file audio veri (CC0) in Assets/Resources, vedi la cartella
-// "suoni gioco" e il suo LEGGIMI.
+// I suoni sono file audio gratuiti (CC0) dentro Assets/Resources.
 // ============================================================================
 public class FeedbackPaziente : MonoBehaviour
 {
